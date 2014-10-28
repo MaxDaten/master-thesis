@@ -1,0 +1,68 @@
+\input{tex/pre}
+\begin{document}
+\pagenumbering{roman}
+
+\pagestyle{plain}
+%\pagestyle{fancy}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Titlepage
+\include{chapter/titlepage}
+\cleardoublepage
+
+%%% blank site
+\thispagestyle{empty}
+\null\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Table of Content
+
+\thispagestyle{empty}
+\tableofcontents
+s\cleardoublepage
+
+%%% blank site
+\thispagestyle{empty}
+\null\newpage
+
+
+\listoffigures
+\listoftables
+\lstlistoflistings
+\cleardoublepage
+
+\thispagestyle{plain}
+\pagenumbering{arabic}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Einführung
+\include{chapter/introduction}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SVOGI
+\include{chapter/svogi}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Virtual Mapping
+\include{chapter/virtual-mapping}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Implementation
+\include{chapter/implementation}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Appendix
+
+\appendix
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bib
+\include{chapter/bibliography}
+
+\include{chapter/eidesstatt}
+\thispagestyle{empty}
+\cleardoublepage
+\null\newpage
+
+
+
+\end{document}

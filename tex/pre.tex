@@ -1,0 +1,116 @@
+\input{tex/def}
+\documentclass[ngerman, a4paper, 11pt]{scrreprt}
+\usepackage{lmodern}\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage[a4paper,
+left=3.5cm, right=3cm,
+top=3cm, bottom=3cm]{geometry}
+\usepackage{setspace}
+\usepackage[multiple]{footmisc}
+\geometry{verbose,a4paper}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+%%\usepackage{preamble}
+\usepackage{fancyhdr}
+\usepackage{lipsum}
+\usepackage{microtype}
+\usepackage[clearempty]{titlesec}
+\usepackage[ngerman]{babel}
+
+\usepackage{jurabib}
+\jurabibsetup{
+    commabeforerest,
+    ibidem=strict,
+    citefull=first,
+    see,
+    titleformat={colonsep,all},
+}
+%\usepackage{bibgerm}
+\usepackage{array}
+\usepackage{pst-pdf}
+
+
+%for autoref
+%There are macros to change the default output with the help of the \renewcommand:
+%\figurename             *\figurename*
+%\tablename              *\tablename*
+%\partname               *\partname*
+%\appendixname           *\appendixname*
+%\equationname           *\equationname*
+%\Itemname               *\Itemname*
+%\chaptername            *\chaptername*
+%\sectionname            *\sectionname*
+%\subsectionname         *\subsesctionname*
+%\subsubsectionname      *\subsubsectionname*
+%\paragraphname          *\paragraphname*
+%\Hfootnotename          *\Hfootnotename*
+%\AMSname                *\AMSname*
+%\theoremname            *\theoremname*
+
+\usepackage[german]{algorithm2e}
+\usepackage{yhmath}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subfig}
+
+\usepackage{blindtext}
+\usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
+
+%%\input{german-backcitecom}
+
+%%%% format
+\setlength{\parindent}{3em}
+\setlength{\parskip}{\baselineskip}
+% \onehalfspacing
+
+\ifpdf
+  \usepackage{hyperref}
+  \definecolor{darkblue}{rgb}{0,0,.5}
+  \hypersetup
+    { colorlinks=true
+    , breaklinks=true
+    , linkcolor=darkblue
+    , menucolor=darkblue
+    , urlcolor=darkblue
+    , pdftitle={\projname -- \untertitel}
+    , pdfsubject={\thesisname}
+    , pdfauthor={\authorname}
+    }
+\else
+\fi
+
+%% Listings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{listings}
+\KOMAoptions{listof=totoc} % necessary because of scrhack
+\renewcommand{\lstlistlistingname}{List of Listings}
+\lstset
+  { basicstyle=\small\ttfamily
+  , breaklines=true
+  , captionpos=b
+  , showstringspaces=false
+  , keywordstyle={}
+  }
+
+\lstnewenvironment{inlinehaskell}
+{\spacing{1}\lstset{language=haskell,nolol,aboveskip=\bigskipamount}}
+{\endspacing}
+
+\lstnewenvironment{inlinexml}
+{\spacing{1}\lstset{language=XML,nolol,aboveskip=\bigskipamount}}
+{\endspacing}
+
+\newcommand{\haskellinput}[2][]{
+  \begin{spacing}{1}
+  \lstinputlisting[language=Haskell,nolol,aboveskip=\bigskipamount,#1]{#2}
+  \end{spacing}
+}
+
+\newcommand{\haskellcode}[2][]{\mylisting[#1,language=Haskell]{#2}}
+
+\newcommand{\mylisting}[2][]{
+\begin{spacing}{1}
+\lstinputlisting[frame=lines,aboveskip=2\bigskipamount,#1]{#2}
+\end{spacing}
+}
