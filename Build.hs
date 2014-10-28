@@ -46,6 +46,10 @@ main = shakeArgs shakeOptions{shakeFiles=buildDir</>""} $ do
         cmd "mkdir -p" [ out ]
 
 
+    phony "view" $ do
+        need [ buildDir</>targetName<.>outType ]
+        cmd "open" [ buildDir</>targetName<.>outType ]
+
 {-
     "_build//*.o" *> \out -> do
         let c = dropDirectory1 $ out -<.> "c"
