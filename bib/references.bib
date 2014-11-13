@@ -2,41 +2,110 @@
 %% http://bibdesk.sourceforge.net/
 
 
-%% Created for Jan-Philip Loos at 2014-10-28 04:56:14 +0100 
+%% Created for Jan-Philip Loos at 2014-11-13 14:14:45 +0100 
 
 
 %% Saved with string encoding Unicode (UTF-8) 
 
 
 
+@inproceedings{ClusteredShading2012,
+	Abstract = {
+		 This paper presents and investigates Clustered Shading for deferred
+		 and forward rendering. In Clustered Shading, view samples with similar
+		 properties (e.g. 3D-position and/or normal) are grouped into clusters.
+		 This is comparable to tiled shading, where view samples are grouped
+		 into tiles based on 2D-position only. We show that Clustered Shading
+		 creates a better mapping of light sources to view samples than tiled
+		 shading, resulting in a significant reduction of lighting computations
+		 during shading. Additionally, Clustered Shading enables using normal
+		 information to perform per-cluster back-face culling of lights, again
+		 reducing the number of lighting computations. We also show that
+		 Clustered Shading not only outperforms tiled shading in many scenes,
+		 but also exhibits better worst case behaviour under tricky conditions
+		 (e.g. when looking at high-frequency geometry with large
+		 discontinuities in depth). Additionally, Clustered Shading enables
+		 real-time scenes with two to three orders of magnitudes more lights
+		 than previously feasible (up to around one million light sources).},
+	Author = {Olsson, Ola and Billeter, Markus and Assarsson, Ulf},
+	Booktitle = {HPG '12: Proceedings of the Conference on High Performance Graphics 2012},
+	Date-Added = {2014-11-13 11:56:54 +0000},
+	Date-Modified = {2014-11-13 11:56:54 +0000},
+	Location = {Paris, France},
+	Title = {Clustered Deferred and Forward Shading},
+	Year = {2012},
+	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QRi4uLy4uL2hzL3lhZ2UtbWV0YS95YWdlLXJlc2VhcmNoL3BhcGVycy9jbHVzdGVyZWRfc2hhZGluZ19wcmVwcmludC5wZGbSFwsYGVdOUy5kYXRhTxECEAAAAAACEAACAAAMTWFjaW50b3NoIEhEAAAAAAAAAAAAAAAAAAAAzpdHVkgrAAAAF3DVHmNsdXN0ZXJlZF9zaGFkaW5nX3ByZXByaW50LnBkZgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH2yNTQilqkAAAAAAAAAAAAAgAFAAAJIAAAAAAAAAAAAAAAAAAAAAZwYXBlcnMAEAAIAADOlzlGAAAAEQAIAADQikyUAAAAAQAcABdw1QAXcJEAE50gABObCAATmksABVP1AAISegACAGpNYWNpbnRvc2ggSEQ6VXNlcnM6AGpsb29zOgBXb3Jrc3BhY2U6AGhzOgB5YWdlLW1ldGE6AHlhZ2UtcmVzZWFyY2g6AHBhcGVyczoAY2x1c3RlcmVkX3NoYWRpbmdfcHJlcHJpbnQucGRmAA4APgAeAGMAbAB1AHMAdABlAHIAZQBkAF8AcwBoAGEAZABpAG4AZwBfAHAAcgBlAHAAcgBpAG4AdAAuAHAAZABmAA8AGgAMAE0AYQBjAGkAbgB0AG8AcwBoACAASABEABIAVlVzZXJzL2psb29zL1dvcmtzcGFjZS9ocy95YWdlLW1ldGEveWFnZS1yZXNlYXJjaC9wYXBlcnMvY2x1c3RlcmVkX3NoYWRpbmdfcHJlcHJpbnQucGRmABMAAS8AABUAAgAM//8AAIAG0hscHR5aJGNsYXNzbmFtZVgkY2xhc3Nlc11OU011dGFibGVEYXRhox0fIFZOU0RhdGFYTlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVkQXJjaGl2ZXLRJidUcm9vdIABAAgAEQAaACMALQAyADcAQABGAE0AVQBgAGcAagBsAG4AcQBzAHUAdwCEAI4A1wDcAOQC+AL6Av8DCgMTAyEDJQMsAzUDOgNHA0oDXANfA2QAAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAAAAADZg==}}
+
+@inproceedings{rousiers-2014,
+	Author = {Charles de Rousiers and S{\'e}bastian Lagarde},
+	Date-Added = {2014-11-13 09:58:36 +0000},
+	Date-Modified = {2014-11-13 10:02:03 +0000},
+	Keywords = {physically based rendering},
+	Series = {SIGGRAPH 2014},
+	Title = {Moving to physically based rendering},
+	Year = {2014},
+	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QUC4uLy4uL2hzL3lhZ2UtbWV0YS95YWdlLXJlc2VhcmNoL3BhcGVycy9jb3Vyc2Vfbm90ZXNfbW92aW5nX2Zyb3N0Yml0ZV90b19wYnIucGRm0hcLGBlXTlMuZGF0YU8RAjAAAAAAAjAAAgAADE1hY2ludG9zaCBIRAAAAAAAAAAAAAAAAAAAAM6XR1ZIKwAAABdw1R9jb3Vyc2Vfbm90ZXNfbW92aW5nIzFFOEI0NjMucGRmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB6LRj0H6EHAAAAAAAAAAAAAIABQAACSAAAAAAAAAAAAAAAAAAAAAGcGFwZXJzABAACAAAzpc5RgAAABEACAAA0H52DAAAAAEAHAAXcNUAF3CRABOdIAATmwgAE5pLAAVT9QACEnoAAgBrTWFjaW50b3NoIEhEOlVzZXJzOgBqbG9vczoAV29ya3NwYWNlOgBoczoAeWFnZS1tZXRhOgB5YWdlLXJlc2VhcmNoOgBwYXBlcnM6AGNvdXJzZV9ub3Rlc19tb3ZpbmcjMUU4QjQ2My5wZGYAAA4AUgAoAGMAbwB1AHIAcwBlAF8AbgBvAHQAZQBzAF8AbQBvAHYAaQBuAGcAXwBmAHIAbwBzAHQAYgBpAHQAZQBfAHQAbwBfAHAAYgByAC4AcABkAGYADwAaAAwATQBhAGMAaQBuAHQAbwBzAGgAIABIAEQAEgBgVXNlcnMvamxvb3MvV29ya3NwYWNlL2hzL3lhZ2UtbWV0YS95YWdlLXJlc2VhcmNoL3BhcGVycy9jb3Vyc2Vfbm90ZXNfbW92aW5nX2Zyb3N0Yml0ZV90b19wYnIucGRmABMAAS8AABUAAgAM//8AAIAG0hscHR5aJGNsYXNzbmFtZVgkY2xhc3Nlc11OU011dGFibGVEYXRhox0fIFZOU0RhdGFYTlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVkQXJjaGl2ZXLRJidUcm9vdIABAAgAEQAaACMALQAyADcAQABGAE0AVQBgAGcAagBsAG4AcQBzAHUAdwCEAI4A4QDmAO4DIgMkAykDNAM9A0sDTwNWA18DZANxA3QDhgOJA44AAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAAAAADkA==}}
+
+@article{kaplanyan2009light,
+	Author = {Kaplanyan, Anton},
+	Date-Added = {2014-11-13 09:51:39 +0000},
+	Date-Modified = {2014-11-13 10:20:30 +0000},
+	Journal = {ACM SIGGRAPH Courses},
+	Keywords = {global illumination,lighting,volumes},
+	Pages = {2},
+	Title = {Light propagation volumes in cryengine 3},
+	Volume = {7},
+	Year = {2009},
+	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QTC4uLy4uL2hzL3lhZ2UtbWV0YS95YWdlLXJlc2VhcmNoL3BhcGVycy9Dcnl0ZWtfTGlnaHRfUHJvcGFnYXRpb25fVm9sdW1lcy5wZGbSFwsYGVdOUy5kYXRhTxECJAAAAAACJAACAAAMTWFjaW50b3NoIEhEAAAAAAAAAAAAAAAAAAAAzpdHVkgrAAAAF3DVH0NyeXRla19MaWdodF9Qcm9wYWdhI0ZDODU3Ni5wZGYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8hXbPgBVOAAAAAAAAAAAAAgAFAAAJIAAAAAAAAAAAAAAAAAAAAAZwYXBlcnMAEAAIAADOlzlGAAAAEQAIAADPf/kuAAAAAQAcABdw1QAXcJEAE50gABObCAATmksABVP1AAISegACAGtNYWNpbnRvc2ggSEQ6VXNlcnM6AGpsb29zOgBXb3Jrc3BhY2U6AGhzOgB5YWdlLW1ldGE6AHlhZ2UtcmVzZWFyY2g6AHBhcGVyczoAQ3J5dGVrX0xpZ2h0X1Byb3BhZ2EjRkM4NTc2LnBkZgAADgBKACQAQwByAHkAdABlAGsAXwBMAGkAZwBoAHQAXwBQAHIAbwBwAGEAZwBhAHQAaQBvAG4AXwBWAG8AbAB1AG0AZQBzAC4AcABkAGYADwAaAAwATQBhAGMAaQBuAHQAbwBzAGgAIABIAEQAEgBcVXNlcnMvamxvb3MvV29ya3NwYWNlL2hzL3lhZ2UtbWV0YS95YWdlLXJlc2VhcmNoL3BhcGVycy9Dcnl0ZWtfTGlnaHRfUHJvcGFnYXRpb25fVm9sdW1lcy5wZGYAEwABLwAAFQACAAz//wAAgAbSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXU5TTXV0YWJsZURhdGGjHR8gVk5TRGF0YVhOU09iamVjdNIbHCIjXE5TRGljdGlvbmFyeaIiIF8QD05TS2V5ZWRBcmNoaXZlctEmJ1Ryb290gAEACAARABoAIwAtADIANwBAAEYATQBVAGAAZwBqAGwAbgBxAHMAdQB3AIQAjgDdAOIA6gMSAxQDGQMkAy0DOwM/A0YDTwNUA2EDZAN2A3kDfgAAAAAAAAIBAAAAAAAAACgAAAAAAAAAAAAAAAAAAAOA}}
+
+@webpage{ogl-sparse,
+	Author = {Graham Sellers},
+	Date-Added = {2014-11-13 09:13:32 +0000},
+	Date-Modified = {2014-11-13 09:16:51 +0000},
+	Keywords = {opengl,texturing},
+	Month = {08},
+	Title = {ARB_sparse_texture},
+	Url = {https://www.opengl.org/registry/specs/ARB/sparse_texture.txt},
+	Urldate = {08/16/2013},
+	Year = {2013},
+	Bdsk-Url-1 = {https://www.opengl.org/registry/specs/ARB/sparse_texture.txt}}
+
 @inproceedings{crassin2011interactive,
 	Author = {Crassin, Cyril and Neyret, Fabrice and Sainz, Miguel and Green, Simon and Eisemann, Elmar},
 	Booktitle = {Computer Graphics Forum},
 	Date-Added = {2014-10-28 03:55:18 +0000},
-	Date-Modified = {2014-10-28 03:55:18 +0000},
+	Date-Modified = {2014-11-13 10:20:11 +0000},
+	Keywords = {global illumination,lighting,voxel,cone tracing},
 	Number = {7},
 	Organization = {Wiley Online Library},
 	Pages = {1921--1930},
 	Title = {Interactive indirect illumination using voxel cone tracing},
 	Volume = {30},
-	Year = {2011}}
+	Year = {2011},
+	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QQy4uLy4uL2hzL3lhZ2UtbWV0YS95YWdlLXJlc2VhcmNoL3BhcGVycy9HSVZveGVscy1wZzIwMTEtYXV0aG9ycy5wZGbSFwsYGVdOUy5kYXRhTxECBgAAAAACBgACAAAMTWFjaW50b3NoIEhEAAAAAAAAAAAAAAAAAAAAzpdHVkgrAAAAF3DVG0dJVm94ZWxzLXBnMjAxMS1hdXRob3JzLnBkZgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFV4TzP1QuoAAAAAAAAAAAAAgAFAAAJIAAAAAAAAAAAAAAAAAAAAAZwYXBlcnMAEAAIAADOlzlGAAAAEQAIAADP1O+IAAAAAQAcABdw1QAXcJEAE50gABObCAATmksABVP1AAISegACAGdNYWNpbnRvc2ggSEQ6VXNlcnM6AGpsb29zOgBXb3Jrc3BhY2U6AGhzOgB5YWdlLW1ldGE6AHlhZ2UtcmVzZWFyY2g6AHBhcGVyczoAR0lWb3hlbHMtcGcyMDExLWF1dGhvcnMucGRmAAAOADgAGwBHAEkAVgBvAHgAZQBsAHMALQBwAGcAMgAwADEAMQAtAGEAdQB0AGgAbwByAHMALgBwAGQAZgAPABoADABNAGEAYwBpAG4AdABvAHMAaAAgAEgARAASAFNVc2Vycy9qbG9vcy9Xb3Jrc3BhY2UvaHMveWFnZS1tZXRhL3lhZ2UtcmVzZWFyY2gvcGFwZXJzL0dJVm94ZWxzLXBnMjAxMS1hdXRob3JzLnBkZgAAEwABLwAAFQACAAz//wAAgAbSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXU5TTXV0YWJsZURhdGGjHR8gVk5TRGF0YVhOU09iamVjdNIbHCIjXE5TRGljdGlvbmFyeaIiIF8QD05TS2V5ZWRBcmNoaXZlctEmJ1Ryb290gAEACAARABoAIwAtADIANwBAAEYATQBVAGAAZwBqAGwAbgBxAHMAdQB3AIQAjgDUANkA4QLrAu0C8gL9AwYDFAMYAx8DKAMtAzoDPQNPA1IDVwAAAAAAAAIBAAAAAAAAACgAAAAAAAAAAAAAAAAAAANZ},
+	Bdsk-File-2 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QYi4uLy4uL2hzL3lhZ2UtbWV0YS95YWdlLXJlc2VhcmNoL3BhcGVycy9TQjEzNC1Wb3hlbC1Db25lLVRyYWNpbmctT2N0cmVlLVJlYWwtVGltZS1JbGx1bWluYXRpb24ucGRm0hcLGBlXTlMuZGF0YU8RAmYAAAAAAmYAAgAADE1hY2ludG9zaCBIRAAAAAAAAAAAAAAAAAAAAM6XR1ZIKwAAABdw1R9TQjEzNC1Wb3hlbC1Db25lLVRyYSNGNUE0NkMucGRmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9aRsz31bdwAAAAAAAAAAAAIABQAACSAAAAAAAAAAAAAAAAAAAAAGcGFwZXJzABAACAAAzpc5RgAAABEACAAAz30/VwAAAAEAHAAXcNUAF3CRABOdIAATmwgAE5pLAAVT9QACEnoAAgBrTWFjaW50b3NoIEhEOlVzZXJzOgBqbG9vczoAV29ya3NwYWNlOgBoczoAeWFnZS1tZXRhOgB5YWdlLXJlc2VhcmNoOgBwYXBlcnM6AFNCMTM0LVZveGVsLUNvbmUtVHJhI0Y1QTQ2Qy5wZGYAAA4AdgA6AFMAQgAxADMANAAtAFYAbwB4AGUAbAAtAEMAbwBuAGUALQBUAHIAYQBjAGkAbgBnAC0ATwBjAHQAcgBlAGUALQBSAGUAYQBsAC0AVABpAG0AZQAtAEkAbABsAHUAbQBpAG4AYQB0AGkAbwBuAC4AcABkAGYADwAaAAwATQBhAGMAaQBuAHQAbwBzAGgAIABIAEQAEgByVXNlcnMvamxvb3MvV29ya3NwYWNlL2hzL3lhZ2UtbWV0YS95YWdlLXJlc2VhcmNoL3BhcGVycy9TQjEzNC1Wb3hlbC1Db25lLVRyYWNpbmctT2N0cmVlLVJlYWwtVGltZS1JbGx1bWluYXRpb24ucGRmABMAAS8AABUAAgAM//8AAIAG0hscHR5aJGNsYXNzbmFtZVgkY2xhc3Nlc11OU011dGFibGVEYXRhox0fIFZOU0RhdGFYTlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVkQXJjaGl2ZXLRJidUcm9vdIABAAgAEQAaACMALQAyADcAQABGAE0AVQBgAGcAagBsAG4AcQBzAHUAdwCEAI4A8wD4AQADagNsA3EDfAOFA5MDlwOeA6cDrAO5A7wDzgPRA9YAAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAAAAAD2A==},
+	Bdsk-File-3 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QQi4uLy4uL2hzL3lhZ2UtbWV0YS95YWdlLXJlc2VhcmNoL3BhcGVycy9HSVZveGVsc19TaWdncmFwaF9UYWxrLnBkZtIXCxgZV05TLmRhdGFPEQIAAAAAAAIAAAIAAAxNYWNpbnRvc2ggSEQAAAAAAAAAAAAAAAAAAADOl0dWSCsAAAAXcNUaR0lWb3hlbHNfU2lnZ3JhcGhfVGFsay5wZGYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVB988/P8+sAAAAAAAAAAAACAAUAAAkgAAAAAAAAAAAAAAAAAAAABnBhcGVycwAQAAgAAM6XOUYAAAARAAgAAM/P18sAAAABABwAF3DVABdwkQATnSAAE5sIABOaSwAFU/UAAhJ6AAIAZk1hY2ludG9zaCBIRDpVc2VyczoAamxvb3M6AFdvcmtzcGFjZToAaHM6AHlhZ2UtbWV0YToAeWFnZS1yZXNlYXJjaDoAcGFwZXJzOgBHSVZveGVsc19TaWdncmFwaF9UYWxrLnBkZgAOADYAGgBHAEkAVgBvAHgAZQBsAHMAXwBTAGkAZwBnAHIAYQBwAGgAXwBUAGEAbABrAC4AcABkAGYADwAaAAwATQBhAGMAaQBuAHQAbwBzAGgAIABIAEQAEgBSVXNlcnMvamxvb3MvV29ya3NwYWNlL2hzL3lhZ2UtbWV0YS95YWdlLXJlc2VhcmNoL3BhcGVycy9HSVZveGVsc19TaWdncmFwaF9UYWxrLnBkZgATAAEvAAAVAAIADP//AACABtIbHB0eWiRjbGFzc25hbWVYJGNsYXNzZXNdTlNNdXRhYmxlRGF0YaMdHyBWTlNEYXRhWE5TT2JqZWN00hscIiNcTlNEaWN0aW9uYXJ5oiIgXxAPTlNLZXllZEFyY2hpdmVy0SYnVHJvb3SAAQAIABEAGgAjAC0AMgA3AEAARgBNAFUAYABnAGoAbABuAHEAcwB1AHcAhACOANMA2ADgAuQC5gLrAvYC/wMNAxEDGAMhAyYDMwM2A0gDSwNQAAAAAAAAAgEAAAAAAAAAKAAAAAAAAAAAAAAAAAAAA1I=},
+	Bdsk-File-4 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QRi4uLy4uL2hzL3lhZ2UtbWV0YS95YWdlLXJlc2VhcmNoL3BhcGVycy9HSVZveGVsc19TaWdncmFwaDIwMTFfd2ViLnBwdHjSFwsYGVdOUy5kYXRhTxECEAAAAAACEAACAAAMTWFjaW50b3NoIEhEAAAAAAAAAAAAAAAAAAAAzpdHVkgrAAAAF3DVHkdJVm94ZWxzX1NpZ2dyYXBoMjAxMV93ZWIucHB0eAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFRErXP0AB0AAAAAAAAAAAAAgAFAAAJIAAAAAAAAAAAAAAAAAAAAAZwYXBlcnMAEAAIAADOlzlGAAAAEQAIAADPz+RUAAAAAQAcABdw1QAXcJEAE50gABObCAATmksABVP1AAISegACAGpNYWNpbnRvc2ggSEQ6VXNlcnM6AGpsb29zOgBXb3Jrc3BhY2U6AGhzOgB5YWdlLW1ldGE6AHlhZ2UtcmVzZWFyY2g6AHBhcGVyczoAR0lWb3hlbHNfU2lnZ3JhcGgyMDExX3dlYi5wcHR4AA4APgAeAEcASQBWAG8AeABlAGwAcwBfAFMAaQBnAGcAcgBhAHAAaAAyADAAMQAxAF8AdwBlAGIALgBwAHAAdAB4AA8AGgAMAE0AYQBjAGkAbgB0AG8AcwBoACAASABEABIAVlVzZXJzL2psb29zL1dvcmtzcGFjZS9ocy95YWdlLW1ldGEveWFnZS1yZXNlYXJjaC9wYXBlcnMvR0lWb3hlbHNfU2lnZ3JhcGgyMDExX3dlYi5wcHR4ABMAAS8AABUAAgAM//8AAIAG0hscHR5aJGNsYXNzbmFtZVgkY2xhc3Nlc11OU011dGFibGVEYXRhox0fIFZOU0RhdGFYTlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVkQXJjaGl2ZXLRJidUcm9vdIABAAgAEQAaACMALQAyADcAQABGAE0AVQBgAGcAagBsAG4AcQBzAHUAdwCEAI4A1wDcAOQC+AL6Av8DCgMTAyEDJQMsAzUDOgNHA0oDXANfA2QAAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAAAAADZg==}}
 
 @inproceedings{olsson:Shadows:2014,
 	Abstract = { Recently, several algorithms have been introduced that enable real-time performance for many lights in applications such as games. In this paper, we explore the use of 
 hardware-supported virtual cube-map shadows to efficiently implement high-quality shadows from hundreds of light sources in real time and within a bounded memory footprint. 
 In addition, we explore the utility of ray tracing for shadows from many lights and present a hybrid algorithm combining ray tracing with cube maps to exploit their respective 
 strengths. Our solution supports real-time performance with hundreds of lights in fully dynamic high-detail scenes.},
-	Author = {Ola Olsson and Erik Sintorn and Viktor K&auml;mpe and Markus Billeter and Ulf Assarsson},
+	Annote = {http://www.cse.chalmers.se/~olaolss/main_frame.php?contents=publication&id=clustered_with_shadows},
+	Author = {Ola Olsson and Erik Sintorn and Viktor K{\"a}mpe and Markus Billeter and Ulf Assarsson},
 	Booktitle = {Proceedings of the ACM SIGGRAPH Symposium on Interactive 3D Graphics and Games},
 	Date-Added = {2014-10-28 03:50:46 +0000},
-	Date-Modified = {2014-10-28 03:50:46 +0000},
-	Keywords = {real-time,shadows,virtual,cube map},
+	Date-Modified = {2014-11-13 10:16:46 +0000},
+	Keywords = {real-time,shadows,virtual,cubemap,texturing},
 	Publisher = {ACM},
 	Title = {Efficient Virtual Shadow Maps for Many Lights},
 	Year = {2014}}
 
 @misc{bohn:gamephysics,
 	Author = {C.-A. Bohn},
+	Date-Modified = {2014-11-13 10:19:40 +0000},
+	Keywords = {game engine,physics},
 	Owner = {Jan-Philip Loos},
 	Timestamp = {31.08.2010},
 	Title = {Game-Physics},
@@ -46,6 +115,8 @@ strengths. Our solution supports real-time performance with hundreds of lights i
 
 @book{Ericson2005,
 	Author = {Christer Ericson},
+	Date-Modified = {2014-11-13 10:21:01 +0000},
+	Keywords = {physics,collision detection},
 	Owner = {Jan-Philip Loos},
 	Publisher = {Morgan Kaufmann},
 	Timestamp = {07.06.2010},
@@ -55,6 +126,8 @@ strengths. Our solution supports real-time performance with hundreds of lights i
 @book{Gamma2004-07-31,
 	__Markedentry = {[Jan-Philip Loos]},
 	Author = {"Erich Gamma and Richard Helm and Ralph Johnson and John Vlissides"},
+	Date-Modified = {2014-11-13 10:18:24 +0000},
+	Keywords = {design patterns,software,software architecture},
 	Owner = {Jan-Philip Loos},
 	Publisher = {Addison Wesley Verlag},
 	Timestamp = {27.08.2010},
@@ -63,6 +136,8 @@ strengths. Our solution supports real-time performance with hundreds of lights i
 
 @phdthesis{James1999,
 	Author = {Adam James},
+	Date-Modified = {2014-11-13 10:19:24 +0000},
+	Keywords = {data structure},
 	Owner = {Jan-Philip Loos},
 	School = {University of East Anglia},
 	Timestamp = {27.08.2010},
@@ -73,6 +148,8 @@ strengths. Our solution supports real-time performance with hundreds of lights i
 
 @book{Lengyel2003,
 	Author = {Eric Lengyel},
+	Date-Modified = {2014-11-13 10:21:17 +0000},
+	Keywords = {game programming,mathematics},
 	Owner = {Jan-Philip Loos},
 	Publisher = {Charles River Media},
 	Timestamp = {07.06.2010},
@@ -81,6 +158,8 @@ strengths. Our solution supports real-time performance with hundreds of lights i
 
 @book{Millington2007,
 	Author = {Ian Millington},
+	Date-Modified = {2014-11-13 10:18:50 +0000},
+	Keywords = {game engine, software architecture},
 	Owner = {Jan-Philip Loos},
 	Publisher = {Morgan Kaufmann},
 	Timestamp = {07.06.2010},
@@ -89,6 +168,8 @@ strengths. Our solution supports real-time performance with hundreds of lights i
 
 @misc{Naylor1993,
 	Author = {Bruce Naylor},
+	Date-Modified = {2014-11-13 10:19:13 +0000},
+	Keywords = {data structure,tree},
 	Owner = {Jan-Philip Loos},
 	Timestamp = {26.08.2010},
 	Title = {Constructing Good Partitioning Trees},
