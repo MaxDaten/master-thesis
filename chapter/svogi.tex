@@ -1,2 +1,28 @@
-\chapter{Sparse Voxel Global Illumination}
-\blindtext
+\chapter{Sparse Voxel Global Illumination im Detail}
+\label{chap:svogi}
+
+Das eigentliche Verfahren beginnt im ersten Schritt mit der Einspeisung (\textit{Inject}) der von den Lichtquellen eintreffenden Beleuchtungsstärke und ihrer Richtung auf Voxelebene (siehe Kapitel [Einspeisung]). Im zweiten Schritt wird die Beleuchtungsstärke in die höheren Ebenen verteilt (\textit{Filter \& Distribute} = \textit{MIP Mapping}, siehe Kapitel [MIP-Mapping]). Abschließend wird im dritten Schritt die Szene aus Sicht des Betrachters rasterisiert. Für jedes Fragmentes wird die Beleuchtung mittels Cone-Tracing (siehe Kapitel [Cone Tracing]) und der im Octree gespeicherten Beleuchtungsinformation bestimmt (\textit{Evaluate}).
+
+\section{Octree}
+\label{sec:octree}
+
+Der Octree wird zur Laufzeit auf der GPU in einem Renderschritt erzeugt (Details [Ein-Schritt Verfahren]). Im Renderschritt werden die Blätter des Octrees mit mit den Beleuchtungsparametern der Szenengeometrie initialisiert. Die von einem Voxel abgedeckten Attribute werden über eine Gaußgewichtung gemittelt und im Voxel gespeichert. Zu den gespeicherten Attributen gehören in der Regel Werte des Materials \warn{(z.B. Albedo, siehe Bild Octree mit Albedo Werten)} und die Oberflächennormale. Leere Oktanten werden zur Reduzierung des Speicherbedarfs kollabiert.
+
+Die Octree-Struktur wird als Szenenbeschreibung gewählt, da der maximale Aufwand für die Suche in der Hierarchie der Voxel fester Größe in der Tiefe beschränkt ist und nur im besten Falle von der Szenenkomplexität. Die Wurzel des Baums umspannt die gesamte Szene. Entsprechend der Hierarchie erhöht sich absteigend die Auflösung des immer kleiner werdenen umspannenten Bereichs. Der Octree dient beim SVOGI-Verfahren als hierarchische Darstellung des Lichttransports innerhalb der Szene, aber ermöglicht auch die Umgebungsverdeckung (\textit{Ambient Occlusion}) als Alpha-Wert in den Oktanten zu speichern. Die Ausnahme bildet die Voxelebene, welche noch zusätzlich die Oberflächenattribute der Szene speichert.
+
+\subsection{Konstruktion}
+
+Die Konstruktion des Octrees muss schnell genug sein um auch dynamische Meshes zu unterstützen. Verändert sich die Szenengeometrie, so muss der Octree auch entsprechend angepasst werden. Ausgehend vom naiven Drei-Schrittverfahren wird unter Verwendung eines Geometrie-Shaders die Konstruktion des Octrees in einem Renderdurchlauf entwickelt.
+
+\subsubsection{Drei-Schritt Verfahren}
+
+Das naive Verfahren zur Konstruktion des Octrees basiert auf drei Renderdurchläufen. Jeder Renderdurchlauf rasterisiert die Szene in der gewählten höchsten Octree-Auflösung entlang der drei Hauptachsen. Der Tiefentest ist deaktiviert, da jedes Fragment potenziell ein Voxel sein könnte. Die relevanten Attribute eines jeden erzeugten Fragments werden direkt in die globale GPU-Speicherstruktur des Octrees eingefügt. Notwendige Teilungen der Oktanten werden sequenzialisiert atomar vorgenommen, so dass Oktanten kollisionsfrei aufgeteilt werden können \cite[4.2.1]{CNSGE11b}.
+
+\subsubsection{Ein-Schritt Verfahren}
+
+Die, für die jeweiligen Hauptachsen, seperaten Renderdurchläufe können mit Hilfe eines Geometry-Shaders zu einem Durchlauf zusammengefasst werden. Der Geometry-Shader berechnet für jedes Dreieck der Szene die dominierende Achse. Anschließend wird das Dreieck orthographisch auf die dominierende Achse projiziert und als neues Dreieck ausgegeben. Die Rasterisierung läuft wie im Drei-Schritt Verfahren ab (Details in \cite{Crassin12, OpenGL Insights  22.1}).
+
+\subsubsection{Dynamisches Update}
+
+Dynamische Meshes werden auf gleiche Weise wie statische zu Voxeln rasterisiert. Damit die dynamischen Objekte die statischen nicht überschreiben und auch wieder schnell aus der Struktur entfernt werden können, werden die dynamischen Voxel ans Ende des Speicherbereichs des Octrees geschrieben und entsprechend verzeigert.
+
