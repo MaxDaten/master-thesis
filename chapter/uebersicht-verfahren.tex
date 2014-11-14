@@ -1,17 +1,25 @@
 \chapter{Übersicht bestehender Verfahren}
 
+Es gibt unterschiedliche Verfahren für die \ac{GI} in Echtzeit. Im folgenden werden die gängigsten Verfahren \ac{LM} und \ac{LPV} kurz vorgestellt. Als Erweiterung des \ac{LPV} Verfahrens um Octrees kann \ac{SVOGI} verstanden werden, welches die Basis dieser Arbeit bildet. In dieser Arbeit wird der SVOGI Algorithmus um ein Verfahren für effiziente virtuelle \acf{SM} erweitert. Als Grundlage wird nach der Vorstellung der gängigsten Echtzeit \ac{GI} Verfahren das in [xyz] entwickelte Verfahren hier vorgestellt.
+
 \blindtext
 
 \section{Verfahren für Globale Beleuchtung in Echtzeit}
 
-\subsection{Light-Maps}
-\blindtext
+\subsection{\ac{LM}}
+\acf{LM} gehören zu den ältesten Verfahren, die eine effiziente Darstellung von Beleuchtung in Echtzeit ermöglichen. Je nach Ausprägung wird die \ac{LM} selten zur Laufzeit erzeugt. In der Regel wird die \ac{LM} auf Grund des Berechnungsaufwandes in einem Präprozess (\textit{Baking}) berechnet. Die erzeugte \ac{LM} wird zur Laufzeit geladen und über die Szene gelegt indem sie mit den Farbinformationen der Geometrien verrechnet wird. \ac{LM} können sowohl auschließlich für die lokale Beleuchtung aber auch für die globale Beleuchtung verwendet werden. Für die Berechnung der globalen Beleuchtung kommen klassische Verfahren der Offline-Bildsynthese zur Anwendung, wie zum Beispiel Photon-Mapping. \warn{ref!} Dies führt zu längeren Produktionszyklen \warn{?!} und einigen Einschränkungen in der künstlerischen Gestaltung der Szenen, da Veränderungen in der Beleuchtung erst mit teilweise erheblicher Verzögerung bewertet werden können. 
 
-\subsection{Light Propagation Volumes}
-\blindtext
+Die Anzahl der Lichter sind bei \ac{LM} nicht beschränkt, das bedeutet, dass der Renderdurchsatz \warn{(?!)} unabhäng von der Beleuchtungskomplexität ist. Doch sind \ac{LM} auf statische Geometrien und statische Lichtquellen beschränkt. Dies wird beim fehlenden Schattenwurf bei bewegten Objekten wesentlich, sodass \ac{LM} oft mit dynamischen Beleuchtungssystemen kombiniert werden. Doch die Kombination von statischen und dynamischen Beleuchstungssystemen führt ohne weitere Behandlung zu auffälligen Inkonsistenzen in der Darstellung, sodass beispielsweise statische Schatten der \ac{LM} weichere Kanten aufweisen als die dynamisch berechneten Schatten. \cite{cryenginesdk:lighting}. Generell müssen \ac{LM} für einen guten visuellen Eindruck entsprechend hoch aufgelöst und damit sogar speziell organisiert werden (Mega-Textures, Sparse Textures etc.). Zusätzlich eignen sich Lightmaps durch die begrenzte Auflösung nicht für spekulare (glänzende) Reflexionen.
 
-\subsection{Sparse Voxel Octree Global Illumination}
-\blindtext
+\subsection{\ac{LPV}}
 
-\section{Vefahren Schadow-Maps}
+Das Verfahren der \ac{LPV} basiert auf einem regelmäßigen Volumenraster, welches sich durch die gesamte Szene erstreckt. Über dieses Volumenraster wird die Lichtstrahlung von Volumen zu Volumen iterativ propagiert. Das Verfahren erlaubt dynamische Lichter sowie Objekte. Naturgemäß kostet das Verfahren mehr Performance als vorberechnete Lightmaps. Auch LPVs haben auf Grund der geringen Auflösung des Volumenrasters Probleme mit spekularen Reflexionen \cite{kaplanyan2009light}.
+
+
+\subsection{\acf{SVOGI}}
+
+Das Verfahren \ac{SVOGI} basiert auf einem spärlich besetzten Octree (\textit{Sparse Octree}). Der Octree wird vollständig auf der GPU erzeugt, leere Oktanten werden kollabiert.  Die relevanten Attribute der Szenengeometrie, zum Beispiel Material und Oberflächennormale, werden für die spätere Beleuchtunsgberechnung in den Blättern des Octrees (\textit{Voxel}) gespeichert. Anschließend werden \ac{RM} für alle relevanten Lichter erzeugt, dessen Pixel als Photonen auf Voxelebene in den den Octree eingespeißt werden. Im nächsten Schritt werden die in den Blättern gesammelten Energien in die höheren Ebenen bis hin zur Wurzel propagiert. Abschließend wird das klassische Shading der Fragmente um ein \textit{Final Gathering} mittels \textit{Cone Tracing} erweitert. Siehe Details im folgenden \fref{chap:svogi}.
+
+
+\section{Vefahren Schadow Maps}
 \blindtext
