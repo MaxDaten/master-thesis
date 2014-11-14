@@ -18,6 +18,23 @@ top=3cm, bottom=3cm]{geometry}
 \usepackage{microtype}
 \usepackage[clearempty]{titlesec}
 \usepackage[ngerman]{babel}
+\usepackage{acronym}
+
+\usepackage[german,vario]{fancyref}
+%% http://www.schlosser.info/in-latex-mit-varioreffancyref-automatisch-ab-seite-statt-auf-seite-setzen/
+\makeatletter
+\let\@f@ref@sav=\@f@ref
+\renewcommand*{\@f@ref}[4]{%
+  \def\@curtlabtype{#3}%
+  \protect\@f@ref@sav{#1}{#2}{#3}{#4}%
+}%
+\addto\extrasngerman{%
+  \renewcommand\reftextfaraway[1]{%
+    \ifthenelse{\equal{\@curtlabtype}{chap}}{ab Seite}{auf Seite}~\pageref{#1}}%
+  \renewcommand\reftextafter{%
+    \ifthenelse{\equal{\@curtlabtype}{chap}}{ab der nächsten Seite}{auf der nächsten Seite}}%
+}
+\makeatother
 
 \usepackage{jurabib}
 \jurabibsetup{
