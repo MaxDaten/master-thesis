@@ -12,11 +12,15 @@ Vorgestellt wird ein Verfahren, dass das Erzeugen von Virtual Shadow Maps auf Vi
         - SVOGI
     - Shadowing
         - Virtual Shadow Maps
+- SVOGI im Detail
+    - Radience Maps
+    - Inject
+    - Eval
 - Probleme von SVOGI
     - Viele Lichter
         - resultierender Speicherverbrauch für Radiance Maps
     - Speicherverbrauch Oktre
-- Übersicht über den Algorithmus
+- Übersicht über den erweiterten Algorithmus
     - Virtual Radiance Maps (!)
     - Injection Octree
     - Eval
