@@ -21,5 +21,15 @@ Das Verfahren der \ac{LPV} basiert auf einem regelmäßigen Volumenraster, welch
 Das Verfahren \ac{SVOGI} basiert auf einem spärlich besetzten Octree (\textit{Sparse Octree}). Der Octree wird vollständig auf der GPU erzeugt, leere Oktanten werden kollabiert.  Die relevanten Attribute der Szenengeometrie, zum Beispiel Material und Oberflächennormale, werden für die spätere Beleuchtunsgberechnung in den Blättern des Octrees (\textit{Voxel}) gespeichert. Anschließend werden \ac{RM} für alle relevanten Lichter erzeugt, dessen Pixel als Photonen auf Voxelebene in den den Octree eingespeißt werden. Im nächsten Schritt werden die in den Blättern gesammelten Energien in die höheren Ebenen bis hin zur Wurzel propagiert. Abschließend wird das klassische Shading der Fragmente um ein \textit{Final Gathering} mittels \textit{Cone Tracing} erweitert. Siehe Details im folgenden \fref{chap:svogi}.
 
 
-\section{Vefahren Schadow Maps}
+\section{Shadow-Mapping Verfahren}
+
+Da für \ac{SVOGI} um die Radiance und Richtung erweiterte \acf{SM} erzeugt werden (\acf{RM}), lohnt es sich einige Verfahren der Berechung von \ac{SM} näher zu betrachten. Naturgemäß steigt der Speicher- und Berechnungsaufwand mit der Anzahl der Licht- bzw. Schattenquellen, da die Szene aus Sicht aller relevanten Lichtquellen rasterisiert werden muss, um jeweiligen \ac{SM} bzw. \ac{RM} zu erzeugen. In der Problemanalyse zu \ac{SVOGI} in \fref{chap:svogi-probs} werden wir sehen, dass dies mit zunehmender Anzahl ein Performanceproblem bedeuten kann. Zusätzlich werden wir analysieren, ob \textit{Clustered Shading} uns eine Repräsentation der Szene bietet, die den Octree als Basishierarchie im ursprünglichen \ac{SVOGI} Verfahren ersetzen könnte.
+
+\subsection{klassiche Shadow Map}
+\blindtext
+
+\subsection{Cascaded Shadow Map}
+\blindtext
+
+\subsection{Virtual Shadow Map}
 \blindtext
