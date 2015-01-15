@@ -1,32 +1,37 @@
 # Dinge die noch nicht fertig ausformuliert sind
 
 Abstract:
-Vorgestellt wird ein Verfahren, dass das Erzeugen von Virtual Shadow Maps auf Virtual Radiance Maps erweitert und mit 
+TBD
 
 ## Gliederung
-- Intro GI
-- Übersicht über vorhergehende Verfahren
-    - Verfahren für Globale Beleuchtung in Echtzeit
-        - Light-Maps
-        - LPV
-        - SVOGI
-    - Shadowing
-        - Virtual Shadow Maps
-- SVOGI im Detail
-    - Radience Maps
-    - Inject
-    - Eval
-- Probleme von SVOGI
-    - Viele Lichter
-        - resultierender Speicherverbrauch für Radiance Maps
-    - Speicherverbrauch Oktre
-- Übersicht über den erweiterten Algorithmus
-    - Virtual Radiance Maps (!)
-    - Injection Octree
-    - Eval
+- Einführung in aktuelle Grafik Engines
+    + Anforderungen an moderne Engines
+    + Überblick moderne Engines und ihrer Features
+- Überblick Modern OpenGL (4.0+)
+    + Reduzierung des CPU Overheads
+    + Direct State Access
+    + Indirect Rendering
+- Funktionale Konzepte
+    + Functoren
+    + Contravarianten
+    + Profunctoren
+    + Monaden / (Comonaden)
+    + Applicatives
+    + Arrows
+- Vorteile Funktionaler Programmierung
+    + Speziell in Verbindung mit Modern OGL
+- Engine Überblick
+    + Modularer Aufbau
+    + Definition der RenderPipeline
+        * Formale Definition
+        * Komponierbarkeit
+        * Flexibilität durch Funktionale Konzepte
 - Implementierungsdetails
-- Integration in PBR
+    + Definition einer PBR Pipeline
+- Analyse
+    + Performance
+    + Bildqualität
 - Ausblick
-
+    + ...
 
 ## Ideas
