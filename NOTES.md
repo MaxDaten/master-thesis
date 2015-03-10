@@ -11,23 +11,26 @@ TBD
     + Reduzierung des CPU Overheads
     + Direct State Access
     + Indirect Rendering
-- Funktionale Konzepte
-    + Functoren
-    + Contravarianten
-    + Profunctoren
-    + Monaden / (Comonaden)
-    + Applicatives
-    + Arrows
-- Vorteile Funktionaler Programmierung
+- Vorzüge Funktionaler Programmierung (in Haskell)
     + Speziell in Verbindung mit Modern OGL
 - Engine Überblick
     + Modularer Aufbau
-    + Definition der RenderPipeline
+    + Philosophie
+    + Definition der Render-Pipeline
         * Formale Definition
         * Komponierbarkeit
         * Flexibilität durch Funktionale Konzepte
+    + Resourcemanagement
+    + Anwendung Funktionaler Konzepte
+        * Funktoren
+        * Contravarianten
+        * Profunktoren
+        * Monaden / (Comonaden)
+        * Applikative
+        * Arrows
 - Implementierungsdetails
     + Definition einer PBR Pipeline
+    + Beleuchtungsmodell
 - Analyse
     + Performance
     + Bildqualität
