@@ -2,6 +2,7 @@
 \usepackage{lmodern}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage[backend=biber,style=authoryear]{biblatex}
 % \usepackage[utf8]{fontenc}
 \usepackage[a4paper,
 left=3.5cm, right=3cm,
@@ -12,7 +13,6 @@ top=3cm, bottom=3cm]{geometry}
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 \usepackage{fancyhdr}
 \usepackage{lipsum}
 \usepackage{microtype}
@@ -21,6 +21,7 @@ top=3cm, bottom=3cm]{geometry}
 \usepackage{acronym}
 
 \usepackage[german,vario]{fancyref}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 %% http://www.schlosser.info/in-latex-mit-varioreffancyref-automatisch-ab-seite-statt-auf-seite-setzen/
 \makeatletter
 \let\@f@ref@sav=\@f@ref
@@ -36,14 +37,14 @@ top=3cm, bottom=3cm]{geometry}
 }
 \makeatother
 
-\usepackage{jurabib}
-\jurabibsetup{
-    commabeforerest,
-    ibidem=strict,
-    citefull=first,
-    see,
-    titleformat={colonsep,all},
-}
+% \usepackage{jurabib}
+% \jurabibsetup{
+%     commabeforerest,
+%     ibidem=strict,
+%     citefull=first,
+%     see,
+%     titleformat={colonsep,all},
+% }
 %\usepackage{bibgerm}
 \usepackage{array}
 \usepackage{pst-pdf}
