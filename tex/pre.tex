@@ -2,7 +2,7 @@
 \usepackage{lmodern}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[backend=biber,style=authoryear]{biblatex}
+\usepackage[backend=biber,style=authoryear]{biblatex} % style=alphabetic
 % \usepackage[utf8]{fontenc}
 \usepackage[a4paper,
 left=3.5cm, right=3cm,
@@ -135,15 +135,24 @@ top=3cm, bottom=3cm]{geometry}
   , backgroundcolor=\color{black!3}
   }
 
-\lstnewenvironment{inlinehaskell}
-{\spacing{1}\lstset{language=haskell,nolol,aboveskip=\bigskipamount}}
-{\endspacing}
+% \lstnewenvironment{inlinehaskell}
+% {\spacing{1}\lstset{language=haskell,nolol,aboveskip=\bigskipamount}}
+% {\endspacing}
+
+\lstnewenvironment{haskell}[1][]{
+\spacing{1}\lstset{#1,language=Haskell,tabsize=2}
+}{\endspacing}
 
 \newcommand{\haskellinput}[2][]{
   \begin{spacing}{1}
   \lstinputlisting[language=Haskell,nolol,aboveskip=\bigskipamount,#1]{#2}
   \end{spacing}
 }
+
+\lstMakeShortInline[columns=fixed,language=Haskell]|
+% \newcommand{\inlinehaskell}{
+%   \lstinline[language=Haskell]
+% }
 
 \newcommand{\haskellcode}[2][]{\mylisting[#1,language=Haskell]{#2}}
 
