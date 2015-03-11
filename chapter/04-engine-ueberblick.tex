@@ -25,6 +25,7 @@ Das Rendersystem basiert auf dem Konzept eines Mealy Automatens \parencite{Mealy
 Die Definition ließe sich noch um die Menge der finalen Endzustände $F \subseteq Q$ hin zu einem 7-Tupel erweitern. In unserem Konzept verzichten wir auf definierte Endzustände, da wir prinzipiell jede Eingabe akzeptieren. Nicht akzpetierbare Eingaben stellen wir als externe Ausnahmefälle (Exceptions) dar. Ein vereinfachtes Beispiel für eine nicht akzeptierbare Eingabe ist die Eingabe $\bot$, nach der unser gesamtes System in einen undefinierten Zustand $\bot$ wechselt.
 
 \subsubsection{Abstrakte Definition in Haskell}
+\label{sec:abstrakte-definition-haskell}
 
 Ein Mealy Automat lässt sich in Haskell abstrakt wie in \fref{lst:haskell-mealy} definieren. {\ttfamily a} beschreibt die Eingabe als Äquivalent zum Eingabealphabet $\Sigma$ der formalen Definition und analog beschreibt |b| die Ausgabe als Äquivalent zum Ausgabealphabet $\Omega$. Die Zustandsübergangsfunktion $\delta$ und die Ausgabefunktion $\lambda$ ergibt sich aus der jeweils konkreten Implementierung des Mealy. Die Menge der Zustände $Q$ wird jeweils von der konkreten Mealy Implementierung gekapselt wie in \fref{lst:state-mealy-beispiel} anhand eines Beispiels veranschaulicht. Aber es lässt sich bereits feststellen, dass die gewählte Form des Mealy Automatens weit mehr als nur ein endlicher Automat ist, da die Mächtigkeit des Ein- und Ausgabealphabets unendlich sein kann, wie dies zum Beispiel bei der Menge der natürlichen Zahlen (abzählbar unendlich) der Fall ist. Daraus folgt zusätzlich, dass auch die Menge der Zustände unendlich sein kann (Zählmaschine).
 
@@ -74,28 +75,29 @@ sumMealy = localStateMealy sumInState 0 where
 \label{sec:konkret-rendersystem}
 
 \subsubsection{Anforderung}
-Ein konkretes Rendersystem soll sich aus mehreren \warn{isolierten} Renderschritten, den Renderpasses, zusammensetzen. Durch die rekursive Definition kann ein Renderpass wiederum ein Rendersystem darstellen, so dass zwischen Rendersystem und Renderpass nur semantisch unterschieden wird. Jeder konkrete Pass soll einen konkret definierten Eingabetypen und einen konkret definierten Ausgabetypen besitzen. Ein Renderpass übersetzt die Eingabe in eine Ausgabe und kapselt alle dafür notwendigen Zustände und Vorgänge. Zustandsveränderungen sollen nicht direkt von außen vorgenommen werden können (Kapselung). Zu dem internen Zustand eines Renderpasses können unter anderem benötigte Ressourcen wie Framebuffer oder Shader gehören. \warn{Die von einem Renderpass akquirierten Ressourcen sollen vom Renderpass gekapselt werden und nur wenn notwendig als Ausgabe exponiert werden.}
+Ein konkretes Rendersystem soll sich aus mehreren \warn{isolierten} Renderschritten, den Renderpasses, zusammensetzen. Durch die rekursive Definition kann ein Renderpass wiederum ein beliebig komplexes Rendersystem darstellen, so dass zwischen Rendersystem und Renderpass nur semantisch unterschieden wird. Jeder konkrete Pass soll einen konkret definierten Eingabetypen und einen konkret definierten Ausgabetypen besitzen. Ein Renderpass übersetzt die Eingabe in eine Ausgabe und kapselt alle dafür notwendigen Zustände und Vorgänge. Zustandsveränderungen sollen nicht direkt von außen vorgenommen werden können. Zu dem internen Zustand eines Renderpasses können unter anderem benötigte Ressourcen wie Framebuffer oder Shader gehören. Der interne Zustand soll nur vom Renderpass selbst sichbar gemacht werden können, und dass auch nur, wenn (ein Teil-) Zustand vom Renderpass in die Ausgabe geleitet wird. Direkte Veränderungen des internen Zustands sind so von vornherein ausgeschlossen, da in Haskell Daten unveränderlich sind \footnote{ausgenommen über Konstrukte wie MVars oder IORefs}.
 
-Die Definition des Mealy-Automatens aus dient als gedankliche Grundlage für die folgende Definition des Rendersystem, da wir mit \fref{lst:state-mealy-ctr} gezeigt haben, wie sich Zustände kapseln lassen. Aus den Anforderungen an das Rendersystem ergibt sich, dass wir das Konzept aus \ref{lst:haskell-mealy} noch um einen monadischen Basistypen erweitern müssen, damit wir beispielsweise Operationen in der |IO| Monade ausführen können, um beispielsweise OpenGL Aufrufe zu tätigen. Damit wir uns auf keinen konkreten monadischen Typen festlegen müssen, konstruieren wir unser Rendersystem als einen monadischen Transformator (Monad-Transformer). Die Form des monadischen Transformators erlaubt es Operationen aus einer anderen Monade, der Basismonade, in unsere Ausführung zu heben (lift). So können wir unserem Rendersystem zum Beispiel über eine |Writer|-Monade die Fähigkeit verleihen Vorgänge zu protokollieren, über deine |Reader|-Monade können sich die Renderschritte eine unveränderliche Umgebung teilen. Durch das sogenannte Stacken von Monaden ist es möglich die Eigenschaften der unterschiedlichsten Monaden mit einer Monade zusammenzufassen, es entsteht ein Monad-Stack.
+Die Definition des Mealy-Typens aus \fref{lst:haskell-mealy} dient als gedankliche Grundlage für die folgende Definition des Rendersystem, da wir mit \ref{lst:state-mealy-ctr} gezeigt haben, wie sich Zustände kapseln lassen. Aus den Anforderungen an das Rendersystem OpenGL-Methoden aufzurufen zu können ergibt sich, dass wir das Konzept des Mealy-Typen noch um einen monadischen Basistypen erweitern müssen, damit wir beispielsweise Operationen in der |IO| Monade ausführen können. Damit wir uns auf keinen konkreten monadischen Typen festlegen müssen, konstruieren wir unser Rendersystem als einen monadischen Transformator (Monad-Transformer). Die Form des monadischen Transformators erlaubt es Operationen aus einer anderen Monade, der Basismonade, in unsere Ausführung zu heben (lift). So können wir unserem Rendersystem zum Beispiel über eine |Writer|-Monade die Fähigkeit verleihen Vorgänge zu protokollieren oder über deine |Reader|-Monade können sich die Renderschritte eine unveränderliche Umgebung (Environment) teilen. Durch das sogenannte Stacken von Monaden ist es möglich die Eigenschaften der unterschiedlichsten Monaden unter einer Monade zusammenzufassen, es entsteht ein Monad-Stack.
 
 \subsubsection{Definition}
 
-Aus den oben gegebenen Anforderungen kann jetzt die Definition für |RenderSystem| in \fref{lst:definition-rendersystem} formuliert werden. |m| entspricht der Basismonade, |i| ist der Typparameter für die Eingabe in das Rendersystem und respektive |o| der Typparameter für die Ausgabe. Das Ausführen eines |RenderSystems| liefert im Gegensatz zum Mealy-Automaten eine monadische Operation mit der Ausgabe |o| und dem |RenderSystem| für die nächste Ausführung als Ergebnis zurück. In \fref{lst:rendersystem-ausfuehrung-beispiel} wird ein einfaches zustandsloses |RenderSystem| auf Basis der |Reader|-Monade definiert. Das |RenderSystem| gibt den momentanen Integerwert der Umgebung auf stdout aus und liefert den Eingabewert unverändert zurück. Der Integerwert der Reader-Monade könnte zum Beispiel einen globalen Frame-Counter repräsentieren.
+Aus den oben gegebenen Anforderungen kann jetzt die Definition für |RenderSystem| in \fref{lst:definition-rendersystem} formuliert werden. |m| entspricht der Basismonade, |i| ist der Typparameter für die Eingabe in das Rendersystem und respektive |o| der Typparameter für die Ausgabe. Das Ausführen eines |RenderSystems| liefert, im Gegensatz zum Mealy-Automaten, als Ergebnis eine monadische Operation mit der Ausgabe |o| und dem neuen |RenderSystem| für die nächste Ausführung. In \fref{lst:rendersystem-beispiel-reader} wird ein einfaches zustandsloses |RenderSystem| auf Basis der |Reader|-Monade definiert und in \fref{lst:rendersystem-ausfuehrung-beispiel} exemplarisch ausgeführt. Das |RenderSystem| gibt den momentanen Integerwert der Umgebung auf stdout aus und liefert den Eingabewert unverändert zurück. Der Integerwert der Reader-Monade könnte zum Beispiel einen globalen Frame-Counter repräsentieren.
 
-\begin{haskell}[label={lst:definition-rendersystem},caption={Definition Rendersystem}]
+\begin{haskell}[label={lst:definition-rendersystem},caption={Definition Rendersystem},float]
 newtype RenderSystem m i o = RenderSystem { runRenderSystem :: i -> m (o, RenderSystem m i o) }
+type RenderPass = RenderSystem -- nur ein semantischer Alias
 \end{haskell}
 
-\begin{haskell}[label={lst:rendersystem-beispiel-reader},caption={Rendersystem mit ReaderT IO als Basismonade}]
-type ReaderSystem = RenderSystem (ReaderT IO Int) a a
-printFrame :: ReaderSystem a a
+\begin{haskell}[label={lst:rendersystem-beispiel-reader},caption={Beispiel Rendersystem mit ReaderT IO als Basismonade},float]
+type PrintPass = RenderPass (ReaderT IO Int) a a
+printFrame :: PrintPass a a
 printFrame = RenderSystem (\i -> do
 	env <- ask 
 	print (show ask)
 	return (i,printFrame))
 \end{haskell}
 
-\begin{haskell}[label={lst:rendersystem-ausfuehrung-beispiel},caption={Ausführungsbeispiel Rendersystem}]
+\begin{haskell}[label={lst:rendersystem-ausfuehrung-beispiel},caption={Ausführungsbeispiel Rendersystem},float]
 > let r0 = runReaderT (runRenderSystem printFrame "Hallo") 0
 > fst r0
 0
@@ -106,7 +108,78 @@ printFrame = RenderSystem (\i -> do
 "Welt"
 \end{haskell}
 
-Das Konzept wird des Rendersystems verfo
-Das Konzept verfolgt das Ziel, dass jeder Abschnitt (Pass) in der Renderpipeline ein von der Außenwelt isolierten lokalen Zustand besitzt. Der Folgezustand definiert sich über zwei Größen, entsprechend dem Mealy Konzept, aus dem momentanten Ist-Zustand und dem Input. Jeder Pass kann somit im lokalen Zustand von Zählvariablen bis hin zu Resourcen verwalten. Eingehende und ausgehende Resourcen werden klar über die Eingae und Ausgabeschnittstellen eines Passes definiert. Dies hebt sich von objektorientierten Konzepten in der Art ab, dass der Zustand des Typens nicht über diverse Methoden verändert wird (z.B. häufig über setter/getter), sondern ein Pass für eine Ausfühung alle benötigten Daten als Input erhält. Zu dieser Eingabe wird eindeutig eine Ausgabe erzeugt.
+Da wir in der praxis unterschiedliche Formen von |RenderPass|es konstruieren werden, definieren wir uns in \fref{lst:renderpass-ctr} Hilffunktionen für die Konstruktion der drei wesentlichen Ausprägungen: 1. zustandslos und unveränderlich, 2. zustandsbehaftet unveränderlich und 3. voll dynamisch.
 
-Die Mealy wurde hier um einen monadischen erweitert (Transformation). Die Notwendigkeit für eine monadischen Mealy besteht darin, dass wir in unserem Pass IO Operationen ausführen müssen, wie z.B. Ausführung von OpenGL Befehlen. Zusätzlich erhöht es die Flexibilität, so können wir auch globale Umgebungen z.B. über die Reader-Monade definieren (Anwendung DeferredSettings). Theoretisch währes es auch über monadische Komponente der Mealy möglich den lokalen Zustand, z.B. über IORef, zu exponieren. Dies liegt aber entsprechend in der Verantwortung der Implementierung.
+\begin{haskell}[label={lst:renderpass-ctr},caption={Konstruktoren für einen RenderPass},float]
+-- 1. zustandslos und unveraenderlich
+mkStaticRenderPass :: Monad m => (i -> m o) -> RenderPass m i o
+mkStaticRenderPass f = r where r = RenderSystem (liftM (,r) . f)
+
+-- 2. zustandsbehaftet und unveraenderlich
+mkStatefulRenderPass :: Monad m => (s -> i -> m (o,s)) -> s -> RenderPass m i o
+mkStatefulRenderPass f = go where
+  go s = RenderSystem (\i -> do
+    (o, t) <- f s i
+    return (o, go t))
+
+-- 3. voll dynamisch
+mkDynamicRenderPass :: (i -> m (o, RenderPass m i o)) -> RenderPass m i o
+mkDynamicRenderPass = RenderSystem
+\end{haskell}
+
+\subsubsection{Klassen-Instanzen}
+\label{sec:rendersystem-klassen-instanzen}
+
+In \fref{sec:abstrakte-definition-haskell} wurde bereits erwähnt, dass sich für den Mealy-Typen nützliche Klassen-Instanzen implementieren lassen. Die konkreten Implementierungen für den Mealy-Typen haben wir übersprungen aber wir werden im wesentlichen äquivalente Implementierungen für unseren Typen |RenderSystem| entwickeln.
+
+\begin{haskell}[label={lst:rendersystem-functor},caption={Functor Instanz für RenderSystem}]
+instance Monad m => Functor (RenderSystem m i) where
+  fmap f (RenderSystem sys) = RenderSystem (sys >=> \ (o,sys') -> return (f o, fmap f sys'))
+\end{haskell}
+
+\begin{haskell}[label={lst:rendersystem-applicative},caption={Applicative Instanz für RenderSystem}]
+instance Monad m => Applicative (RenderSystem m i) where
+  pure b = r where r = RenderSystem (return . const (b,r))
+  RenderSystem sysf <*> RenderSystem sysa = RenderSystem (\i -> do
+    (f, mf) <- sysf i
+    (a, ma) <- sysa i
+    return (f a, mf <*> ma))
+\end{haskell}
+
+\begin{haskell}[label={lst:rendersystem-arrow},caption={Arrow Instanz für RenderSystem}]
+instance Monad m => Arrow (RenderSystem m) where
+  arr f = RenderSystem (\i -> return (f i, arr f))
+  first sys = RenderSystem (\ (b,d) -> do
+    (c, sys') <- runRenderSystem sys b
+    return ((c,d), first sys'))
+\end{haskell}
+
+\begin{haskell}[label={lst:rendersystem-arrowchoice},caption={ArrowChoice Instanz für RenderSystem}]
+instance Monad m => ArrowChoice (RenderSystem m) where
+  left sys = RenderSystem (\case
+    Left i  -> do
+      (b, sys') <- runRenderSystem sys i
+      return (Left b, left sys'))
+    Right i -> return (Right i, left sys)
+  right sys = RenderSystem (\case
+    Left i  -> return (Left i, right sys)
+    Right i -> do
+      (b, sys') <- runRenderSystem sys i
+      return (Right b, right sys'))
+\end{haskell}
+
+\begin{haskell}[label={lst:rendersystem-category},caption={Category Instanz für RenderSystem}]
+instance Monad m => Category (RenderSystem m) where
+  id = RenderSystem (return . (,id))
+  RenderSystem mbc . RenderSystem mab = RenderSystem (\a -> do
+    (b, mab') <- mab a
+    (c, mbc') <- mbc b
+    return (c, mbc' . mab'))
+\end{haskell}
+
+\begin{haskell}[label={lst:rendersystem-profunctor},caption={Profunctor Instanz für RenderSystem}]
+instance Monad m => Profunctor (RenderSystem m) where
+  dimap f g (RenderSystem sys) = RenderSystem (\i -> do
+    (o,sys') <- sys (f i)
+    return (g o, dimap f g sys'))
+\end{haskell}
