@@ -1,1 +1,35 @@
 \chapter{Überblick über die Engine}
+
+\section{Das Rendersystem}
+
+Das Rendersystem basiert auf dem Konzept eines Mealy Automatens \cite{Mealy1955}. Ein Mealy Automat ist Transduktor oder \ac{FST}, ein spezieller endlicher Automat, der nicht nur seine Eingabesprache vom Eingabeband akzeptiert sondern auch eine Ausgabe auf einem Ausgabeband erzeugt. Ein Transduktor übersetzt die Eingabesprache in eine Ausgabesprache. Bei dem Mealy Automaten als spezielle Form definiert sich die Ausgabe über den momentanen Zustand und der Eingabe auf diesem Zustand. Formal lässt sich ein Mealy Automat $\mathbfcal{M}$ als 6-Tupel wie folgt definieren:
+
+\[
+\mathbfcal{M} = \left( Q, \Sigma, \Omega, \delta, \lambda, q_0 \right)
+\]
+\begin{align*}
+	\text{mit}\\
+	Q &: \text{Endliche Menge von Zuständen} \\
+	\Sigma  &:\text{Endliches Eingabealphabet} \\
+	\Omega  &:\text{Endliches Ausgabealphabet} \\
+	\delta  &:\text{Zustandsübergangsfunktion}\ Q \times \Sigma \rightarrow Q \\
+	\lambda &:\text{Ausgabefunktion}\ Q \times \Sigma \rightarrow \Omega \\
+	q_0 &: \text{Startzustand}
+\end{align*}
+
+Die Definition ließe sich noch um die Menge der finalen Endzustände $F \subseteq Q$ erweitern. In unserem Konzept verzichten wir auf definierte Endzustände, da wir prinzipiell jede Eingabe akzeptieren. Nicht akzpetierbare Eingaben stellen wir als externe Ausnahmefälle (Exceptions) dar. Ein vereinfachtes Beispiel für eine nicht akzeptierbare Eingabe ist die Eingabe $\bot$, nach der unser gesamtes System in einen undefinierten Zustand $\bot$ wechselt.
+
+Die Praktische Implementierung:
+\begin{lstlisting}[language=Haskell]
+newtype Mealy a b = Mealy { runMealy :: a -> (b,Maely a b) }
+\end{lstlisting}
+https://hackage.haskell.org/package/machines-0.4.1/docs/Data-Machine-Mealy.html
+
+Das Konzept verfolgt das Ziel, dass jeder Abschnitt (Pass) in der Renderpipeline ein von der Außenwelt isolierten lokalen Zustand besitzt. Der Folgezustand definiert sich über zwei Größen, entsprechend dem Mealy Konzept, aus dem momentanten Ist-Zustand und dem Input. Jeder Pass kann somit im lokalen Zustand von Zählvariablen bis hin zu Resourcen verwalten. Eingehende und ausgehende Resourcen werden klar über die Eingae und Ausgabeschnittstellen eines Passes definiert. Dies hebt sich von objektorientierten Konzepten in der Art ab, dass der Zustand des Typens nicht über diverse Methoden verändert wird (z.B. häufig über setter/getter), sondern ein Pass für eine Ausfühung alle benötigten Daten als Input erhält. Zu dieser Eingabe wird eindeutig eine Ausgabe erzeugt.
+
+Monadische Mealy
+\begin{lstlisting}[language=Haskell]
+newtype RenderSystem m i o = RenderSystem { runRenderSystem :: i -> m (o, RenderSystem m i o) }
+\end{lstlisting}
+
+Die Mealy wurde hier um einen monadischen erweitert (Transformation). Die Notwendigkeit für eine monadischen Mealy besteht darin, dass wir in unserem Pass IO Operationen ausführen müssen, wie z.B. Ausführung von OpenGL Befehlen. Zusätzlich erhöht es die Flexibilität, so können wir auch globale Umgebungen z.B. über die Reader-Monade definieren (Anwendung DeferredSettings). Theoretisch währes es auch über monadische Komponente der Mealy möglich den lokalen Zustand, z.B. über IORef, zu exponieren. Dies liegt aber entsprechend in der Verantwortung der Implementierung.
