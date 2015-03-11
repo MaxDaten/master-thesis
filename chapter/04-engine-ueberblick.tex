@@ -130,12 +130,26 @@ mkDynamicRenderPass = RenderSystem
 \subsubsection{Klassen-Instanzen}
 \label{sec:rendersystem-klassen-instanzen}
 
-In \fref{sec:abstrakte-definition-haskell} wurde bereits erwähnt, dass sich für den Mealy-Typen nützliche Klassen-Instanzen implementieren lassen. Die konkreten Implementierungen für den Mealy-Typen haben wir übersprungen aber wir werden im wesentlichen äquivalente Implementierungen für unseren Typen |RenderSystem| entwickeln.
+In \fref{sec:abstrakte-definition-haskell} wurde bereits erwähnt, dass sich für den Mealy-Typen nützliche Klassen-Instanzen implementieren lassen. Die konkreten Implementierungen für den Mealy-Typen wurden übersprungen aber wir werden in diesem Kapitel wesentlichen äquivalente Implementierungen für unseren Typen |RenderSystem| entwickeln. Aus Platzgründen werden nur die jeweils minimal notwendigen Definitionen angegeben, vollständige Definition finden sich im Modul |RenderSystem|. Praktische Anwendungen werden mit unter in \fref{chap:anwendungsbeispiele} gegeben, doch kann auch hier aus Platzgründen keine umfassende Übersicht gegegeben werden. Umfassende Beispiele finden sich ebenso im Projekt beispielsweise im Modul |Yage.Rendering.Pipeline.Deferred|.
+
+\paragraph{Functor} 
+Funktoren, im Folgenden Functor genannt, beschreiben in der Kategorientheorie eine strukturerhaltene Abbildung (Homomorphismus) zwischen zwei Kategorien. In Haskell ist die Klasse der Functoren wie \fref{lst:class-functor} definiert. Das erste intuitive Verständnis eines |Functor|s in Haskell ist eine Containerstruktur deren Inhalt von einem Typen |a| auf den Typen |b| überführt werden kann, ähnlich dem |map| für die Listen. Zur Klasse der Functoren gehören darüber hinaus noch weit mehr Strukturen. Zum Beispiel lassen sich auch die Ergebnisse von Funktionen homomorph in eine andere Kategorie überführen ohne die Struktur der Berechnung zu verändern.
+
+\begin{haskell}[label={lst:class-functor},caption={Functor Klasse},nolol]
+class Functor f where
+  fmap :: (a -> b) -> f a -> f b 
+\end{haskell}
+
+\Fref{lst:rendersystem-functor} definiert eine Functor Instanz für den |RenderSystem| Typen. Beschrieben wird die Überführung des Ergebnistypens |o| in einen neuen Ergebnistypen |c| (siehe konkrete Typsignatur). Die Implementierung verdeutlich, dass die Struktur der Berechnung nicht verändert wird. Es wird lediglich der Ausgabetyp des |RenderSystem| in einen neuen Ausgabetyp überführt. Diese Functor Instanz ermöglicht es beispielsweise den Ausgabetypen eines |RenderPass|es, mit Hilfe einer Tranformationsfunktion |f| als Adapter, auf den Eingabetypen eines nachfolgenden |RenderPass| zu überführen.
 
 \begin{haskell}[label={lst:rendersystem-functor},caption={Functor Instanz für RenderSystem}]
 instance Monad m => Functor (RenderSystem m i) where
+  fmap :: (o -> c) -> RenderSystem m i o -> RenderSystem m i c
   fmap f (RenderSystem sys) = RenderSystem (sys >=> \ (o,sys') -> return (f o, fmap f sys'))
 \end{haskell}
+
+\paragraph{Applicative}
+bla
 
 \begin{haskell}[label={lst:rendersystem-applicative},caption={Applicative Instanz für RenderSystem}]
 instance Monad m => Applicative (RenderSystem m i) where
@@ -146,6 +160,20 @@ instance Monad m => Applicative (RenderSystem m i) where
     return (f a, mf <*> ma))
 \end{haskell}
 
+\paragraph{Profunctor}
+bla
+
+\begin{haskell}[label={lst:rendersystem-profunctor},caption={Profunctor Instanz für RenderSystem}]
+instance Monad m => Profunctor (RenderSystem m) where
+  dimap f g (RenderSystem sys) = RenderSystem (\i -> do
+    (o,sys') <- sys (f i)
+    return (g o, dimap f g sys'))
+\end{haskell}
+
+\paragraph{Arrow}
+bla http://blog.sigfpe.com/2011/07/profunctors-in-haskell.html
+\cite{Asada2010}
+
 \begin{haskell}[label={lst:rendersystem-arrow},caption={Arrow Instanz für RenderSystem}]
 instance Monad m => Arrow (RenderSystem m) where
   arr f = RenderSystem (\i -> return (f i, arr f))
@@ -154,6 +182,9 @@ instance Monad m => Arrow (RenderSystem m) where
     return ((c,d), first sys'))
 \end{haskell}
 
+\paragraph{ArrowChoice}
+bla
+
 \begin{haskell}[label={lst:rendersystem-arrowchoice},caption={ArrowChoice Instanz für RenderSystem}]
 instance Monad m => ArrowChoice (RenderSystem m) where
   left sys = RenderSystem (\case
@@ -161,12 +192,10 @@ instance Monad m => ArrowChoice (RenderSystem m) where
       (b, sys') <- runRenderSystem sys i
       return (Left b, left sys'))
     Right i -> return (Right i, left sys)
-  right sys = RenderSystem (\case
-    Left i  -> return (Left i, right sys)
-    Right i -> do
-      (b, sys') <- runRenderSystem sys i
-      return (Right b, right sys'))
 \end{haskell}
+
+\paragraph{Category}
+bla
 
 \begin{haskell}[label={lst:rendersystem-category},caption={Category Instanz für RenderSystem}]
 instance Monad m => Category (RenderSystem m) where
@@ -175,11 +204,4 @@ instance Monad m => Category (RenderSystem m) where
     (b, mab') <- mab a
     (c, mbc') <- mbc b
     return (c, mbc' . mab'))
-\end{haskell}
-
-\begin{haskell}[label={lst:rendersystem-profunctor},caption={Profunctor Instanz für RenderSystem}]
-instance Monad m => Profunctor (RenderSystem m) where
-  dimap f g (RenderSystem sys) = RenderSystem (\i -> do
-    (o,sys') <- sys (f i)
-    return (g o, dimap f g sys'))
 \end{haskell}
