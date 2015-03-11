@@ -36,6 +36,24 @@ top=3cm, bottom=3cm]{geometry}
     \ifthenelse{\equal{\@curtlabtype}{chap}}{ab der nächsten Seite}{auf der nächsten Seite}}%
 }
 \makeatother
+%% src: http://tex.stackexchange.com/a/70847
+\newcommand*{\fancyreflstlabelprefix}{lst}
+
+\fancyrefaddcaptions{german}{%
+  \providecommand*{\freflstname}{Quelltext}%
+  \providecommand*{\Freflstname}{Quelltext}%
+}
+
+\frefformat{plain}{\fancyreflstlabelprefix}{\freflstname\fancyrefdefaultspacing#1}
+\Frefformat{plain}{\fancyreflstlabelprefix}{\Freflstname\fancyrefdefaultspacing#1}
+
+\frefformat{vario}{\fancyreflstlabelprefix}{%
+  \freflstname\fancyrefdefaultspacing#1#3%
+}
+\Frefformat{vario}{\fancyreflstlabelprefix}{%
+  \Freflstname\fancyrefdefaultspacing#1#3%
+}
+
 
 % \usepackage{jurabib}
 % \jurabibsetup{
@@ -107,6 +125,7 @@ top=3cm, bottom=3cm]{geometry}
 \usepackage{sourcecodepro} % now the default typewriter font
 \KOMAoptions{listof=totoc} % necessary because of scrhack
 \renewcommand{\lstlistlistingname}{Quelltextverzeichnis}
+\renewcommand{\lstlistingname}{Quelltext}
 \lstset
   { basicstyle=\small\ttfamily
   , breaklines=true
@@ -118,10 +137,6 @@ top=3cm, bottom=3cm]{geometry}
 
 \lstnewenvironment{inlinehaskell}
 {\spacing{1}\lstset{language=haskell,nolol,aboveskip=\bigskipamount}}
-{\endspacing}
-
-\lstnewenvironment{inlinexml}
-{\spacing{1}\lstset{language=XML,nolol,aboveskip=\bigskipamount}}
 {\endspacing}
 
 \newcommand{\haskellinput}[2][]{
