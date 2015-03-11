@@ -2,6 +2,10 @@
 
 \section{Das Rendersystem}
 
+\warn{Wir beschreiben den sinn und zweck des Renderystems hier. Das Rendersystem ist der Kern der Renderkomponente der Engine. Die Aufgabe des Rendersystems ist eine Eingabe zu einem Bild darzustellen... Im Konkreten Fall erhält das RenderSystem eine Szenenbeschreibung als Eingabe und führt auf Basis dieser alle definierten Schritte um die Szene in der gewünschten Darstellung als Bild zu synthetisieren.}
+
+\subsection{Mealy als Formale Basis}
+
 Das Rendersystem basiert auf dem Konzept eines Mealy Automatens \cite{Mealy1955}. Ein Mealy Automat ist Transduktor oder \ac{FST}, ein spezieller endlicher Automat, der nicht nur seine Eingabesprache vom Eingabeband akzeptiert sondern auch eine Ausgabe auf einem Ausgabeband erzeugt. Ein Transduktor übersetzt die Eingabesprache in eine Ausgabesprache. Bei dem Mealy Automaten als spezielle Form definiert sich die Ausgabe über den momentanen Zustand und der Eingabe auf diesem Zustand. Formal lässt sich ein Mealy Automat $\mathbfcal{M}$ als 6-Tupel wie folgt definieren:
 
 \[
@@ -17,13 +21,23 @@ Das Rendersystem basiert auf dem Konzept eines Mealy Automatens \cite{Mealy1955}
 	q_0 &: \text{Startzustand}
 \end{align*}
 
-Die Definition ließe sich noch um die Menge der finalen Endzustände $F \subseteq Q$ erweitern. In unserem Konzept verzichten wir auf definierte Endzustände, da wir prinzipiell jede Eingabe akzeptieren. Nicht akzpetierbare Eingaben stellen wir als externe Ausnahmefälle (Exceptions) dar. Ein vereinfachtes Beispiel für eine nicht akzeptierbare Eingabe ist die Eingabe $\bot$, nach der unser gesamtes System in einen undefinierten Zustand $\bot$ wechselt.
+Die Definition ließe sich noch um die Menge der finalen Endzustände $F \subseteq Q$ hin zu einem 7-Tupel erweitern. In unserem Konzept verzichten wir auf definierte Endzustände, da wir prinzipiell jede Eingabe akzeptieren. Nicht akzpetierbare Eingaben stellen wir als externe Ausnahmefälle (Exceptions) dar. Ein vereinfachtes Beispiel für eine nicht akzeptierbare Eingabe ist die Eingabe $\bot$, nach der unser gesamtes System in einen undefinierten Zustand $\bot$ wechselt.
 
-Die Praktische Implementierung:
-\begin{lstlisting}[language=Haskell]
-newtype Mealy a b = Mealy { runMealy :: a -> (b,Maely a b) }
+\subsubsection{Abstrakte Definition in Haskell}
+
+Ein Mealy Automat lässt sich in Haskell abstrakt wie in \fref{lst:haskell-mealy} definieren. {\tt a} beschreibt die Eingabe als Äquivalent zum Eingabealphabet $\Sigma$ der formalen Definition und analog beschreibt {\tt b} die Ausgabe als Äquivalent zum Ausgabealphabet $\Omega$. Die Zustandsübergangsfunktion $\delta$ und die Ausgabefunktion $\lambda$ ergibt sich aus der jeweils konkreten Implementierung des Mealy. Die Menge der Zustände $Q$ wird jeweils von der konkreten Mealy gekapselt wie in \fref{lst:state-mealy-beispiel} anhand eines Beispiels veranschaulicht. Aber es lässt sich bereits feststellen, dass die gewählte Form des Mealy Automatens weit mehr als nur ein endlicher Automat ist, da sowohl die Menge der Zustände als auch das Ein- und Ausgabealphabet auch überabzählbar sein kann.
+
+\begin{lstlisting}[language=Haskell,label={lst:haskell-mealy},caption={Definition Mealy in Haskell\protect\footnotemark},float]
+newtype Mealy a b = Mealy { runMealy :: a -> (b, Maely a b) }
 \end{lstlisting}
-https://hackage.haskell.org/package/machines-0.4.1/docs/Data-Machine-Mealy.html
+\footnotetext{https://hackage.haskell.org/package/machines-0.4.1/docs/Data-Machine-Mealy.html}
+
+Veranschaulichung der funktionsweise eines konkreten Mealy Automaten mit einem Lokalen Zustand.
+
+Diese Definition einer Meleay gehört einiger nützlicher Klassen an, die wir aber hier überspringen da wir in \fref{sec:konkret-rendersystem} für unsere erweiterte monadische Definition eigene Implementierungen entwickeln werden.
+
+\subsection{Konkrete Definition des Rendersystems}
+\label{sec:konkret-rendersystem}
 
 Das Konzept verfolgt das Ziel, dass jeder Abschnitt (Pass) in der Renderpipeline ein von der Außenwelt isolierten lokalen Zustand besitzt. Der Folgezustand definiert sich über zwei Größen, entsprechend dem Mealy Konzept, aus dem momentanten Ist-Zustand und dem Input. Jeder Pass kann somit im lokalen Zustand von Zählvariablen bis hin zu Resourcen verwalten. Eingehende und ausgehende Resourcen werden klar über die Eingae und Ausgabeschnittstellen eines Passes definiert. Dies hebt sich von objektorientierten Konzepten in der Art ab, dass der Zustand des Typens nicht über diverse Methoden verändert wird (z.B. häufig über setter/getter), sondern ein Pass für eine Ausfühung alle benötigten Daten als Input erhält. Zu dieser Eingabe wird eindeutig eine Ausgabe erzeugt.
 
