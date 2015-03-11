@@ -9,6 +9,7 @@ buildDir     = "_build"
 chapterDir   = "chapter"
 outType      = "pdf"
 masterFile   = "main.tex"
+bibCmd       = "biber"
 -- for output redirection and workaround for a pdflatex bug
 -- https://bugs.launchpad.net/ubuntu/+source/texlive-base/+bug/1132843
 buildChapter = buildDir </> chapterDir
@@ -33,13 +34,14 @@ main = shakeArgs shakeOptions{shakeFiles=buildDir</>""} $ do
             pdflatexCmd = cmd "pdflatex" [outDir, outFmt, target, masterFile]
 
         void pdflatexCmd
-        need [out -<.> "bbl"]
+        need [out -<.> "bcf"]
         void pdflatexCmd
         pdflatexCmd
 
-    buildDir </> "*.bbl" *> \out -> do
+    -- build the bibliography
+    buildDir </> "*.bcf" *> \out -> do
         command_ [] "cp" [ "-r", "bib", buildDir]
-        command [ Cwd buildDir ] "bibtex" [ dropDirectory1 out -<.> "aux" ]
+        command [ Cwd buildDir ] bibCmd [ dropDirectory1 out ]
 
     -- the pdflatex bug workaround
     buildChapter *> \out ->
