@@ -1,7 +1,7 @@
 master-thesis
 =============
 
-a working latex distributen, haskell, cabal & shake is a requirement to build this project
+a working latex distribution, haskell, cabal & shake is a requirement to build this project
 
 ## Steps to build:
 
