@@ -49,8 +49,26 @@ localStateMealy stateTransition initState = run initState where
 
 Mit Hilfe der Funktion |localStateMealy| wird ein Mealy-Automat erzeugt, der bei jeder Ausführung die |stateTransition| Funktion auf die aktuellen Eingabe |input| und den momentanen Zustand |state| anwendet um eine Ausgabe |output| und einen neuen Zustand |state'| zu erzeugen. |output| wird in Verbindung mit dem für die nächste Ausführung neu konstruiertem Meleay-Automaten als Resultat zurück geliefert.
 
-Veranschaulichung der funktionsweise eines konkreten Mealy Automaten mit einem Lokalen Zustand.
+In \fref{lst:state-mealy-beispiel} konstruieren wir einen einfachen Mealy-Automaten der ganzzahlige Eingaben akkumuliert und ausgibt. Abschließend wird in \fref{lst:state-mealy-ausfuehrung} ein Ausführungsbeispiel für |sumMealy| demonstriert.
 
+\begin{haskell}[label={lst:state-mealy-beispiel},caption={[Beispiel Mealy-Automat mit lokalem Zustand]Beispiel Mealy-Automat mit lokalem Zustand}]
+sumMealy :: Mealy Int Int
+sumMealy = localStateMealy sumInState 0 where
+	sumInState state input = (state, state + input)
+\end{haskell}
+
+\begin{haskell}[label={lst:state-mealy-ausfuehrung},nolol,caption={Ausführung Mealy-Automat mit lokalem Zustand}]
+> let m0 = sumMealy
+> let m1 = runMealy m 5
+> fst m1
+0
+> let m2 = runMealy m1 8
+> fst m2
+5
+> let m3 = runMealy m2 0
+> fst m3
+13
+\end{haskell}
 
 \subsection{Konkrete Definition des Rendersystems}
 \label{sec:konkret-rendersystem}
