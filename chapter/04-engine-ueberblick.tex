@@ -1,4 +1,4 @@
-\chapter{Überblick über die Engine}
+\chapter{Formaler und Funktionaler Überblick über die Engine}
 
 \section{Das Rendersystem}
 
@@ -127,20 +127,23 @@ mkDynamicRenderPass :: (i -> m (o, RenderPass m i o)) -> RenderPass m i o
 mkDynamicRenderPass = RenderSystem
 \end{haskell}
 
+
 \subsubsection{Klassen-Instanzen}
 \label{sec:rendersystem-klassen-instanzen}
 
 In \fref{sec:abstrakte-definition-haskell} wurde bereits erwähnt, dass sich für den Mealy-Typen nützliche Klassen-Instanzen implementieren lassen. Die konkreten Implementierungen für den Mealy-Typen wurden übersprungen aber wir werden in diesem Kapitel wesentlichen äquivalente Implementierungen für unseren Typen |RenderSystem| entwickeln. Aus Platzgründen werden nur die jeweils minimal notwendigen Definitionen angegeben, vollständige Definition finden sich im Modul |RenderSystem|. Praktische Anwendungen werden mit unter in \fref{chap:anwendungsbeispiele} gegeben, doch kann auch hier aus Platzgründen keine umfassende Übersicht gegegeben werden. Umfassende Beispiele finden sich ebenso im Projekt beispielsweise im Modul |Yage.Rendering.Pipeline.Deferred|.
 
+% Functor
 \paragraph{Functor} 
-Funktoren, im Folgenden Functor genannt, beschreiben in der Kategorientheorie eine strukturerhaltene Abbildung (Homomorphismus) zwischen zwei Kategorien. In Haskell ist die Klasse der Functoren wie \fref{lst:class-functor} definiert. Das erste intuitive Verständnis eines |Functor|s in Haskell ist eine Containerstruktur deren Inhalt von einem Typen |a| auf den Typen |b| überführt werden kann, ähnlich dem |map| für die Listen. Zur Klasse der Functoren gehören darüber hinaus noch weit mehr Strukturen. Zum Beispiel lassen sich auch die Ergebnisse von Funktionen homomorph in eine andere Kategorie überführen ohne die Struktur der Berechnung zu verändern.
+Funktoren, im Folgenden Functor genannt, beschreiben in der Kategorientheorie eine strukturerhaltene Abbildung (Homomorphismus) zwischen zwei Kategorien. In Haskell ist die Klasse der Functoren wie in \fref{lst:class-functor} definiert. Das erste intuitive Verständnis eines |Functor|s in Haskell ist eine Containerstruktur deren Inhalt von einem Typen |a| auf den Typen |b| überführt werden kann, ähnlich dem |map| für die Listen. Zur Klasse der Functoren gehören darüber hinaus noch weit mehr Strukturen. Zum Beispiel lassen sich auch die Ergebnisse von Funktionen homomorph in eine andere Kategorie überführen ohne die Struktur der Berechnung zu verändern.
 
-\begin{haskell}[label={lst:class-functor},caption={Functor Klasse},nolol]
+\begin{haskell}[label={lst:class-functor},caption={Functor Klasse\protect\footnotemark},nolol,float,floatplacement=H]
 class Functor f where
   fmap :: (a -> b) -> f a -> f b 
 \end{haskell}
+\footnotetext{http://hackage.haskell.org/package/base-4.7.0.2/docs/Data-Functor.html}
 
-\Fref{lst:rendersystem-functor} definiert eine Functor Instanz für den |RenderSystem| Typen. Beschrieben wird die Überführung des Ergebnistypens |o| in einen neuen Ergebnistypen |c| (siehe konkrete Typsignatur). Die Implementierung verdeutlich, dass die Struktur der Berechnung nicht verändert wird. Es wird lediglich der Ausgabetyp des |RenderSystem| in einen neuen Ausgabetyp überführt. Diese Functor Instanz ermöglicht es beispielsweise den Ausgabetypen eines |RenderPass|es, mit Hilfe einer Tranformationsfunktion |f| als Adapter, auf den Eingabetypen eines nachfolgenden |RenderPass| zu überführen.
+\Fref{lst:rendersystem-functor} definiert eine Functor Instanz für den |RenderSystem| Typen. Beschrieben wird die Überführung des Ergebnistypens |o| in einen neuen Ergebnistypen |c| (siehe konkrete Signatur für |fmap|). Die Implementierung verdeutlich, dass die Struktur der Berechnung nicht verändert wird. Es wird lediglich der Ausgabetyp des |RenderSystem| in einen neuen Ausgabetyp überführt. Diese Functor Instanz ermöglicht es beispielsweise den Ausgabetypen eines |RenderPass|es, mit Hilfe einer Tranformationsfunktion |f| als Adapter, auf den Eingabetypen eines nachfolgenden |RenderPass| zu überführen.
 
 \begin{haskell}[label={lst:rendersystem-functor},caption={Functor Instanz für RenderSystem}]
 instance Monad m => Functor (RenderSystem m i) where
@@ -148,8 +151,18 @@ instance Monad m => Functor (RenderSystem m i) where
   fmap f (RenderSystem sys) = RenderSystem (sys >=> \ (o,sys') -> return (f o, fmap f sys'))
 \end{haskell}
 
+% Applicative
 \paragraph{Applicative}
-bla
+Applikative, im Folgenden Applicatives, sind eine spezielle Ausprägung von Functoren. Ein Applicative wird über zwei Operationen definiert: |pure| bettet einen Wert in den Kontext |f| ein und der Sequenz-Operator |(<*>)| wendet eine Berechnung im Kontext |f| auf einen Wert in |f| an und kombiniert das Resultat \parencite[Kapitel~2]{Paterson2008}. Applicative sind weniger mächtig als Monaden, da sie nur das sequenzieren von kontextfreien Operationen erlauben. Sie werden gerne dazu verwendet kleine Bausteine als Kombinatoren zu bauen und sie kontextfrei aufeinander anzuwenden. In Haskell sind Applicatives wie in \fref{lst:class-functor} definiert.
+
+\begin{haskell}[label={lst:class-functor},caption={Applicative Klasse\protect\footnotemark},nolol]
+class Functor f => Applicative f where
+  pure :: a -> f a
+  (<*>) :: f (a -> b) -> f a -> f a
+\end{haskell}
+\footnotetext{http://hackage.haskell.org/package/base-4.7.0.2/docs/Control-Applicative.html}
+
+Für unser |RenderSystem| definieren wir in \fref{lst:rendersystem-applicative} die Applicative Instanz. Auch hier macht die Implementierung von |(<*>)| deutlich, dass die in |sysf| eingebettete Funktion auf den in |sysa| eingebetteten Wert ohne Berücksichtung des Kontext angewendet wird. |pure| entspricht einem RenderSystem, dass ungeachtet der Eingabe konstant den Wert |b| zurück liefert und unter keinen Umständen das Verhalten wechselt. Mit Hilfe der Appliacative Instanz unseres |RenderSystem|-Typen können wir mehrere Rendersysteme zu einer größeren Struktur kombinieren, sofern die Rendersysteme nicht von einander direkt abhängen (\fref{lst:rendersystem-applicative-beispiel}).
 
 \begin{haskell}[label={lst:rendersystem-applicative},caption={Applicative Instanz für RenderSystem}]
 instance Monad m => Applicative (RenderSystem m i) where
@@ -159,6 +172,31 @@ instance Monad m => Applicative (RenderSystem m i) where
     (a, ma) <- sysa i
     return (f a, mf <*> ma))
 \end{haskell}
+
+\begin{haskell}[label={lst:rendersystem-applicative-beispiel},caption={Applicative RenderSystem Beispiel}]
+data Cube a = CubeTexture{left,right,top,bottom,front,back :: a}
+
+sceneToTexture :: Camera -> RenderPass IO Scene Texture
+sceneToTexture = ...
+
+scene :: Scene
+scene = ...
+
+-- Cube with cameras along the +/- world axis directions
+cubeViews :: Cube Camera
+cubeViews = ...
+
+-- Renders a scene into a cube map
+sceneToCubeTexture :: RenderPass IO Scene (Cube Texture)
+sceneToCubeTexture = Cube
+	`fmap` sceneToTexture (left cubeViews)
+	<*> sceneToTexture (right  cubeViews)
+	<*> sceneToTexture (top    cubeViews)
+	<*> sceneToTexture (bottom cubeViews)
+	<*> sceneToTexture (front  cubeViews)
+	<*> sceneToTexture (back   cubeViews)
+\end{haskell}
+
 
 \paragraph{Profunctor}
 bla
