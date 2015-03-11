@@ -6,11 +6,12 @@
 
 \subsection{Mealy als Formale Basis}
 
-Das Rendersystem basiert auf dem Konzept eines Mealy Automatens \cite{Mealy1955}. Ein Mealy Automat ist Transduktor oder \ac{FST}, ein spezieller endlicher Automat, der nicht nur seine Eingabesprache vom Eingabeband akzeptiert sondern auch eine Ausgabe auf einem Ausgabeband erzeugt. Ein Transduktor übersetzt die Eingabesprache in eine Ausgabesprache. Bei dem Mealy Automaten als spezielle Form definiert sich die Ausgabe über den momentanen Zustand und der Eingabe auf diesem Zustand. Formal lässt sich ein Mealy Automat $\mathbfcal{M}$ als 6-Tupel wie folgt definieren:
+Das Rendersystem basiert auf dem Konzept eines Mealy Automatens \parencite{Mealy1955}. Ein Mealy Automat ist \ac{FST}, ein spezieller endlicher Automat, der nicht nur seine Eingabesprache vom Eingabeband akzeptiert sondern auch eine Ausgabe auf einem Ausgabeband erzeugt. Ein Transduktor übersetzt die Eingabesprache in eine Ausgabesprache. Bei dem Mealy Automaten als spezielle Form eines \ac{FST} definiert sich die Ausgabe über den momentanen Zustand und die Eingabe auf diesem Zustand. Formal lässt sich ein Mealy Automat $\mathbfcal{M}$ als 6-Tupel wie folgt definieren:
 
-\[
+\begin{align}
 \mathbfcal{M} = \left( Q, \Sigma, \Omega, \delta, \lambda, q_0 \right)
-\]
+\label{def:mealy-formal}
+\end{align}
 \begin{align*}
 	\text{mit}\\
 	Q &: \text{Endliche Menge von Zuständen} \\
@@ -25,16 +26,31 @@ Die Definition ließe sich noch um die Menge der finalen Endzustände $F \subset
 
 \subsubsection{Abstrakte Definition in Haskell}
 
-Ein Mealy Automat lässt sich in Haskell abstrakt wie in \fref{lst:haskell-mealy} definieren. {\tt a} beschreibt die Eingabe als Äquivalent zum Eingabealphabet $\Sigma$ der formalen Definition und analog beschreibt {\tt b} die Ausgabe als Äquivalent zum Ausgabealphabet $\Omega$. Die Zustandsübergangsfunktion $\delta$ und die Ausgabefunktion $\lambda$ ergibt sich aus der jeweils konkreten Implementierung des Mealy. Die Menge der Zustände $Q$ wird jeweils von der konkreten Mealy gekapselt wie in \fref{lst:state-mealy-beispiel} anhand eines Beispiels veranschaulicht. Aber es lässt sich bereits feststellen, dass die gewählte Form des Mealy Automatens weit mehr als nur ein endlicher Automat ist, da sowohl die Menge der Zustände als auch das Ein- und Ausgabealphabet auch überabzählbar sein kann.
+Ein Mealy Automat lässt sich in Haskell abstrakt wie in \fref{lst:haskell-mealy} definieren. {\ttfamily a} beschreibt die Eingabe als Äquivalent zum Eingabealphabet $\Sigma$ der formalen Definition und analog beschreibt |b| die Ausgabe als Äquivalent zum Ausgabealphabet $\Omega$. Die Zustandsübergangsfunktion $\delta$ und die Ausgabefunktion $\lambda$ ergibt sich aus der jeweils konkreten Implementierung des Mealy. Die Menge der Zustände $Q$ wird jeweils von der konkreten Mealy Implementierung gekapselt wie in \fref{lst:state-mealy-beispiel} anhand eines Beispiels veranschaulicht. Aber es lässt sich bereits feststellen, dass die gewählte Form des Mealy Automatens weit mehr als nur ein endlicher Automat ist, da die Mächtigkeit des Ein- und Ausgabealphabets unendlich sein kann, wie dies zum Beispiel bei der Menge der natürlichen Zahlen (abzählbar unendlich) der Fall ist. Daraus folgt zusätzlich, dass auch die Menge der Zustände unendlich sein kann (Zählmaschine).
 
-\begin{lstlisting}[language=Haskell,label={lst:haskell-mealy},caption={Definition Mealy in Haskell\protect\footnotemark},float]
+\begin{haskell}[label={lst:haskell-mealy},caption={Definition Mealy in Haskell\protect\footnotemark},float]
 newtype Mealy a b = Mealy { runMealy :: a -> (b, Maely a b) }
-\end{lstlisting}
+\end{haskell}
 \footnotetext{https://hackage.haskell.org/package/machines-0.4.1/docs/Data-Machine-Mealy.html}
+
+Für diese Definition einer Meleay lassen sich einige nützlicher Klassen finden, die wir aber hier überspringen da wir in \fref{sec:konkret-rendersystem} für unsere erweiterte monadische Definition eigene Implementierungen entwickeln werden.
+
+Allgemein lässt sich die Funktionsweise von |Mealy| wie folgt beschreiben: Zu jeder Eingabe |a| erzeugt die Ausfühung von |Mealy| durch |runMealy| eine Ausgabe |b| und einen neuen Mealy-Automaten, der die selbe Eingabesprache in die selbe Ausgabesprache übersetzt. Im einfachsten Fall ist der neu erzeugte Mealy-Automat exakt der gleiche aus dem vorherigen Schritt. Ist dies für das gesamte Eingabealphabet gegeben gilt der Automat als zustandslos.
+
+Für die Konstruktion eines Mealy-Automatens mit lokalem Zustand folgt aus der formalen Definition \ref{def:mealy-formal} die Notwendigkeit einer Zustandsübergangsfunktion $\delta$ und einem Startzustand $q_0$. Hiefür definieren wir uns in \fref{lst:state-mealy-ctr} die Hilfsfunktion |localStateMealy|. Der erste Parameter |s -> a -> (b, s)| beschreibt die Kombination der beiden Funktionen $\delta$ und $\lambda$, der zweite Parameter den Startzustand $q_0$.
+
+\begin{haskell}[label={lst:state-mealy-ctr},caption={[Konstruktion Mealy mit lokalem Zustand]Hilfsfunktion zur Konstruktion eines Mealy-Automatens mit lokalem Zustand}]
+localStateMealy :: (s -> a -> (b, s)) -> s -> Mealy a b
+localStateMealy stateTransition initState = run initState where
+	run state = Mealy (\input -> 
+  		let (output, state') = stateTransition state input 
+		in (output, stateTransition state'))
+\end{haskell}
+
+Mit Hilfe der Funktion |localStateMealy| wird ein Mealy-Automat erzeugt, der bei jeder Ausführung die |stateTransition| Funktion auf die aktuellen Eingabe |input| und den momentanen Zustand |state| anwendet um eine Ausgabe |output| und einen neuen Zustand |state'| zu erzeugen. |output| wird in Verbindung mit dem für die nächste Ausführung neu konstruiertem Meleay-Automaten als Resultat zurück geliefert.
 
 Veranschaulichung der funktionsweise eines konkreten Mealy Automaten mit einem Lokalen Zustand.
 
-Diese Definition einer Meleay gehört einiger nützlicher Klassen an, die wir aber hier überspringen da wir in \fref{sec:konkret-rendersystem} für unsere erweiterte monadische Definition eigene Implementierungen entwickeln werden.
 
 \subsection{Konkrete Definition des Rendersystems}
 \label{sec:konkret-rendersystem}
