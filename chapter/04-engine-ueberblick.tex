@@ -1,4 +1,4 @@
-\chapter{Formaler und Funktionaler Überblick über die Engine}
+\chapter{Überblick über die Engine}
 
 \section{Das Rendersystem}
 
@@ -220,7 +220,17 @@ instance Monad m => Profunctor (RenderSystem m) where
 
 % Category
 \paragraph{Category}
-bla
+
+Beschreibt morphismen die sie componieren lassen.
+
+\begin{haskell}[label={lst:class-category},caption={Category Klasse\protect\footnotemark},nolol,float,floatplacement=H]
+class Category cat where
+  id :: cat a a
+  (.) :: cat b c -> cat a b -> cat a c
+\end{haskell}
+\footnotetext{https://hackage.haskell.org/package/base-4.7.0.2/docs/Control-Category.html}
+
+Unser Rendersystem beschreibt einen Morphismus von Eingabe |i| zur Ausgabe |o|. Wir definieren mittels der |Category| wie sich dieser Morphismus von a nach b, und b nach c zu a nach c komponieren lässt. Dies erlaubt es uns auf elegenate Art und Weise unterschiedliche Stufen eines RenderSystems hintereinander zu schalten und zu einem größeren Gesamtsystem zu komponieren. \warn{Beispiel pass filter}
 
 \begin{haskell}[label={lst:rendersystem-category},caption={Category Instanz für RenderSystem}]
 instance Monad m => Category (RenderSystem m) where
@@ -231,9 +241,21 @@ instance Monad m => Category (RenderSystem m) where
     return (c, mbc' . mab'))
 \end{haskell}
 
+
+% Arrow
 \paragraph{Arrow}
+
 bla http://blog.sigfpe.com/2011/07/profunctors-in-haskell.html
 \cite{Asada2010}
+
+\begin{haskell}[label={lst:class-arrow},caption={Arrow Klasse\protect\footnotemark},nolol,float,floatplacement=H]
+class Category a => Arrow a where
+  arr :: (b -> c) -> a b c
+  first :: a b c -> a (b, d) (c, d)
+\end{haskell}
+\footnotetext{https://hackage.haskell.org/package/base-4.7.0.2/docs/Control-Arrow.html}
+
+bla 
 
 \begin{haskell}[label={lst:rendersystem-arrow},caption={Arrow Instanz für RenderSystem}]
 instance Monad m => Arrow (RenderSystem m) where
@@ -244,6 +266,15 @@ instance Monad m => Arrow (RenderSystem m) where
 \end{haskell}
 
 \paragraph{ArrowChoice}
+
+bla
+
+\begin{haskell}[label={lst:class-arrowchoice},caption={ArrowChoice Klasse\protect\footnotemark},nolol,float,floatplacement=H]
+class Arrow a => ArrowChoice a where
+  left :: a b c -> a (Either b d) (Either c d)
+\end{haskell}
+\footnotetext{https://hackage.haskell.org/package/base-4.7.0.2/docs/Control-Arrow.html\#g:5}
+
 bla
 
 \begin{haskell}[label={lst:rendersystem-arrowchoice},caption={ArrowChoice Instanz für RenderSystem}]
