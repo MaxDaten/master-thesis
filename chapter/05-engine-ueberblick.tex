@@ -128,12 +128,20 @@ mkDynamicRenderPass = RenderSystem
 \end{haskell}
 
 
+%%%
+% Klassen
+%%%
+
 \subsubsection{Klassen-Instanzen}
 \label{sec:rendersystem-klassen-instanzen}
 
 In \fref{sec:abstrakte-definition-haskell} wurde bereits erwähnt, dass sich für den Mealy-Typen nützliche Klassen-Instanzen implementieren lassen. Die konkreten Implementierungen für den Mealy-Typen wurden übersprungen aber wir werden in diesem Kapitel wesentlichen äquivalente Implementierungen für unseren Typen |RenderSystem| entwickeln. Aus Platzgründen werden nur die jeweils minimal notwendigen Definitionen angegeben, vollständige Definition finden sich im Modul |RenderSystem|. Praktische Anwendungen werden mit unter in \fref{chap:anwendungsbeispiele} gegeben, doch kann auch hier aus Platzgründen keine umfassende Übersicht gegegeben werden. Umfassende Beispiele finden sich ebenso im Projekt beispielsweise im Modul |Yage.Rendering.Pipeline.Deferred|.
 
+
+%%%
 % Functor
+%%%
+
 \paragraph{Functor} 
 Funktoren, im Folgenden Functor genannt, beschreiben in der Kategorientheorie eine strukturerhaltene Abbildung (Homomorphismus) zwischen zwei Kategorien. In Haskell ist die Klasse der Functoren wie in \fref{lst:class-functor} definiert. Das erste intuitive Verständnis eines |Functor|s in Haskell ist eine Containerstruktur deren Inhalt von einem Typen |a| auf den Typen |b| überführt werden kann, ähnlich dem |map| für die Listen. Zur Klasse der Functoren gehören darüber hinaus noch weit mehr Strukturen. Zum Beispiel lassen sich auch die Ergebnisse von Funktionen homomorph in eine andere Kategorie überführen ohne die Struktur der Berechnung zu verändern.
 
@@ -151,7 +159,11 @@ instance Monad m => Functor (RenderSystem m i) where
   fmap f (RenderSystem sys) = RenderSystem (sys >=> \ (o,sys') -> return (f o, fmap f sys'))
 \end{haskell}
 
+
+%%%
 % Applicative
+%%%
+
 \paragraph{Applicative}
 Applikative, im Folgenden Applicatives, sind eine spezielle Ausprägung von Functoren. Ein Applicative wird über zwei Operationen definiert: |pure| bettet einen Wert in den Kontext |f| ein und der Sequenz-Operator |(<*>)| wendet eine Berechnung im Kontext |f| auf einen Wert in |f| an und kombiniert das Resultat \parencite[Kapitel~2]{Paterson2008}. Applicative sind weniger mächtig als Monaden, da sie nur das Sequenzieren von kontextfreien Operationen erlauben. Sie werden gerne dazu verwendet kleine Bausteine als Kombinatoren zu bauen um sie kontextfrei aufeinander anzuwenden. In Haskell sind Applicatives wie in \fref{lst:class-functor} definiert.
 
@@ -197,7 +209,11 @@ sceneToCubeTexture = Cube
 	<*> sceneToTexture (back   cubeViews)
 \end{haskell}
 
+
+%%%
 % Profunctor
+%%%
+
 \paragraph{Profunctor}
 Während die vorhergehenden Klassen nur Operationen auf dem letzten Argument des Typens definierten, gehört unser unser |RenderSystem| Typ auch noch weiteren Klassen an, die sich für die letzten beiden Argumente definieren lassen. Ein Functor in zwei Argumenten wird auch Bifunctor genannt. Jedes Argument gehört einer eigenen Functor-Kategorie an, die auch voneinander unterschiedlich sein können aber nicht müssen. Zusammmen bilden die beiden Functor-Kategorien ($C$ und $D$) eine Produktkategorie ($C \times D$) \parencite{MacLane1998}. Ein spezieller Bifunctor ist der Profunctor, dessen erstes Argument contravariant und zweites Argument covariant ist. Ein covarianter Functor entspricht der üblichen Haskell |Functor| Klasse mit einem Morphismus von der Ausgangskategorie hin zur Zielkategorie. Die Contravarianz entspricht dahingehend einem umgekehrten Morphismus, von der Zielkategorie zur Ausgangskategorie. Die Haskell Definition der Klasse |Profunctor| findet sich in \fref{lst:class-profunctor}
 
@@ -218,7 +234,10 @@ instance Monad m => Profunctor (RenderSystem m) where
 \end{haskell}
 
 
+%%%
 % Category
+%%%
+
 \paragraph{Category}
 
 Die |Category| beschreibt die Klasse von Strukturen deren Morphismus sich über beide Argumente komponieren lassen. Die grundlegenste |Category| in Haskell ist die der Funktionen und ihre Komponierbarkeit. Unäre Funktionen |(->)| beschreiben einen Morphismus der das Argument der Funktion einem Funktionswert zuordnet. Unäre Funktionen sind in Haskell analog zur mathematischen Funktionskomposition komponierbar. Dies wird dadurch ausgedrückt, dass unäre Funktionen der |Category| Klasse angehören. In \fref{lst:class-category} wird die Definition der Klasse ausgeschrieben. Sie besteht aus dem Identitätsmorphismus |id| und der rechts zu links Komposition |(.)|.
@@ -257,7 +276,10 @@ bloom = gaussFilter 64 . lumaFilter 0.4
 \end{haskell}
 
 
+%%%
 % Arrow
+%%%
+
 \paragraph{Arrow}
 
 |Arrows| sind eine weitere abstrakte Darstellungsform von Morphismen. Während |Category| die Komponierbarkeit von Morphismen beschreibt, beschreiben Arrows den Morphismus an sich. In Haskell wird ein Arrow über die Operation |arr| und |first| definiert. Zusätzlich gehört zur Arrow Klasse auch die Kompositionsoperation, welche aber schon durch die Spezialisierung von |Category| definiert ist. |arr| stellt den direkten Bezug zu dem grundlegenden Morphismus der unären Funktionen |(->)| und der Arrow Struktur her und hebt einen einfachen Morphismus in den Kontext des |Arrow|s. |first| ist eine Variante, neben dem gespiegelten |second|, der sogenannten Sideline Operation \parencite[Kapitel 1]{Asada2010}. Über |first| kann ein Morphismus |a b c| auf die erste Komponente des Argumentes angewendet werden, während doe zweite Komponente unverändert durchgereicht wird. Erwähnenswert ist abschließend, dass jeder |Arrow| auch als |Profunctor| dargestellt werden kann \parencite[Kapitel 3]{Asada2010}.
@@ -277,6 +299,10 @@ instance Monad m => Arrow (RenderSystem m) where
     (c, sys') <- runRenderSystem sys b
     return ((c,d), first sys'))
 \end{haskell}
+
+%%%
+% ArrowChoice
+%%%
 
 \paragraph{ArrowChoice}
 
