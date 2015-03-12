@@ -32,21 +32,22 @@ main = shakeArgs shakeOptions{shakeFiles=buildDir</>""} $ do
             outDir = "-output-directory=" ++ buildDir
             outFmt = "-output-format=" ++ outType
             pdflatexCmd = cmd "pdflatex" [outDir, outFmt, target, masterFile]
-
+        
+        -- move the bib into the build directory
+        command_ [] "cp" [ "-r", "bib", buildDir]
+        
         void pdflatexCmd
         need [out -<.> "bcf"]
         void pdflatexCmd
         pdflatexCmd
 
     -- build the bibliography
-    buildDir </> "*.bcf" *> \out -> do
-        command_ [] "cp" [ "-r", "bib", buildDir]
+    buildDir </> "*.bcf" *> \out ->
         command [ Cwd buildDir ] bibCmd [ dropDirectory1 out ]
 
     -- the pdflatex bug workaround
     buildChapter *> \out ->
         cmd "mkdir -p" [ out ]
-
 
     phony "view" $ do
         need [ buildDir</>targetName<.>outType ]
