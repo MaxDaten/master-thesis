@@ -137,7 +137,7 @@ In \fref{sec:abstrakte-definition-haskell} wurde bereits erwähnt, dass sich fü
 \paragraph{Functor} 
 Funktoren, im Folgenden Functor genannt, beschreiben in der Kategorientheorie eine strukturerhaltene Abbildung (Homomorphismus) zwischen zwei Kategorien. In Haskell ist die Klasse der Functoren wie in \fref{lst:class-functor} definiert. Das erste intuitive Verständnis eines |Functor|s in Haskell ist eine Containerstruktur deren Inhalt von einem Typen |a| auf den Typen |b| überführt werden kann, ähnlich dem |map| für die Listen. Zur Klasse der Functoren gehören darüber hinaus noch weit mehr Strukturen. Zum Beispiel lassen sich auch die Ergebnisse von Funktionen homomorph in eine andere Kategorie überführen ohne die Struktur der Berechnung zu verändern.
 
-\begin{haskell}[label={lst:class-functor},caption={Functor Klasse\protect\footnotemark},nolol,float,floatplacement=H]
+\begin{haskell}[label={lst:class-functor},caption={Functor Klasse\protect\footnotemark},float,floatplacement=H,nolol]
 class Functor f where
   fmap :: (a -> b) -> f a -> f b 
 \end{haskell}
@@ -145,7 +145,7 @@ class Functor f where
 
 \Fref{lst:rendersystem-functor} definiert eine Functor Instanz für den |RenderSystem| Typen. Beschrieben wird die Überführung des Ergebnistypens |o| in einen neuen Ergebnistypen |c| (siehe konkrete Signatur für |fmap|). Die Implementierung verdeutlich, dass die Struktur der Berechnung nicht verändert wird. Es wird lediglich der Ausgabetyp des |RenderSystem| in einen neuen Ausgabetyp überführt. Diese Functor Instanz ermöglicht es beispielsweise den Ausgabetypen eines |RenderPass|es, mit Hilfe einer Tranformationsfunktion |f| als Adapter, auf den Eingabetypen eines nachfolgenden |RenderPass| zu überführen.
 
-\begin{haskell}[label={lst:rendersystem-functor},caption={Functor Instanz für RenderSystem}]
+\begin{haskell}[label={lst:rendersystem-functor},caption={Functor Instanz für RenderSystem},float,floatplacement=H]
 instance Monad m => Functor (RenderSystem m i) where
   fmap :: (o -> c) -> RenderSystem m i o -> RenderSystem m i c
   fmap f (RenderSystem sys) = RenderSystem (sys >=> \ (o,sys') -> return (f o, fmap f sys'))
@@ -153,7 +153,7 @@ instance Monad m => Functor (RenderSystem m i) where
 
 % Applicative
 \paragraph{Applicative}
-Applikative, im Folgenden Applicatives, sind eine spezielle Ausprägung von Functoren. Ein Applicative wird über zwei Operationen definiert: |pure| bettet einen Wert in den Kontext |f| ein und der Sequenz-Operator |(<*>)| wendet eine Berechnung im Kontext |f| auf einen Wert in |f| an und kombiniert das Resultat \parencite[Kapitel~2]{Paterson2008}. Applicative sind weniger mächtig als Monaden, da sie nur das sequenzieren von kontextfreien Operationen erlauben. Sie werden gerne dazu verwendet kleine Bausteine als Kombinatoren zu bauen und sie kontextfrei aufeinander anzuwenden. In Haskell sind Applicatives wie in \fref{lst:class-functor} definiert.
+Applikative, im Folgenden Applicatives, sind eine spezielle Ausprägung von Functoren. Ein Applicative wird über zwei Operationen definiert: |pure| bettet einen Wert in den Kontext |f| ein und der Sequenz-Operator |(<*>)| wendet eine Berechnung im Kontext |f| auf einen Wert in |f| an und kombiniert das Resultat \parencite[Kapitel~2]{Paterson2008}. Applicative sind weniger mächtig als Monaden, da sie nur das Sequenzieren von kontextfreien Operationen erlauben. Sie werden gerne dazu verwendet kleine Bausteine als Kombinatoren zu bauen um sie kontextfrei aufeinander anzuwenden. In Haskell sind Applicatives wie in \fref{lst:class-functor} definiert.
 
 \begin{haskell}[label={lst:class-functor},caption={Applicative Klasse\protect\footnotemark},nolol]
 class Functor f => Applicative f where
@@ -162,9 +162,9 @@ class Functor f => Applicative f where
 \end{haskell}
 \footnotetext{http://hackage.haskell.org/package/base-4.7.0.2/docs/Control-Applicative.html}
 
-Für unser |RenderSystem| definieren wir in \fref{lst:rendersystem-applicative} die Applicative Instanz. Auch hier macht die Implementierung von |(<*>)| deutlich, dass die in |sysf| eingebettete Funktion auf den in |sysa| eingebetteten Wert ohne Berücksichtung des Kontext angewendet wird. |pure| entspricht einem RenderSystem, dass ungeachtet der Eingabe konstant den Wert |b| zurück liefert und unter keinen Umständen das Verhalten wechselt. Mit Hilfe der Appliacative Instanz unseres |RenderSystem|-Typen können wir mehrere Rendersysteme zu einer größeren Struktur kombinieren, sofern die Rendersysteme nicht von einander direkt abhängen (\fref{lst:rendersystem-applicative-beispiel}).
+Für unser |RenderSystem| definieren wir in \fref{lst:rendersystem-applicative} die Applicative Instanz. Auch hier wird anhand der Implementierung von |(<*>)| deutlich, dass die in |sysf| eingebettete Funktion auf den in |sysa| eingebetteten Wert ohne Berücksichtung des Kontext angewendet wird. |pure| entspricht einem RenderSystem, dass ungeachtet der Eingabe konstant den Wert |b| zurück liefert und unter keinen Umständen das Verhalten wechselt. Mit Hilfe der Appliacative Instanz des |RenderSystem|-Typens können wir mehrere Rendersysteme zu einer größeren Struktur kombinieren, sofern die Rendersysteme nicht von einander direkt abhängen. \Fref{lst:rendersystem-applicative-beispiel} zeigt an einem Beispiel, wie über die Applicative Instanz eine Definition eines RenderSystems . Dieses RenderSystem |sceneToTexture| lässt sich dann über die die Applicative Kombinatoren zu einem RenderSystem kombinieren, dass eine Szene in eine Cubemap rendert. Dynamisch erzeugte Cubemaps werden oft als Environment-Maps (Umgebungstexturen) verwendet, um dynamische Spiegelungen der Umgebung auf Objekten darzustellen.
 
-\begin{haskell}[label={lst:rendersystem-applicative},caption={Applicative Instanz für RenderSystem}]
+\begin{haskell}[label={lst:rendersystem-applicative},caption={Applicative Instanz für RenderSystem},float,floatplacement=H]
 instance Monad m => Applicative (RenderSystem m i) where
   pure b = r where r = RenderSystem (return . const (b,r))
   RenderSystem sysf <*> RenderSystem sysa = RenderSystem (\i -> do
@@ -173,7 +173,7 @@ instance Monad m => Applicative (RenderSystem m i) where
     return (f a, mf <*> ma))
 \end{haskell}
 
-\begin{haskell}[label={lst:rendersystem-applicative-beispiel},caption={Applicative RenderSystem Beispiel}]
+\begin{haskell}[label={lst:rendersystem-applicative-beispiel},caption={Applicative RenderSystem Beispiel},float,floatplacement=H]
 data Cube a = CubeTexture{left,right,top,bottom,front,back :: a}
 
 sceneToTexture :: Camera -> RenderPass IO Scene Texture
@@ -197,15 +197,38 @@ sceneToCubeTexture = Cube
 	<*> sceneToTexture (back   cubeViews)
 \end{haskell}
 
-
+% Profunctor
 \paragraph{Profunctor}
-bla
+Während die vorhergehenden Klassen nur Operationen auf dem letzten Argument des Typens definierten, gehört unser unser |RenderSystem| Typ auch noch weiteren Klassen an, die sich für die letzten beiden Argumente definieren lassen. Ein Functor in zwei Argumenten wird auch Bifunctor genannt. Jedes Argument gehört einer eigenen Functor-Kategorie an, die auch voneinander unterschiedlich sein können aber nicht müssen. Zusammmen bilden die beiden Functor-Kategorien ($C$ und $D$) eine Produktkategorie ($C \times D$) \parencite{MacLane1998}. Ein spezieller Bifunctor ist der Profunctor, dessen erstes Argument contravariant und zweites Argument covariant ist. Ein covarianter Functor entspricht der üblichen Haskell |Functor| Klasse mit einem Morphismus von der Ausgangskategorie hin zur Zielkategorie. Die Contravarianz entspricht dahingehend einem umgekehrten Morphismus, von der Zielkategorie zur Ausgangskategorie. Die Haskell Definition der Klasse |Profunctor| findet sich in \fref{lst:class-profunctor}
+
+\begin{haskell}[label={lst:class-profunctor},caption={Profunctor Klasse\protect\footnotemark},nolol,float,floatplacement=H]
+class Profunctor p where
+  dimap :: (a -> b) -> (c -> d) -> p b c -> p a d
+\end{haskell}
+\footnotetext{https://hackage.haskell.org/package/profunctors-3.2/docs/Data-Profunctor.html}
+
+Anschaulicher wird die Funktionsweise eines |Profunctor|s wieder bei der Implementierung der |Profunctor| Instanz für unser |RenderSystem|. Das zweite covariante Argument unseres Bifunctors ist unser Parameter |o| für den Ausgabetypen des |RenderSystems| und wird analog zu der Functor Instanz implementiert, mit |g| als Morphismus. Der neue erste Parameter unseres Bifunctors entspricht dem contravarianten Argument. Der umgekehrte Morphismus |f| wird im Gegenzug auf den Eingabewert angewendet, bevor das entsprechende RenderSystem mit der Eingabe ausgeführt wird. Mit der Profunctor Instanz können wir nicht nur elegant den Ausgabetyp unseres Rendersystems konvertieren, sondern auch auch zu einem allgemein definierten Rendersystem neue Varianten erzeugen die auf unterschiedlichen Eingaben arbeiten, solange wir eine Konvertierungsfunktion für die Eingabe definieren können. Die interne Funktionsweise des Rendersystems bleibt trotz etwaiger Konvertierungen von Ein- und Ausgaben die selbe, es werden lediglich die Schnittstellen einem externen Format angepasst.
 
 \begin{haskell}[label={lst:rendersystem-profunctor},caption={Profunctor Instanz für RenderSystem}]
 instance Monad m => Profunctor (RenderSystem m) where
+  dimap :: (i -> a) -> (b -> o) -> RenderSystem m a b -> RenderSystem m i o
   dimap f g (RenderSystem sys) = RenderSystem (\i -> do
     (o,sys') <- sys (f i)
     return (g o, dimap f g sys'))
+\end{haskell}
+
+
+% Category
+\paragraph{Category}
+bla
+
+\begin{haskell}[label={lst:rendersystem-category},caption={Category Instanz für RenderSystem}]
+instance Monad m => Category (RenderSystem m) where
+  id = RenderSystem (return . (,id))
+  RenderSystem mbc . RenderSystem mab = RenderSystem (\a -> do
+    (b, mab') <- mab a
+    (c, mbc') <- mbc b
+    return (c, mbc' . mab'))
 \end{haskell}
 
 \paragraph{Arrow}
@@ -230,16 +253,4 @@ instance Monad m => ArrowChoice (RenderSystem m) where
       (b, sys') <- runRenderSystem sys i
       return (Left b, left sys'))
     Right i -> return (Right i, left sys)
-\end{haskell}
-
-\paragraph{Category}
-bla
-
-\begin{haskell}[label={lst:rendersystem-category},caption={Category Instanz für RenderSystem}]
-instance Monad m => Category (RenderSystem m) where
-  id = RenderSystem (return . (,id))
-  RenderSystem mbc . RenderSystem mab = RenderSystem (\a -> do
-    (b, mab') <- mab a
-    (c, mbc') <- mbc b
-    return (c, mbc' . mab'))
 \end{haskell}
