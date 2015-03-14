@@ -12,12 +12,31 @@ Der Künstler produziert 3D Modelle oft in einer von der Echtzeitengine isoliert
 
 Mit \ac{PBR} werden die klassischen Ad-hoc zusammengestellten Beleuchtungsmodelle verworfen, damit Beleuchtungsmodelle entworfen werden können, deren Parameter sich in einem physikalisch sinnvollem Zusammenhang setzen lassen. Nur dadurch lassen sich Spezialfälle vermeiden und es lässt sich eine visuelle Konsistenz herstellen. Visuelle Konsistenz bedeutet in diesem Zusammhang, dass sich einmal konfigurierte Oberflächeneigenschaften in unterschiedlichen Beleuchtungssituationen realistisch plausibel und verhersagbar verhalten. 
 
-Dies wird dadurch erreicht, dass die Eigenschaften der Lichtquellen, Oberflächeneingenschaften und der Betrachter von einander entkoppelt werden.
+Dies wird dadurch erreicht, dass die Eigenschaften der Lichtquellen, die Oberflächeneingenschaften und der Betrachter von einander entkoppelt werden. Ziel ist meist ein einheitliches Shading Modell zu entwickeln, das für alle möglichen Szeneneinstellungen geeignet ist.
 
-\section{Grundlagen}
+\section{Theoretische Grundlagen}
 \label{sec:pbr-grundlagen}
 
-bla
+Wie für die meisten Beleuchtungsmodelle bildet die \ac{BRDF} auch für das Konzept \ac{PBR} die heoretische Grundlage. Die \ac{BRDF} beschreibt das Reflexionsverhalten von Oberflächen. Die BRDF lässt sich aus den zwei getrennten Termen für die diffuse $f_d$ und spekulare Reflexion $f_r$ zusammensetzen \parencite[Kapitel 3.1.2, Seite 7]{Rousiers2014}. So lassen sich für beide Terme getrennt von einander betrachten sowie unterschiedliche Modelle und spezialisierte Approximationen finden.
+
+\begin{align}
+	\label{eq:brdf-dekonstruiert}
+	% \caption{Dekonstruierte BRDF}
+	f(V,L) = f_d(V,L) + f_r(V,L)
+\end{align}
+
+\subsection[Spekulares Reflexionsverhalten]{Spekulares Reflexionsverhalten $f_r$}
+Das Reflexionsverhalten wird in der Realität wesentlich von der Oberflächenbeschaffenheit des Materials bestimmt. Polierte Oberflächen spiegeln, im Gegensatz zu rauhen Oberflächen, die Umgebung und erhalten Glanzlichter bei direkter Beleuchtung. Irreguläre rauhe Oberflächen streuen das einfallende Licht ungleichmäßig in alle Richtungen. Reguläre glatte Oberflächen reflektieren das einfallene Licht über die Fläche betrachtet gleichförmig (\warn{isotropic? nicht ganz}).
+
+\warn{Bild Microfacet}
+
+Ein realistisches Reflexionsmodell muss diese Oberflächenbeschaffenheit berücksichtigen. In Echtzeitverfahren ist es nicht praktikabel die mikroskopischen Unebenheiten, genannt \textit{Microfacetten oder Microfecets} (siehe \fref{fig:microfacet}), exakt zu berechenen. Entsprechend wurden einige approximierende Microfacet Modelle entwickelt, die die Interaktion des Lichts mit den Facetten realistisch abbilden können. Ein oft verwendetes Microfacet Modell ist die Cook-Torrance Modell \parencite{Cook1981} welches in \fref{eq:cook-torrance-model} dargestellt wird \parencite[Kapitel 6.9.2, Seite 194]{Lengyel2003}.
+
+\begin{align}
+	\label{eq:cook-torrance-model}
+	% \caption{Cook-Torrance Illumination}
+	f_r(V,L) = \mathcal{F}(V,L)\frac{D(V,L)G(V,L)}{\pi(N \cdot V)(N \cdot L)}
+\end{align}
 
 \section{Umsetzung}
 \label{sec:pbr-umsetzung}
