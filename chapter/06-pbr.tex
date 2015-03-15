@@ -17,13 +17,31 @@ Dies wird dadurch erreicht, dass die Eigenschaften der Lichtquellen, die Oberfl�
 \section{Theoretische Grundlagen}
 \label{sec:pbr-grundlagen}
 
-Wie für die meisten Beleuchtungsmodelle bildet die \ac{BRDF} auch für das Konzept \ac{PBR} die theoretische Grundlage. Die \ac{BRDF} beschreibt das Reflexionsverhalten von Oberflächen. Sie lässt sich aus den zwei getrennten Termen für die diffuse $f_d$ und spekulare Reflexion $f_r$ zusammensetzen \parencite[Kapitel 3.1.2, Seite 7]{Rousiers2014}. So lassen sich beide Terme getrennt von einander betrachten sowie unterschiedliche Modelle und spezialisierte Approximationen finden.
+\begin{table}
+\centering
+\begin{tabular}{c l}
+\hline
+	$\mathbf V$ & Richtungsvektor zum Betrachter \\
+	$\mathbf L$ & Richtungsvektor zur Lichtquelle \\
+	$\mathbf N$ & Oberflächennormale \\
+	$m$ 	 	& Rauheitswert der Oberfläche (\textit{Roughness}) \\
+ 	$f$ 		& \textit{BRDF} \\
+	$f_d$ 		& Diffuser Term der \textit{BRDF} \\
+	$f_s$ 		& Spekularer Term der \textit{BRDF}\\
+\hline
+\end{tabular}
+\caption[Notation \textit{BRDF}]{Notation}
+\label{tab:pbr-notation}
+\end{table}
+
+Wie für die meisten Beleuchtungsmodelle bildet die \ac{BRDF} auch für das Konzept \ac{PBR} die theoretische Grundlage. Die \ac{BRDF} beschreibt das Reflexionsverhalten von Oberflächen. Sie lässt sich aus den zwei getrennten Termen für die diffuse $f_d$ und spekulare Reflexion $f_s$ zusammensetzen \parencite[Kapitel 3.1.2, Seite 7]{Rousiers2014}. So lassen sich beide Terme getrennt von einander betrachten sowie unterschiedliche Modelle und spezialisierte Approximationen finden. Im folgenden werden wir die in \fref{tab:pbr-notation} genannte Notation verwenden.
 
 \begin{align}
 	\label{eq:brdf-dekonstruiert}
 	% \caption{Dekonstruierte BRDF}
-	f(\mathbf V,\mathbf L) = f_d(\mathbf V,\mathbf L) + f_r(\mathbf V,\mathbf L)
+	f(\mathbf V,\mathbf L) &= f_d(\mathbf V,\mathbf L) + f_s(\mathbf V,\mathbf L)\\
 \end{align}
+
 
 \subsection[Spekulares Reflexionsverhalten]{Spekulares Reflexionsverhalten $f_r$}
 Das Reflexionsverhalten wird in der Realität wesentlich von der Oberflächenbeschaffenheit des Materials bestimmt. Polierte Oberflächen spiegeln, im Gegensatz zu rauhen Oberflächen, die Umgebung und erhalten Glanzlichter bei direkter Beleuchtung. Irreguläre rauhe Oberflächen streuen das einfallende Licht ungleichmäßig in alle Richtungen. Reguläre glatte Oberflächen reflektieren das einfallene Licht über die Fläche betrachtet gleichförmig (\warn{isotropic? nicht ganz}).
@@ -35,7 +53,7 @@ Ein realistisches Reflexionsmodell muss diese Oberflächenbeschaffenheit berück
 \begin{align}
 	\label{eq:cook-torrance-model}
 	% \caption{Cook-Torrance Illumination}
-	f_r(\mathbf V,\mathbf L) = \mathcal{F}(\mathbf V,\mathbf L)\frac{D(\mathbf V,\mathbf L)G(\mathbf V,\mathbf L)}{\pi(\mathbf N \cdot \mathbf V)(\mathbf N \cdot \mathbf L)}
+	f_s(\mathbf V,\mathbf L) = \mathcal{F}(\mathbf V,\mathbf L)\frac{D(\mathbf V,\mathbf L)G(\mathbf V,\mathbf L)}{\pi(\mathbf N \cdot \mathbf V)(\mathbf N \cdot \mathbf L)}
 \end{align}
 
 \section{Umsetzung}
