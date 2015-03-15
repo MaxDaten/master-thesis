@@ -17,12 +17,12 @@ Dies wird dadurch erreicht, dass die Eigenschaften der Lichtquellen, die Oberfl�
 \section{Theoretische Grundlagen}
 \label{sec:pbr-grundlagen}
 
-Wie für die meisten Beleuchtungsmodelle bildet die \ac{BRDF} auch für das Konzept \ac{PBR} die heoretische Grundlage. Die \ac{BRDF} beschreibt das Reflexionsverhalten von Oberflächen. Die BRDF lässt sich aus den zwei getrennten Termen für die diffuse $f_d$ und spekulare Reflexion $f_r$ zusammensetzen \parencite[Kapitel 3.1.2, Seite 7]{Rousiers2014}. So lassen sich für beide Terme getrennt von einander betrachten sowie unterschiedliche Modelle und spezialisierte Approximationen finden.
+Wie für die meisten Beleuchtungsmodelle bildet die \ac{BRDF} auch für das Konzept \ac{PBR} die theoretische Grundlage. Die \ac{BRDF} beschreibt das Reflexionsverhalten von Oberflächen. Sie lässt sich aus den zwei getrennten Termen für die diffuse $f_d$ und spekulare Reflexion $f_r$ zusammensetzen \parencite[Kapitel 3.1.2, Seite 7]{Rousiers2014}. So lassen sich beide Terme getrennt von einander betrachten sowie unterschiedliche Modelle und spezialisierte Approximationen finden.
 
 \begin{align}
 	\label{eq:brdf-dekonstruiert}
 	% \caption{Dekonstruierte BRDF}
-	f(V,L) = f_d(V,L) + f_r(V,L)
+	f(\mathbf V,\mathbf L) = f_d(\mathbf V,\mathbf L) + f_r(\mathbf V,\mathbf L)
 \end{align}
 
 \subsection[Spekulares Reflexionsverhalten]{Spekulares Reflexionsverhalten $f_r$}
@@ -35,7 +35,7 @@ Ein realistisches Reflexionsmodell muss diese Oberflächenbeschaffenheit berück
 \begin{align}
 	\label{eq:cook-torrance-model}
 	% \caption{Cook-Torrance Illumination}
-	f_r(V,L) = \mathcal{F}(V,L)\frac{D(V,L)G(V,L)}{\pi(N \cdot V)(N \cdot L)}
+	f_r(\mathbf V,\mathbf L) = \mathcal{F}(\mathbf V,\mathbf L)\frac{D(\mathbf V,\mathbf L)G(\mathbf V,\mathbf L)}{\pi(\mathbf N \cdot \mathbf V)(\mathbf N \cdot \mathbf L)}
 \end{align}
 
 \section{Umsetzung}
