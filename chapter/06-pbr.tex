@@ -12,10 +12,20 @@ Der Künstler produziert 3D Modelle oft in einer von der Echtzeitengine isoliert
 
 Mit \ac{PBR} werden die klassischen Ad-hoc zusammengestellten Beleuchtungsmodelle verworfen, damit Beleuchtungsmodelle entworfen werden können, deren Parameter sich in einem physikalisch sinnvollem Zusammenhang setzen lassen. Nur dadurch lassen sich Spezialfälle vermeiden und es lässt sich eine visuelle Konsistenz herstellen. Visuelle Konsistenz bedeutet in diesem Zusammhang, dass sich einmal konfigurierte Oberflächeneigenschaften in unterschiedlichen Beleuchtungssituationen realistisch plausibel und verhersagbar verhalten. 
 
-Dies wird dadurch erreicht, dass die Eigenschaften der Lichtquellen, die Oberflächeneingenschaften und der Betrachter von einander entkoppelt werden. Ziel ist meist ein einheitliches Shading Modell zu entwickeln, das für alle möglichen Szeneneinstellungen geeignet ist.
+Dies wird dadurch erreicht, dass die Eigenschaften der Lichtquellen, die Oberflächeneingenschaften und der Betrachter von einander entkoppelt werden. Ziel ist meist ein einheitliches Beleuchtungsmodell zu entwickeln, das für alle möglichen Szeneneinstellungen geeignet ist und in sich konsistent ist.
 
 \section{Theoretische Grundlagen}
 \label{sec:pbr-grundlagen}
+
+Beleuchtungsmodelle werden unter dem Begriff \acf{BRDF} zusammengefasst. Allgemein beschreibt eine \ac{BRDF} das Reflexionsverhalten von Oberflächen. Sie lässt sich aus den zwei getrennten Termen für die diffuse $f_d$ und spekulare Reflexion $f_s$ zusammensetzen \parencite[Kapitel 3.1.2, Seite 7]{Rousiers2014}, so dass sich beide Terme getrennt von einander betrachten lassen. Das ermöglicht für $f_d$ und $f_s$ unterschiedliche unterschiedliche Modelle und spezialisierte Approximationen.
+
+Damit die physikalischen Eigenschaften der Oberflächen möglichst realistisch abgebildet werden können, wird ein geeignetes Beleuchtungsmodell (\acf{BRDF}) als Grundlage für die Lichtberechnung benötigt. Die klassischen Modelle wie Phong oder Blinn-Phong bieten hierbei wenige physikalische Einflussgrößen, und sind deswegen ungeeignet. Bei Phong bzw. Blinn-Phong wird zum Beispiel der spekulare Beitrag von Parametern beeinflusst, die sich weder intutiv greifen noch sich ohne weiteres direkt aus physikalischen Oberflächeneingenschaften ableiten lassen. Im Folgenden betrachten wir das Cook-Torrance Modell als Grundlage für unsere \ac{PBR} Implementierung und verwenden die in \fref{tab:pbr-notation} genannte Notation.
+
+\begin{align}
+	\label{eq:brdf-dekonstruiert}
+	% \caption{Dekonstruierte BRDF}
+	f(\mathbf V,\mathbf L) &= f_d(\mathbf V,\mathbf L) + f_s(\mathbf V,\mathbf L)\\
+\end{align}
 
 \begin{table}
 \centering
@@ -24,6 +34,8 @@ Dies wird dadurch erreicht, dass die Eigenschaften der Lichtquellen, die Oberfl�
 	$\mathbf V$ & Richtungsvektor zum Betrachter \\
 	$\mathbf L$ & Richtungsvektor zur Lichtquelle \\
 	$\mathbf N$ & Oberflächennormale \\
+	$\mathbf H$ & Winkelhalbierende ($\frac{V + L}{\|V + L\|}$) \\
+	$\mathbf R$ & Reflexion von $L$ an $N$ \\
 	$m$ 	 	& Rauheitswert der Oberfläche (\textit{Roughness}) \\
  	$f$ 		& \textit{BRDF} \\
 	$f_d$ 		& Diffuser Term der \textit{BRDF} \\
@@ -34,17 +46,11 @@ Dies wird dadurch erreicht, dass die Eigenschaften der Lichtquellen, die Oberfl�
 \label{tab:pbr-notation}
 \end{table}
 
-Wie für die meisten Beleuchtungsmodelle bildet die \ac{BRDF} auch für das Konzept \ac{PBR} die theoretische Grundlage. Die \ac{BRDF} beschreibt das Reflexionsverhalten von Oberflächen. Sie lässt sich aus den zwei getrennten Termen für die diffuse $f_d$ und spekulare Reflexion $f_s$ zusammensetzen \parencite[Kapitel 3.1.2, Seite 7]{Rousiers2014}. So lassen sich beide Terme getrennt von einander betrachten sowie unterschiedliche Modelle und spezialisierte Approximationen finden. Im folgenden werden wir die in \fref{tab:pbr-notation} genannte Notation verwenden.
+\subsection{Cook-Torrance Modell}
 
-\begin{align}
-	\label{eq:brdf-dekonstruiert}
-	% \caption{Dekonstruierte BRDF}
-	f(\mathbf V,\mathbf L) &= f_d(\mathbf V,\mathbf L) + f_s(\mathbf V,\mathbf L)\\
-\end{align}
+Das Reflexionsverhalten von Oberflächen wird in der Realität wesentlich von der Oberflächenbeschaffenheit des Materials bestimmt. Polierte Oberflächen spiegeln, im Gegensatz zu rauhen Oberflächen, die Umgebung und erhalten Glanzlichter bei direkter Beleuchtung. Irreguläre rauhe Oberflächen streuen das einfallende Licht ungleichmäßig in alle Richtungen.
 
-
-\subsection[Spekulares Reflexionsverhalten]{Spekulares Reflexionsverhalten $f_r$}
-Das Reflexionsverhalten wird in der Realität wesentlich von der Oberflächenbeschaffenheit des Materials bestimmt. Polierte Oberflächen spiegeln, im Gegensatz zu rauhen Oberflächen, die Umgebung und erhalten Glanzlichter bei direkter Beleuchtung. Irreguläre rauhe Oberflächen streuen das einfallende Licht ungleichmäßig in alle Richtungen. Reguläre glatte Oberflächen reflektieren das einfallene Licht über die Fläche betrachtet gleichförmig (\warn{isotropic? nicht ganz}).
+Ein realistisches Reflexionsmodell muss diese Oberflächenbeschaffenheit berücksichtigen. In Echtzeitverfahren ist es nicht praktikabel die mikroskopischen Unebenheiten, genannt \textit{Microfacetten oder Microfecets} (siehe \fref{fig:microfacet}), exakt zu berechenen. Entsprechend wurden einige approximierende Microfacet Modelle entwickelt, die die Interaktion des Lichts mit den Facetten realistisch abbilden können.
 
 \begin{figure}
 	\label{fig:microfacet}
@@ -53,13 +59,46 @@ Das Reflexionsverhalten wird in der Realität wesentlich von der Oberflächenbes
 	\caption{links: $m = 0$; rechts $m = 1$}
 \end{figure}
 
-Ein realistisches Reflexionsmodell muss diese Oberflächenbeschaffenheit berücksichtigen. In Echtzeitverfahren ist es nicht praktikabel die mikroskopischen Unebenheiten, genannt \textit{Microfacetten oder Microfecets} (siehe \fref{fig:microfacet}), exakt zu berechenen. Entsprechend wurden einige approximierende Microfacet Modelle entwickelt, die die Interaktion des Lichts mit den Facetten realistisch abbilden können. Ein oft verwendetes Microfacet Modell ist die Cook-Torrance Modell \parencite{Cook1981} welches in \fref{eq:cook-torrance-model} dargestellt wird \parencite[Kapitel 6.9.2, Seite 194]{Lengyel2003}.
+Eines von ihnen ist das Cook-Torrance Modell \parencite{Cook1981}, welches mit dem Ziel entwickelt wurde die physikalischen Reflexionseigenschaften von rauhen und glatten Oberflächen realistischer abzubilden als es die klassischen Modelle ermöglichen \parencite[Seite 40]{Ngan2004}. Da sich das Cook-Torrance Modell auf spekulare Reflexionen konzentriert, verwenden wir das Cook-Torrance Modell auschließlich zur Berechnung des spekularen Anteils $f_s$ der BRDF. Der diffuse Anteil $f_d$ wird durch das klassische Lambert'sche Modell abgebildet und nicht weiter betrachtet. Denkbar sind aber auch andere Modelle für die diffuse Reflexion. In \fref{eq:cook-torrance-model} wird das Modell formal dargestellt.
 
 \begin{align}
 	\label{eq:cook-torrance-model}
 	% \caption{Cook-Torrance Illumination}
 	f_s(\mathbf V,\mathbf L) = \mathcal{F}(\mathbf V,\mathbf L)\frac{D(\mathbf V,\mathbf L)G(\mathbf V,\mathbf L)}{\pi(\mathbf N \cdot \mathbf V)(\mathbf N \cdot \mathbf L)}
 \end{align}
+
+Der spekulare Beitrag $f_s$ wird durch die drei Faktoren bestimmt: Dem Fresnel $\mathcal{F}$ Term, der Microfacet Richtungsverteilung, $\mathbf D$ und der geometrischen Abschwächung (Geometrical Attenuation) $\mathbf G$.
+
+\subsubsection[Fresnel]{Fresnel $\mathcal{F}$}
+Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen reflektierender erscheinen, umso flacher der Betrachtungswinkel wird. Als Approximation wurde die \textit{Schlick Approximation} \parencite{Schlick1994} gewählt. In \cite{Lagarde2012} wurde eine weitere Modifikation vorgeschlagen um die Berechnung zu vereinfachen, die hier ebenso wie in \cite[Seite 3]{Karis2013} angewendet wird.
+
+\begin{align}
+	\label{eq:fresnel-schlick}
+	\mathcal F(\mathbf V,\mathbf L) = F_0  + (1 - F_0) 2^{(-5.55473 (\mathbf V \cdot \mathbf H) - 6.98316 (\mathbf V \cdot \mathbf H))}
+\end{align}
+
+
+\subsubsection[Facetten Normalverteilung]{Facetten Normalverteilung $D$} 
+$D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets entsprechend der Winkelhalbierenden $H$. Die Microfacets von glatten Oberflächen sind überwiegend gleich ausgerichtet, so dass Licht hauptsächlich entlang $R$ reflektiert wird. Rauen Oberflächen besitzen eher zufällig ausgerichtete Mircofacets, so dass Licht breiter gestreut wird. Die Rauheit der Oberfläche wird mit $m$ ausgedrückt. Zur Approximation von $D$ finden sich wiederum eine vielzahl von Modellen. Die Implementierung verwendet das als \textit{GGX} in \cite{Walter2007} vorgestellte Modell (siehe \fref{eq:ggx} nach \cite[Seite 3]{Karis2013}). $F_0$ beschreibt die Reflektanz für parallel zur Normale $\mathbf N$ einfallendes Licht.
+
+\begin{align}
+	\label{eq:ggx}
+	D(\mathbf V,\mathbf L) = \frac{m^4}{ \pi \left(\left( \mathbf N \cdot \mathbf H \right)^2\left(m^4 - 1\right) + 1\right)^2}
+\end{align}
+
+
+\subsubsection[Geometrische Abschwächung]{Geometrische Abschwächung $G$} 
+$G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich gegenseitig das Licht blockieren und sich somit gegenseitig schattieren können. Es wurd die in \cite[Seite 3]{Karis2013}) modifizierte \textit{Schlick} Approximation übernommen \warn{Begründung?!}.
+
+
+\begin{align}
+	\label{eq:geometric-schlick}
+	k &= \frac{(m + 1)^2}{8}\\
+	G_1(\mathbf V) &= \frac{\mathbf N \cdot \mathbf V}{(\mathbf N \cdot \mathbf V)(1-k)+k}\\
+	G_1(\mathbf L) &= \frac{\mathbf N \cdot \mathbf L}{(\mathbf N \cdot \mathbf L)(1-k)+k}\\
+	G(\mathbf V,\mathbf L) &= G_1(\mathbf V) G_1(\mathbf L)
+\end{align}
+
 
 \section{Umsetzung}
 \label{sec:pbr-umsetzung}
