@@ -67,10 +67,10 @@ Eines von ihnen ist das Cook-Torrance Modell \parencite{Cook1981}, welches mit d
 	f_s(\mathbf V,\mathbf L) = \mathcal{F}(\mathbf V,\mathbf L)\frac{D(\mathbf V,\mathbf L)G(\mathbf V,\mathbf L)}{\pi(\mathbf N \cdot \mathbf V)(\mathbf N \cdot \mathbf L)}
 \end{align}
 
-Der spekulare Beitrag $f_s$ wird durch die drei Faktoren bestimmt: Dem Fresnel $\mathcal{F}$ Term, der Microfacet Richtungsverteilung, $\mathbf D$ und der geometrischen Abschwächung (Geometrical Attenuation) $\mathbf G$.
+Der spekulare Beitrag $f_s$ wird durch die drei Faktoren bestimmt: Dem Fresnel $\mathcal{F}$ Term, der Microfacet Richtungsverteilung, $\mathbf D$ und der geometrischen Abschwächung (Geometrical Attenuation) $\mathbf G$. Die Auswahl der konkreten Approximationen folgt der aus \cite[Seite 3]{Karis2013}.
 
 \subsubsection[Fresnel]{Fresnel $\mathcal{F}$}
-Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen reflektierender erscheinen, umso flacher der Betrachtungswinkel wird. Als Approximation wurde die \textit{Schlick Approximation} \parencite{Schlick1994} gewählt. In \cite{Lagarde2012} wurde eine weitere Modifikation vorgeschlagen um die Berechnung zu vereinfachen, die hier ebenso wie in \cite[Seite 3]{Karis2013} angewendet wird.
+Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen stärker reflektieren, umso flacher der Betrachtungswinkel wird. Als Approximation wurde die \textit{Schlick Approximation} \parencite{Schlick1994} gewählt. In \cite{Lagarde2012} wurde eine weitere Modifikation vorgeschlagen um die Berechnung zu vereinfachen. Diese findet hier ebenso ihre Anwendung.
 
 \begin{align}
 	\label{eq:fresnel-schlick}
@@ -79,7 +79,7 @@ Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen reflektierender
 
 
 \subsubsection[Facetten Normalverteilung]{Facetten Normalverteilung $D$} 
-$D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets entsprechend der Winkelhalbierenden $H$. Die Microfacets von glatten Oberflächen sind überwiegend gleich ausgerichtet, so dass Licht hauptsächlich entlang $R$ reflektiert wird. Rauen Oberflächen besitzen eher zufällig ausgerichtete Mircofacets, so dass Licht breiter gestreut wird. Die Rauheit der Oberfläche wird mit $m$ ausgedrückt. Zur Approximation von $D$ finden sich wiederum eine vielzahl von Modellen. Die Implementierung verwendet das als \textit{GGX} in \cite{Walter2007} vorgestellte Modell (siehe \fref{eq:ggx} nach \cite[Seite 3]{Karis2013}). $F_0$ beschreibt die Reflektanz für parallel zur Normale $\mathbf N$ einfallendes Licht.
+$D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets entsprechend der \warn{Winkelhalbierenden?} $H$. Die Microfacets von glatten Oberflächen sind überwiegend gleich ausgerichtet, so dass Licht hauptsächlich entlang $R$ reflektiert wird. Raue Oberflächen besitzen eher zufällig ausgerichtete Mircofacets, so dass das reflektierte Licht breiter gestreut wird. Die Rauheit der Oberfläche wird mit $m$ ausgedrückt. Zur Approximation von $D$ finden sich wiederum eine vielzahl von Modelle. Die Implementierung verwendet das als \textit{GGX} in \cite{Walter2007} vorgestellte Modell (siehe \fref{eq:ggx}). $F_0$ beschreibt die Reflektanz für parallel zur Normale $\mathbf N$ einfallendes Licht.
 
 \begin{align}
 	\label{eq:ggx}
@@ -88,7 +88,7 @@ $D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets
 
 
 \subsubsection[Geometrische Abschwächung]{Geometrische Abschwächung $G$} 
-$G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich gegenseitig das Licht blockieren und sich somit gegenseitig schattieren können. Es wurd die in \cite[Seite 3]{Karis2013}) modifizierte \textit{Schlick} Approximation übernommen \warn{Begründung?!}.
+$G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich gegenseitig das Licht blockieren und sich somit gegenseitig schattieren können. Verwendet wird eine modifizierte Version der \textit{Schlick} Approximation \warn{Begründung und wie modifiziert?!}.
 
 
 \begin{align}
