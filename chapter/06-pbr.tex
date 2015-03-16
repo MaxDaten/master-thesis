@@ -46,7 +46,12 @@ Wie für die meisten Beleuchtungsmodelle bildet die \ac{BRDF} auch für das Konz
 \subsection[Spekulares Reflexionsverhalten]{Spekulares Reflexionsverhalten $f_r$}
 Das Reflexionsverhalten wird in der Realität wesentlich von der Oberflächenbeschaffenheit des Materials bestimmt. Polierte Oberflächen spiegeln, im Gegensatz zu rauhen Oberflächen, die Umgebung und erhalten Glanzlichter bei direkter Beleuchtung. Irreguläre rauhe Oberflächen streuen das einfallende Licht ungleichmäßig in alle Richtungen. Reguläre glatte Oberflächen reflektieren das einfallene Licht über die Fläche betrachtet gleichförmig (\warn{isotropic? nicht ganz}).
 
-\warn{Bild Microfacet}
+\begin{figure}
+	\label{fig:microfacet}
+	\includegraphics[width=.5\textwidth]{img/roughness0}
+	\includegraphics[width=.5\textwidth]{img/roughness1}
+	\caption{links: $m = 0$; rechts $m = 1$}
+\end{figure}
 
 Ein realistisches Reflexionsmodell muss diese Oberflächenbeschaffenheit berücksichtigen. In Echtzeitverfahren ist es nicht praktikabel die mikroskopischen Unebenheiten, genannt \textit{Microfacetten oder Microfecets} (siehe \fref{fig:microfacet}), exakt zu berechenen. Entsprechend wurden einige approximierende Microfacet Modelle entwickelt, die die Interaktion des Lichts mit den Facetten realistisch abbilden können. Ein oft verwendetes Microfacet Modell ist die Cook-Torrance Modell \parencite{Cook1981} welches in \fref{eq:cook-torrance-model} dargestellt wird \parencite[Kapitel 6.9.2, Seite 194]{Lengyel2003}.
 
