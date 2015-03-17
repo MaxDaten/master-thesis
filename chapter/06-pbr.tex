@@ -56,7 +56,7 @@ Ein realistisches Reflexionsmodell muss diese Oberflächenbeschaffenheit berück
 	\label{fig:microfacet}
 	\includegraphics[width=.5\textwidth]{img/roughness0}
 	\includegraphics[width=.5\textwidth]{img/roughness1}
-	\caption{links: $m = 0$; rechts $m = 1$}
+	\caption[Rauheit]{links: $m = 0$; rechts $m = 1$}
 \end{figure}
 
 Eines von ihnen ist das Cook-Torrance Modell \parencite{Cook1981}, welches mit dem Ziel entwickelt wurde die physikalischen Reflexionseigenschaften von rauhen und glatten Oberflächen realistischer abzubilden als es die klassischen Modelle ermöglichen \parencite[Seite 40]{Ngan2004}. Da sich das Cook-Torrance Modell auf spekulare Reflexionen konzentriert, verwenden wir das Cook-Torrance Modell auschließlich zur Berechnung des spekularen Anteils $f_s$ der BRDF. Der diffuse Anteil $f_d$ wird durch das klassische Lambert'sche Modell abgebildet und nicht weiter betrachtet. Denkbar sind aber auch andere Modelle für die diffuse Reflexion. In \fref{eq:cook-torrance-model} wird das Modell formal dargestellt.
@@ -64,13 +64,13 @@ Eines von ihnen ist das Cook-Torrance Modell \parencite{Cook1981}, welches mit d
 \begin{align}
 	\label{eq:cook-torrance-model}
 	% \caption{Cook-Torrance Illumination}
-	f_s(\mathbf V,\mathbf L) = \mathcal{F}(\mathbf V,\mathbf L)\frac{D(\mathbf V,\mathbf L)G(\mathbf V,\mathbf L)}{\pi(\mathbf N \cdot \mathbf V)(\mathbf N \cdot \mathbf L)}
+	f_s(\mathbf V,\mathbf L) = \frac{\mathcal{F}(\mathbf V,\mathbf L)D(\mathbf V,\mathbf L)G(\mathbf V,\mathbf L)}{4(\mathbf N \cdot \mathbf V)(\mathbf N \cdot \mathbf L)}
 \end{align}
 
 Der spekulare Beitrag $f_s$ wird durch die drei Faktoren bestimmt: Dem Fresnel $\mathcal{F}$ Term, der Microfacet Richtungsverteilung, $\mathbf D$ und der geometrischen Abschwächung (Geometrical Attenuation) $\mathbf G$. Die Auswahl der konkreten Approximationen folgt der aus \cite[Seite 3]{Karis2013}.
 
 \subsubsection[Fresnel]{Fresnel $\mathcal{F}$}
-Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen stärker reflektieren, umso flacher der Betrachtungswinkel wird. Als Approximation wurde die \textit{Schlick Approximation} \parencite{Schlick1994} gewählt. In \cite{Lagarde2012} wurde eine weitere Modifikation vorgeschlagen um die Berechnung zu vereinfachen. Diese findet hier ebenso ihre Anwendung.
+Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen stärker reflektieren, umso flacher der Betrachtungswinkel wird. Als Approximation wurde die \textit{Schlick Approximation} \parencite{Schlick1994} gewählt. In \cite{Lagarde2012} wurde eine weitere Modifikation vorgeschlagen um den Berechnungsaufwand zu reduzieren. Diese findet hier ebenso ihre Anwendung.
 
 \begin{align}
 	\label{eq:fresnel-schlick}
@@ -79,7 +79,7 @@ Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen stärker reflek
 
 
 \subsubsection[Facetten Normalverteilung]{Facetten Normalverteilung $D$} 
-$D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets entsprechend der \warn{Winkelhalbierenden?} $H$. Die Microfacets von glatten Oberflächen sind überwiegend gleich ausgerichtet, so dass Licht hauptsächlich entlang $R$ reflektiert wird. Raue Oberflächen besitzen eher zufällig ausgerichtete Mircofacets, so dass das reflektierte Licht breiter gestreut wird. Die Rauheit der Oberfläche wird mit $m$ ausgedrückt. Zur Approximation von $D$ finden sich wiederum eine vielzahl von Modelle. Die Implementierung verwendet das als \textit{GGX} in \cite{Walter2007} vorgestellte Modell (siehe \fref{eq:ggx}). $F_0$ beschreibt die Reflektanz für parallel zur Normale $\mathbf N$ einfallendes Licht.
+$D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets entsprechend der \warn{Winkelhalbierenden?} $H$. Die Microfacets von glatten Oberflächen sind überwiegend gleich ausgerichtet, so dass Licht hauptsächlich entlang $R$ reflektiert wird. Raue Oberflächen besitzen eher zufällig ausgerichtete Mircofacets, so dass das reflektierte Licht breiter gestreut wird. Die Rauheit der Oberfläche wird mit $m$ im Intervall $[0,1]$ ausgedrückt. Zur Approximation von $D$ finden sich wiederum eine vielzahl von Modelle. Die Implementierung verwendet das als \textit{GGX} in \cite{Walter2007} vorgestellte Modell (siehe \fref{eq:ggx}). $F_0$ beschreibt die Reflektanz für parallel zur Normale $\mathbf N$ einfallendes Licht.
 
 \begin{align}
 	\label{eq:ggx}
@@ -88,8 +88,7 @@ $D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets
 
 
 \subsubsection[Geometrische Abschwächung]{Geometrische Abschwächung $G$} 
-$G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich gegenseitig das Licht blockieren und sich somit gegenseitig schattieren können. Verwendet wird eine modifizierte Version der \textit{Schlick} Approximation \warn{Begründung und wie modifiziert?!}.
-
+$G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich gegenseitig das Licht blockieren und sich somit gegenseitig schattieren ($G_1(\mathbf L)$) oder Reflexionen maskieren ($G_1(\mathbf V)$) können. Verwendet wird eine modifizierte Version der \textit{Schlick} Approximation, damit sie sich dem physikalisch präziseren Smith Modell annähert. Eine genauere Analyse des Smith Modells findet sich in \cite[Kapitel 6, Seite 33]{Heitz2014}.
 
 \begin{align}
 	\label{eq:geometric-schlick}
@@ -100,11 +99,32 @@ $G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich ge
 \end{align}
 
 
-\section{Umsetzung}
+\subsubsection{Dielektische und metallische Materialien}
+bla
+
+\section{Praktische Umsetzung}
 \label{sec:pbr-umsetzung}
 
-bla
+Wie Eingangs erwähnt erfordert die Umstellung auf \ac{PBR} eine Anpassung der Produktions- und Renderpipeline. Während Diffuse- bzw Albeo-Texturen sowie Normalentexturen bereits üblich sind, ist es für die Albedo Texturen um so wichtiger, dass die von jeglicher \"eingebackener\" Beleuchtung bereinigt sind (Details in \cite{Lagarde2011}), damit die grundlegenden Texturen in allen Beleuchtungssituationen funktionieren. Die Implementierung wird im \fref{chap:anwendung} auszugsweise vorgestellt. Im Folgenden eine kurze Übersicht über die praktischen Grundlagen der Implementierung.
+
+\subsection{Eingangsparameter}
+
+Als Eingangsparameter verwendet die Pipeline der Implementierung dieser Arbeit folgende Größen:
+\begin{itemize}
+\item Albedo-Textur im sRGB Farbraum
+\item Normalen-Textur mit Oberflächennormale im Tangent-Raum kodiert in RGB
+\item Roughness-Textur ($m$) in Graustufen
+\item Metallic-Textur in Graustufen für die Unterscheidung von dielektrischen und metallischen Oberflächen
+\end{itemize}
+
+\subsection{Renderverfahren}
+
+Als Renderverfahren wurde das als \textit{Deferred Shading} bekannte Verfahren gewählt, da es effizienter als \textit{Forward Shading} in der Lichtberechnung von vielen Lichtern ist. Dazu wird vor der Berechnung der Schattierung der Oberflächen die Geometrie gerendert. In diesem Renderschritt werden die Oberflächenattribute wie Albedo-Farbe, Roughness und Normale in Texturen gerendert, kombiniert oft \textit{G-Buffer} genannt. Dieser \textit{G-Buffer} dient dann anschließend im Shading Renderschritt als Grundlage für die Berechnung. In diesem Schritt werden die Lichter mit Stellvertreter Geometrien gerendert. Für jedes so erzeugte Fragment wird dann die gewählte \ac{BRDF} mit Hilfe der Lichtparameter und der Parameter aus dem G-Buffer ausgewertet. In der fortlaufenden Pipeline werden die Farbwerte im HDR-Raum behandelt. Im abschließenden sogenannten Tone-Mapping Schritt werden die Farbwerte vom HDR-Raum auf den linearen (s)RGB Raum übertragen. Weiterführende Details finden dazu finden sich in der Implementierung zu dieser Arbeit oder in \cite{Shishkovtsov2005}.
+
+\subsection[\acl{IBL}]{\acf{IBL}}
+
+Ein weiterer Beitrag zum realistischen Eindruck ist die Berücksichtigung der Beobachtung, dass alle Oberflächen ihre Umgebung bis zu einem gewissen Grad reflektieren \parencite{Hable2010}. \warn{Erklärung diffuse niedige Frequenz/spekular hohe Frequenz} Ein ideale Möglichkeit diese Tatsache abzubilden wäre die Implementierung eines Radiosity Verfahrens, dass niedrige (diffuse) und hohe (spekular) Frequenzen abdeckt. Da voll dynamisches Radiosity/\ac{GI} in Echtzeit immer noch ein Problem darstellt und nur auf Highend Hardware ansatzweise über Verfahren wie \ac{SVOGI} \parencite{Lin2013} zu realisieren ist, wird wieder nach einer vereinfachten Möglichkeit gesucht, generelle Reflexionen in unterschiedlichen Frequenzen abzubilden. Zum Einsatz kommt hier ein erweitertes \acf{IBL} Verfahren, dass die Umgebungstexturen im Preprozess für die unterschiedlichen Frequenzen vorintegriert.
 
 \section{Wo wird es eingesetzt?}
 \label{sec:pbr-wo}
-Inzwischen wird das Verfahren in allen großen Spieleengines eingesetzt: CryEngine \parencite{Schulz2014}, Unreal Engine 4 \parencite{Martin2012}, Frostbite \parencite{Lagarde2014} und der Engine hinter den Call of Duty Titeln \parencite{Lazarov2011}.
+Inzwischen wird das Verfahren in allen großen Spieleengines eingesetzt: CryEngine \parencite{Schulz2014}, Unreal Engine 4 \parencite{Martin2012}, Frostbite \parencite{Lagarde2014}, der Engine hinter den Call of Duty Titeln \parencite{Lazarov2011} und EVE Online \parencite{CCP2014}.
