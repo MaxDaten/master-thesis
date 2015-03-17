@@ -24,7 +24,7 @@ Damit die physikalischen Eigenschaften der Oberflächen möglichst realistisch a
 \begin{align}
 	\label{eq:brdf-dekonstruiert}
 	% \caption{Dekonstruierte BRDF}
-	f(\mathbf V,\mathbf L) &= f_d(\mathbf V,\mathbf L) + f_s(\mathbf V,\mathbf L)\\
+	f(\mathbf V,\mathbf L) &= f_d(\mathbf V,\mathbf L) + f_s(\mathbf V,\mathbf L)
 \end{align}
 
 \begin{table}
@@ -124,9 +124,26 @@ Als Eingangsparameter verwendet die Pipeline der Implementierung dieser Arbeit f
 
 Als Renderverfahren wurde das als \textit{Deferred Shading} bekannte Verfahren gewählt, da es effizienter als \textit{Forward Shading} in der Lichtberechnung von vielen Lichtern ist. Dazu wird vor der Berechnung der Schattierung der Oberflächen die Geometrie gerendert. In diesem Renderschritt werden die Oberflächenattribute wie Albedo-Farbe, Roughness und Normale in Texturen gerendert, kombiniert oft \textit{G-Buffer} genannt. Dieser \textit{G-Buffer} dient dann anschließend im Shading Renderschritt als Grundlage für die Berechnung. In diesem Schritt werden die Lichter mit Stellvertreter Geometrien gerendert. Für jedes so erzeugte Fragment wird dann die gewählte \ac{BRDF} mit Hilfe der Lichtparameter und der Parameter aus dem G-Buffer ausgewertet. In der fortlaufenden Pipeline werden die Farbwerte im HDR-Raum behandelt. Im abschließenden sogenannten Tone-Mapping Schritt werden die Farbwerte vom HDR-Raum auf den linearen (s)RGB Raum übertragen. Weiterführende Details finden dazu finden sich in der Implementierung zu dieser Arbeit oder in \cite{Shishkovtsov2005}.
 
-\subsection[\acl{IBL}]{\acf{IBL}}
+\subsection[Indirekte Beleuchtung]{Indirekte Beleuchtung mit \acl{IBL}}
 
-Ein weiterer Beitrag zum realistischen Eindruck ist die Berücksichtigung der Beobachtung, dass alle Oberflächen ihre Umgebung bis zu einem gewissen Grad reflektieren \parencite{Hable2010}. \warn{Erklärung diffuse niedige Frequenz/spekular hohe Frequenz} Ein ideale Möglichkeit diese Tatsache abzubilden wäre die Implementierung eines Radiosity Verfahrens, dass niedrige (diffuse) und hohe (spekular) Frequenzen abdeckt. Da voll dynamisches Radiosity/\ac{GI} in Echtzeit immer noch ein Problem darstellt und nur auf Highend Hardware ansatzweise über Verfahren wie \ac{SVOGI} \parencite{Lin2013} zu realisieren ist, wird wieder nach einer vereinfachten Möglichkeit gesucht, generelle Reflexionen in unterschiedlichen Frequenzen abzubilden. Zum Einsatz kommt hier ein erweitertes \acf{IBL} Verfahren, dass die Umgebungstexturen im Preprozess für die unterschiedlichen Frequenzen vorintegriert.
+Bisher wurde nur die direkte Beleuchtung von Materialien betrachtet. Aber ein weiterer wesentlicher Beitrag zum realistischen Eindruck ist die sogenannte indirekte Beleuchtung. Indirekte Beleuchtung beschreibt physikalische Tatsache, dass Objekte nicht nur direkt von Lichtquellen beleuchtet werden, sondern selbst wieder Licht reflektieren. Entweder trifft das reflektierte Licht in das Auge des Betrachters, so dass Objekte für uns sichtbar werden, oder wiederum auf andere Objekte. Letzteres führt dazu, dass Oberflächen durch das von anderen Oberflächen reflektierte Licht zusätzlich beleuchtet werden \warn{Bild}. Diese wechselseitige Interreflexion wird unter dem Begriff indirekte Beleuchtung zusammengefasst.
+
+Bisher haben wir in \fref{eq:brdf-dekonstruiert} ausschließlich die \ac{BRDF} mit direkter Beleuchtung betrachtet, aber die \ac{BRDF} lässt sich wie in \fref{eq:brdf-indirect-dekonstruiert} um Beiträge aus ambienten bzw. indirekten Beleuchtungstermen erweitern. Da spekulare Reflexionen kein Sonderfall sind \parencite{Hable2010}, lohnt es sich ein generelles Verfahren zur Berechnung des indirekten Beitrags $f_{indirect}$ zu wählen. 
+
+\begin{align}
+	% \caption{Dekonstruierte BRDF}
+	\label{eq:brdf-indirect}
+	f   &= f_d + f_s\\
+	\intertext{Erweiterung von $f_d$ und $f_s$ um ambienten Beitrag:}
+	{f_d}^{\prime} &= f_{d_{indirect}} + f_{d_{direct}}\\
+	{f_s}^{\prime} &= f_{s_{indirect}} + f_{s_{direct}}\\
+	\label{eq:brdf-indirect-dekonstruiert}
+	f^{\prime}   &= \underbrace{f_{d_{indirect}} + f_{s_{indirect}}}_{f_{indirect}} + \underbrace{f_{d_{direct}} + f_{s_{direct}}}_{f_{direct}}
+\end{align}
+
+Idealerweise lässt sich die Pipeline um ein umfassendes \acf{GI}\footnote{\acl{GI} Synonym für indirekte Beleuchtung.} Verfahren erweiteren, dass die wechselseitigen Interreflexionen aller Objekte im Raum über ein möglichst breites Frequenzenband\footnote{niedrige Frequenzen = diffuse Reflexion $f_{d_{indirect}}$; hohe Frequenzen = spekulare Reflexion $f_{s_{indirect}}$} hin abdeckt. Doch voll dynamisches \ac{GI} ist immer noch in Echtzeit nicht vollends praktikabl, und ist aktuell nur auf Highend Hardware, wie zum Beispiel über Verfahren wie \ac{SVOGI} \parencite{Lin2013}, zu realisieren.
+
+Entsprechend suchen wir nach einer vereinfachten Möglichkeit, generelle Reflexionen in unterschiedlichen Frequenzen abzubilden. Zum Einsatz kommt hier ein erweitertes \acf{IBL} Verfahren, dass die Umgebungstexturen im Preprozess für die unterschiedlichen Frequenzen vorintegriert.
 
 \section{Wo wird es eingesetzt?}
 \label{sec:pbr-wo}
