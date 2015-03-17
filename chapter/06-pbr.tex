@@ -88,7 +88,7 @@ $D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets
 
 
 \subsubsection[Geometrische Abschwächung]{Geometrische Abschwächung $G$} 
-$G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich gegenseitig das Licht blockieren und sich somit gegenseitig schattieren ($G_1(\mathbf L)$) oder Reflexionen maskieren ($G_1(\mathbf V)$) können. Verwendet wird eine modifizierte Version der \textit{Schlick} Approximation, damit sie sich dem physikalisch präziseren Smith Modell annähert. Eine genauere Analyse des Smith Modells findet sich in \cite[Kapitel 6, Seite 33]{Heitz2014}.
+$G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich gegenseitig einfallendes oder reflektiertes Licht blockieren und sich somit gegenseitig schattieren ($G_1(\mathbf L)$) oder Reflexionen maskieren ($G_1(\mathbf V)$) können. Verwendet wird eine modifizierte Version der \textit{Schlick} Approximation, damit sie sich dem physikalisch präziseren Smith Modell annähert. Eine genauere Analyse des Smith Modells findet sich in \cite[Kapitel 6, Seite 33]{Heitz2014}.
 
 \begin{align}
 	\label{eq:geometric-schlick}
@@ -100,7 +100,10 @@ $G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich ge
 
 
 \subsubsection{Dielektische und metallische Materialien}
-bla
+
+In der Natur lassen sich Substanzen bezüglich ihrer Leiteigenschaften in drei Kategorien einteilen: Nichtleiter (Dielektrikum oder Isolatoren), Halbleiter und Leiter (u.A. metallische Substanzen). Ohne auf die physikalischen Details einzugehen (\warn{Ref}) unterscheiden sich metallische und dielektrische Materialien in ihrem spekularem Reflexionsverhalten. Dielektrische Materialien besitzen ausschließlich weiße spekulare Reflexionen (siehe \warn{bild}) während metallische Materialien über ein Farbspektrum spekular reflektieren \parencite[Abschnitt: Specular]{Lagarde2011a}.
+
+In der Implementierung bilden wir das über eine Justierung des $F_0$ Wertes aus dem Fresnel-Term $\mathcal{F}$ ab. Für metallische Materialien setzen wir $F_0$ auf die Grundfarbe des Materials, ansonsten setzen wir wie $F_0$ auf weiß (Idee basiert auf der Unreal Engine 4 Implementierung, Stand 2014).
 
 \section{Praktische Umsetzung}
 \label{sec:pbr-umsetzung}
@@ -114,7 +117,7 @@ Als Eingangsparameter verwendet die Pipeline der Implementierung dieser Arbeit f
 \item Albedo-Textur im sRGB Farbraum
 \item Normalen-Textur mit Oberflächennormale im Tangent-Raum kodiert in RGB
 \item Roughness-Textur ($m$) in Graustufen
-\item Metallic-Textur in Graustufen für die Unterscheidung von dielektrischen und metallischen Oberflächen
+\item Metallic-Textur in Graustufen für die Unterscheidung von dielektrischen und metallischen Oberflächen\footnote{Entspricht einer Maske, 0 = nicht metallisch, 1 = metallisch}
 \end{itemize}
 
 \subsection{Renderverfahren}
