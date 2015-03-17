@@ -143,7 +143,7 @@ Bisher haben wir in \fref{eq:brdf-dekonstruiert} ausschließlich die \ac{BRDF} m
 
 Idealerweise lässt sich die Pipeline um ein umfassendes \acf{GI}\footnote{\acl{GI} Synonym für indirekte Beleuchtung.} Verfahren erweiteren, dass die wechselseitigen Interreflexionen aller Objekte im Raum über ein möglichst breites Frequenzenband\footnote{niedrige Frequenzen = diffuse Reflexion $f_{d_{indirect}}$; hohe Frequenzen = spekulare Reflexion $f_{s_{indirect}}$} hin abdeckt. Doch voll dynamisches \ac{GI} ist immer noch in Echtzeit nicht vollends praktikabl, und ist aktuell nur auf Highend Hardware, wie zum Beispiel über Verfahren wie \ac{SVOGI} \parencite{Lin2013}, zu realisieren.
 
-Entsprechend suchen wir nach einer vereinfachten Möglichkeit, generelle Reflexionen in unterschiedlichen Frequenzen abzubilden. Zum Einsatz kommt hier ein erweitertes \acf{IBL} Verfahren, dass die Umgebungstexturen im Preprozess für die unterschiedlichen Frequenzen vorintegriert.
+Entsprechend suchen wir nach einer vereinfachten Möglichkeit, generelle Reflexionen in unterschiedlichen Frequenzen abzubilden. Zum Einsatz kommt hier ein erweitertes \acf{IBL} Verfahren, dass die Umgebungstexturen im Preprozess für die unterschiedlichen Frequenzen vorintegriert. Die Vorintegration läuft aktuell noch nicht direkt in der Pipeline ab sondern wird offline mit dem von Sébastien Lagarde modifiziertem Programm \textit{AMD Cubemapgen} durchgeführt \parencite{Lagarde2012a}. Dazu wird eine HDR-Cubemap in das Programm geladen und mit den passenden Einstellungen gefiltert. Das Resultat ist eine \ac{PMREM} die dann geladen und in der Auswertung der \ac{BRDF} verwendet wird.\warn{PMREM erläutern}.
 
 \section{Wo wird es eingesetzt?}
 \label{sec:pbr-wo}
