@@ -1,4 +1,5 @@
 \chapter{Überblick über die Engine}
+\label{chap:ueberblick-pipeline}
 
 \section{Das Rendersystem}
 
@@ -29,7 +30,7 @@ Die Definition ließe sich noch um die Menge der finalen Endzustände $F \subset
 
 Ein Mealy Automat lässt sich in Haskell abstrakt wie in \fref{lst:haskell-mealy} definieren. {\ttfamily a} beschreibt die Eingabe als Äquivalent zum Eingabealphabet $\Sigma$ der formalen Definition und analog beschreibt |b| die Ausgabe als Äquivalent zum Ausgabealphabet $\Omega$. Die Zustandsübergangsfunktion $\delta$ und die Ausgabefunktion $\lambda$ ergibt sich aus der jeweils konkreten Implementierung des Mealy. Die Menge der Zustände $Q$ wird jeweils von der konkreten Mealy Implementierung gekapselt wie in \fref{lst:state-mealy-beispiel} anhand eines Beispiels veranschaulicht. Aber es lässt sich bereits feststellen, dass die gewählte Form des Mealy Automatens weit mehr als nur ein endlicher Automat ist, da die Mächtigkeit des Ein- und Ausgabealphabets unendlich sein kann, wie dies zum Beispiel bei der Menge der natürlichen Zahlen (abzählbar unendlich) der Fall ist. Daraus folgt zusätzlich, dass auch die Menge der Zustände unendlich sein kann (Zählmaschine).
 
-\begin{haskell}[label={lst:haskell-mealy},caption={Definition Mealy in Haskell\protect\footnotemark},float]
+\begin{haskell}[label={lst:haskell-mealy},caption={[Definition Mealy in Haskell]Definition Mealy in Haskell\protect\footnotemark},float]
 newtype Mealy a b = Mealy { runMealy :: a -> (b, Maely a b) }
 \end{haskell}
 \footnotetext{https://hackage.haskell.org/package/machines-0.4.1/docs/Data-Machine-Mealy.html}
@@ -273,6 +274,49 @@ gaussianFilter kernelsize = ...
 
 bloom :: RenderSystem IO Texture Texture
 bloom = gaussFilter 64 . lumaFilter 0.4
+\end{haskell}
+
+
+%%%
+% Semigroup
+%%%
+
+\paragraph{Semigroup}
+
+Eine \textit{Semigroup} bzw. eine \textit{Halbgruppe} ist eine algebraische Struktur mit einer assoziativen binären Verknüpfung. Sie gilt als Verallgemeinerung eines Monoiden, für die kein neutrales Element benötigt wird und respektive einer \textit{Group} bzw \textit{Gruppe}, für die kein inverses und kein neutrales Element benötigt wird.
+
+\begin{haskell}[label={lst:class-semigroup},caption={Semigroup Klasse\protect\footnotemark},nolol]
+class Semigroup a where
+  (<>) :: a -> a -> a -- fuer Monoiden 'mappend'
+\end{haskell}
+\footnotetext{https://hackage.haskell.org/package/semigroups-0.16.2.2/docs/Data-Semigroup.html}
+
+Die Implementierung in \fref{lst:rendersystem-semigroup} verknüpft die beiden |RenderSystem|e, in dem beide auf der gleichen Eingabe sequenziell ausführt werden. Die Resultate werden abschließend mit |(<>)| verknüpft.
+
+\begin{haskell}[label={lst:rendersystem-semigroup},caption={Semigroup Instanz für RenderSystem}]
+instance (Applicative m, Semigroup o) => Semigroup (RenderSystem m i o) where
+	sysX <> sysY =  RenderSystem (\i -> liftA2 (<>) (runRenderSystem sysX i) (runRenderSystem sysY i))
+\end{haskell}
+
+\Fref{lst:rendersystem-semigroup-beispiel} ist ein Beispiel dafür, wie die Resulate aus mehreren Render-Schritten zu einer größeren assoziative Struktur zusammengefügt werden können. In diesem Fall wird mehrfach |downsample| auf auf einer Textur ausgeführt, um anschließend die herunter gerechneten Texturen zu einer Mipmap-Chain zu kombinieren. 
+
+\begin{haskell}[label={lst:rendersystem-semigroup-beispiel},caption={Beispielanwendung Semigroup für RenderSystem}]
+import Data.List.NonEmpty
+-- | MipmapChain mit einem Basis Element und einer Liste von Mipmap Stufen
+-- Instanz von Semigroup
+type MipmapChain = NonEmpty
+
+mkBase :: b -> MipmapChain b
+mkBase b = b :| []
+
+downsample :: Int -> RenderSystem IO Texture Texture
+downsample factor = ...
+
+generateMipmap :: RenderSystem IO Texture (MipmapChain Texture)
+generateMipmap = fmap mkBase id 
+	<> fmap mkBase (downsample (2^1)) 
+	<> fmap mkBase (downsample (2^2)) 
+	<> fmap mkBase (downsample (2^3))
 \end{haskell}
 
 
