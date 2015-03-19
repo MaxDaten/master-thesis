@@ -152,8 +152,22 @@ Idealerweise lässt sich die Pipeline um ein umfassendes \acf{GI}\footnote{\acl{
 
 Darum, und weil die Implementierung einfacherer ist, findet ein vorberechnetes Verfahren anwendung. Zum Einsatz kommt ein erweitertes \acf{IBL} Verfahren, dass die Umgebungstexturen im Preprozess für die unterschiedlichen Frequenzen vorintegriert. Die Vorintegration läuft aktuell noch nicht direkt in der Pipeline ab sondern wird offline mit dem von Sébastien Lagarde modifiziertem Programm \textit{AMD Cubemapgen} durchgeführt \parencite{Lagarde2012a}. Dazu wird eine HDR-Cubemap in das Programm geladen und mit den passenden Einstellungen gefiltert. Das Resultat ist eine \ac{PMREM} die dann geladen und in der Auswertung der \ac{BRDF} verwendet wird.
 
-\paragraph{\acl{PMREM}} Umgebungstexturen \textit{Environment Map} werden nicht nur für das Simulieren von unendlich\footnote{unendlich im Sinne der Kameraeinstellung} weit entferner Umgebung mittels eines Skybox oder Skydome verwendet, sondern oft auch für perfekt spiegelnde spekulare Reflexionen, zum Beispiel auf Wasseroberflächen. Fassen wir Spiegelungen der Umgebung als indirekte Beleuchtung auf, können wir aus \fref{eq:brdf-indirect-dekonstruiert} folgern, dass solche Reflexionen mit dem indirekten Term abgebildet werden können. In diesem Fall betrachten wir die Environment Map als Abbildung der aus allen Richtungen indirekt eintreffender Radiance. Da wir nicht nur perfekt spiegelnde Oberflächen simulieren, sondern extra die Roughness Größe für die Unterscheidung des spekularen Reflexionsverhaltens eingeführt haben, können wir nicht ohne weiteres die ungefilterte Environemnt Map als Basis für unsere ambiente Beleuchtung für alle Roughness Stufen und dem diffusen Anteil verwenden. \warn{Engine-Bild diffuse ambient, spekular ambient}
+\paragraph{\acl{PMREM}} Betrachten wir die Reflexion an einem Oberflächenpunkt aus Sicht des Betrachters, so bestimmt sich die Reflexion aus der Streuung des reflektierten Sichtstrahls ($\mathbf R$). Ein perfekter Spiegel reflektiert den Sichtstrahl ohne jegliche Streuung während rauhe Oberflächen den Strahl mit höherer Rauhaut entsprechend breiter streuen, bis hin zur ausschließlich diffusen Streuung. de bestimmen wir für alle Roughness Stufen und dem diffusen Anteil verwenden.
+
+Betrachten wir diffuse und spekulare Reflexionen als diffuse und spekulare indirekte Beleuchtung der Umgebung, lässt sich aus \fref{eq:brdf-indirect-dekonstruiert} folgern, dass sich Reflexionen mit dem $f_{indirect}$ Term abbilden lassen. Für die Rauheit der Oberflächen wurde $m$ als Einflussgröße für den spekularen Anteil der \ac{BRDF} eingeführt. Betrachten wir Umgebungstexturen \textit{Environment Maps} als Repräsentation des einfallenden Lichts, können wir Umgebungstexturen für die berechnung des ambienten Terms $f_{indirect}$ verwenden. Entsprechend des Oberflächen Rauheit muss dafür das einfallende Licht über einen Ausschnitt der Hemisphäre aufgesammelt werden. Dies entspricht der Auswertung der \ac{BRDF} über den entsprechenden Raumwinkel $\Omega$ (siehe \fref{eq:ambient-integral}).
+
+\begin{align}
+	\label{eq:ambient-integral}
+	\int\limits_{\Omega} f
+\end{align}
+
+werden nicht nur für das Simulieren von unendlich\footnote{unendlich im Sinne der Kameraeinstellung} weit entferner Umgebung mittels einer Skybox verwendet, sondern oft auch für perfekt spiegelnde spekulare Reflexionen. Fassen wir Spiegelungen der Umgebung als indirekte Beleuchtung auf, können wir aus  folgern, dass solche Reflexionen mit dem indirekten Term abgebildet werden können. In diesem Fall betrachten wir die Environment Map als Abbildung des aus allen Richtungen indirekt eintreffenden Lichts (\textit{Radiance}). Da wir nicht nur perfekt spiegelnde Oberflächen simulieren, sondern Roughness $m$ als Einflussgröße auf das spekulare Reflexionsverhalten eingeführt haben, können wir nicht ohne weiteres die ungefilterte Environemnt Map als Basis für unsere ambiente Beleuchtung verwenden. 
+
+\warn{Engine-Bild diffuse ambient, spekular ambient}
+
 \cite{Bjorke2007}
+
+\warn{Bild PMREM stufen}
 
 \section{Wo wird es eingesetzt?}
 \label{sec:pbr-wo}
