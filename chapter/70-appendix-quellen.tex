@@ -3,7 +3,7 @@
 \section[ToneMapPass]{\texttt{ToneMapPass}}
 \label{sec:src-tonemappass}
 
-\begin{haskell}[label={lst:tonemap-pass-vollstaendig},caption={\texttt{ToneMapPass} vollständig}]
+\begin{haskell}[label={lst:tonemap-pass-vollstaendig},caption={[ToneMapPass vollständig]\texttt{ToneMapPass} vollständig}]
 type ToneMapInput = (HDRSensor, Texture2D PixelHDR, Maybe (Texture2D PixelHDR))
 type ToneMapOutput = (Texture2D PixelRGB8)
 type ToneMapPass = RenderPass ResIO ToneMapInput ToneMapOutput
@@ -53,7 +53,7 @@ toneMap = do
 \section[StateVar]{\texttt{StateVar}}
 \label{sec:src-statevar}
 
-\begin{haskell}[label={lst:statevar},caption={Definition \texttt{StateVar}}]
+\begin{haskell}[label={lst:statevar},caption={[Definition StateVar]Definition \texttt{StateVar}}]
 data StateVar a = StateVar (IO a) (a -> IO ())
 
 ($=) :: StateVar a -> a -> IO ()
@@ -66,5 +66,5 @@ get (StateVar getter _) = getter
 \begin{landscape}
 \section{Deferred PBR Pipeline Übersicht}
 \label{sec:src-pipeline}
-\lstinputlisting[language=Haskell]{src/deferred-pbr-pipeline.hs}
+\lstinputlisting[language=Haskell,caption={Deferred PBR Pipeline Übersicht}]{src/deferred-pbr-pipeline.hs}
 \end{landscape}

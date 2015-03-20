@@ -7,7 +7,7 @@ Es folgt eine exemplarische Implementierung eines Tone-Map Render"-schritts. Die
 
 \paragraph{StateVars} StateVars sind eine einfache Kapselung von zwei IO Operationen, von der eine Operation einen Wert abfragt und und die andere Operation einen Wert setzt. Oft werden StateVars in Verbindung mit externen (foreign) Biblitheken verwendet um veränderliche Zustände zu kapseln. StateVars können als normale Haskell Datenobjekte verwendet werden. Eine Ad-Hoc Implementierung findet sich in \fref{lst:statevar}.
 
-\begin{haskell}[label={lst:tonemap-pass-sig},caption={\texttt{ToneMapPass} Signatur}]
+\begin{haskell}[label={lst:tonemap-pass-sig},caption={\texttt{ToneMapPass} Signatur},nolol]
 type ToneMapInput = (HDRSensor, Texture2D PixelHDR, Maybe (Texture2D PixelHDR))
 type ToneMapOutput = (Texture2D PixelRGB8)
 type ToneMapPass = RenderPass ResIO ToneMapInput ToneMapOutput
@@ -34,7 +34,7 @@ toneMap = do
 
 In \fref{lst:tonemap-pass-res}, dem Ressourcenblock des Renderschritts, werden die Ressourcen akquiriert, die zur Ausführung der ab \fref{lst:tonemap-pass-run-resize} beschrieben Routine notwenig sind. Dazu gehören ein Vertex Array Objekt, Framebuffer Objekt und die aus dem Vertex-Shader |drawRectangle.vert| und dem Fragment-Shader |tonemap.frag| erzeugte OpenGL Pipeline\footnote{https://www.opengl.org/wiki/GLSL\_Object\#Program\_pipeline\_objects}. Die Uniform Variablen des Fragment-Shaders werden von |fragmentUniforms| als |StateVar|s gekappselt (siehe Verwendung \fref{lst:tonemap-pass-run-pipeline}). Zusätzlich erzeugen wir uns eine interne |IORef| für die Ausgabetextur. Da die verwendeten OpenGL Texturen\footnote{erzeugt mit \texttt{glTexStorage*}} in ihrer Größe unveränderlich sind, muss für neue Ausgabegrößen entsprechend auch jeweils eine neue Textur erzeugt werden (siehe \fref{lst:tonemap-pass-run-reize}). Dieses Texturobjekt speichern wir uns für den nächsten Aufruf in der |IORef|.
 
-\begin{haskell}[label={lst:tonemap-pass-run-reize},caption={\texttt{ToneMapPass} Größenanpassung des Framebuffers},nolol,float,floatplacement=H]
+\begin{haskell}[label={lst:tonemap-pass-run-reize},caption={[ToneMapPass Größenanpassung des Framebuffers]\texttt{ToneMapPass} Größenanpassung des Framebuffers},nolol,float,floatplacement=H]
     target <- get outTexture
     when (target^.textureDimension /= sceneTex^.textureDimension) $ do
       let V2 w h = sceneTex^.asRectangle.extend

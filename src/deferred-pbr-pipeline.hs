@@ -4,7 +4,6 @@ yDeferredLighting
 yDeferredLighting = do
   throwWithStack $ glEnable GL_FRAMEBUFFER_SRGB
   throwWithStack $ buildNamedStrings embeddedShaders ((++) "/res/glsl/")
-
   drawGBuffer     <- gPass
   skyPass         <- drawSky
   defaultRadiance <- textureRes (pure (defaultMaterialSRGB^.materialTexture) :: Cubemap (Image PixelRGB8))
@@ -61,11 +60,9 @@ yDeferredLighting = do
     finalScene <- tonemapPass -< (input^.hdrCamera.hdrSensor, sceneTex, Just bloomed)
     if input^.deferredSettings.showDebugOverlay && isJust mVoxelOcclusion
       then do
-        visVoxTex <- processPassWithGlobalEnv visVoxel
-                      -< ( voxelSceneTarget
-                         , fromJust mVoxelOcclusion
-                         , input^.hdrCamera.camera
-                         ,  [VisualizeSceneVoxel] -- [VisualizePageMask] -- [VisualizeSceneVoxel]
-                         )
+        visVoxTex <- processPassWithGlobalEnv visVoxel -< ( voxelSceneTarget
+                                                          , fromJust mVoxelOcclusion
+                                                          , input^.hdrCamera.camera
+                                                          , [VisualizeSceneVoxel,VisualizePageMask] )
         debugOverlay -< (input^.hdrCamera.hdrSensor, finalScene, Just visVoxTex)
       else returnA -< finalScene
