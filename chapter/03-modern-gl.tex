@@ -1,4 +1,4 @@
-\chapter{Überblick über Modern OpenGL 4.0+}
+\chapter{Überblick über Modern OpenGL}
 \label{cha:modern-opengl}
 
 \section{Von Fixed Pipeline zu Shadern}
@@ -12,15 +12,21 @@ Schließlich konnte der bis dato wesentliche Flaschenhals und limitierende Fakto
 
 \section{Treiber Overhead}
 
-Dabei ist die OpenGL API und ihre Treiberimplementierung nicht per se ein Flaschenhals, doch erlaubt die gewachsene und rückwärtskompatibel gehaltene API unterschiedliche Pfade zum annähernd gleichen Ziel. Einige ältere Pfade bringen oft mehr Overhead mit sich, neuere erlauben die effektive Reduzierung der API Aufrufe. \ac{AZDO}, eine Initiative von AMD, nVidia und Intel, versucht seit ein bis zwei Jahren Entwickler dazu zu bewegen die schnelleren Pfade, wie das Rendern über \ac{MDI}, zu nutzen.
+Dabei ist die OpenGL API und ihre Treiberimplementierung nicht per se ein Flaschenhals, doch erlaubt die gewachsene und rückwärtskompatibel gehaltene API unterschiedliche Pfade zum annähernd gleichen Ziel. Einige ältere Pfade bringen oft mehr Overhead mit sich, neuere erlauben die effektive Reduzierung der API Aufrufe. \ac{AZDO}, eine Initiative von AMD, nVidia und Intel, versucht seit ein bis zwei Jahren die schnelleren Pfade bei den Entwicklern bekannter zu machen. Zu den sc\ac{MDI}, zu nutzen.
+
+\paragraph{\acl{MDI}} 
+\ac{MDI} beschreibt das Ausführen von mehreren Draw-Calls mit einen API Aufruf. Zuvor werden die für die Aufrufe notwendigen Parameter in OpenGL Buffer geschrieben. Die Parameter können entweder von der CPU aus bestimmt werden oder direkt von der GPU (z.B. durch View-Frustum Culling auf der GPU).
+
+\begin{figure}
+	\label{fig:opengl-pfade}
+	\includegraphics[width=\textwidth]{img/opengl-spread}
+	\caption{Unterschiede in den Pfaden \parencite[Seite 98]{Everitt2014}}
+\end{figure}
+
 
 Große Buffer (z.B. für Shader), Daten in Blöcken anstatt einzeln
-\cite{Everitt2014}
 
-\ac{MDI}
 
 \ac{DSA}
-
-\ac{AZDO}
 
 \cite{gamedevnet:glnext}
