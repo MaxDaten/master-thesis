@@ -105,7 +105,7 @@ $G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich ge
 	\label{fig:dielectric-metallic}
 	\includegraphics[width=.5\textwidth]{img/dielectric}
 	\includegraphics[width=.5\textwidth]{img/metallic}
-	\caption[Rauheit]{links: Plastik; rechts: Messing}
+	\caption[Dielektische und metallische Materialien]{links: Plastik; rechts: Messing}
 \end{figure}
 
 In der Natur lassen sich Substanzen bezüglich ihrer Leiteigenschaften in drei Kategorien einteilen: Nichtleiter (Dielektrikum oder Isolatoren), Halbleiter und Leiter (u.A. metallische Substanzen). Ohne auf die physikalischen Details einzugehen (Details in \cite[Abschnitt: Glanz und Farbe der Metalle]{Zawischa2011}) unterscheiden sich metallische und dielektrische Materialien in ihrem spekularem Reflexionsverhalten. Dielektrische Materialien besitzen ausschließlich weiße spekulare Reflexionen\footnote{unter weißem Licht} während metallische Materialien über ein Farbspektrum spekular reflektieren \parencite[Abschnitt: Specular]{Lagarde2011a}(siehe \fref{fig:dielectric-metallic}).
@@ -127,6 +127,8 @@ Als Eingangsparameter verwendet die Pipeline der Implementierung dieser Arbeit f
 \item Roughness-Textur ($m$) in Graustufen
 \item Metallic-Textur in Graustufen für die Unterscheidung von dielektrischen und metallischen Oberflächen\footnote{Entspricht einer Maske, 0 = nicht metallisch, 1 = metallisch}
 \end{itemize}
+
+\warn{Bild von Beispiel Texturen}
 
 \subsection{Renderverfahren}
 
@@ -162,7 +164,7 @@ Betrachten wir diffuse und spekulare Reflexionen als diffuse und spekulare indir
 	R = \int\limits_{\Omega} f(V,L)(N \cdot L)Env(L)\, \mathrm{d}\omega_L.
 \end{align}
 
-Für einen perfekt spiegeligen Oberflächenpunkt reduziert sich der Raumwinkel $\Omega$ auf einen Strahl, mit steigender Rauheit $m$ rauhe Oberflächen vergrößert sich der Raumwinkel bis hin zur ganzen Hemisphäre. Da die Auswertung für beliebige $m$ zur Laufzeit zu aufwändig ist, wenden wir eine entsprechende Faltung für abgestufte Werte von $m$ im Bereich $[0,1]$ auf die Umgebungstextur an, und werten die \ac{BRDF} im Integral aus. Die gefalteten Umgebungstexturen werden in den Mipmap-Stufen der Umgebungstextur gespeichert. Dies ermöglicht die Berechnung der Werte $f_{s_{indirect}}$ und $f_{d_{indirect}}$ auf Basis der gefilterten Umgebungstextur zur Laufzeit, indem wir den Rauheitswert $m$ auf die entsprechende Mipmap Stufe abbilden und den \warn{Radiance?} Wert der Umgebungstextur auswerten. 
+Für einen perfekt spiegeligen Oberflächenpunkt reduziert sich der Raumwinkel $\Omega$ auf einen Strahl, mit steigender Rauheit $m$ rauhe Oberflächen vergrößert sich der Raumwinkel bis hin zur ganzen Hemisphäre. Da die Auswertung für beliebige $m$ zur Laufzeit zu aufwändig ist, wenden wir eine entsprechende Faltung für abgestufte Werte von $m$ im Bereich $[0,1]$ auf die Umgebungstextur an, und werten die \ac{BRDF} im Integral aus. Die gefalteten Umgebungstexturen werden in den Mipmap-Stufen der Umgebungstextur gespeichert. Dies ermöglicht die Berechnung der Werte $f_{s_{indirect}}$ und $f_{d_{indirect}}$ auf Basis der gefilterten Umgebungstextur zur Laufzeit, indem wir den Rauheitswert $m$ auf die entsprechende Mipmap Stufe abbilden und den \warn{Radiance?} Wert der Umgebungstextur auswerten.
 
 \warn{Bild PMREM stufen}
 \warn{Engine-Bild diffuse ambient, spekular ambient}

@@ -1,0 +1,70 @@
+\chapter{Quellen}
+
+\section[ToneMapPass]{\texttt{ToneMapPass}}
+\label{sec:src-tonemappass}
+
+\begin{haskell}[label={lst:tonemap-pass-vollstaendig},caption={\texttt{ToneMapPass} vollständig}]
+type ToneMapInput = (HDRSensor, Texture2D PixelHDR, Maybe (Texture2D PixelHDR))
+type ToneMapOutput = (Texture2D PixelRGB8)
+type ToneMapPass = RenderPass ResIO ToneMapInput ToneMapOutput
+
+toneMap :: Resource ToneMapPass
+toneMap = do
+  emptyvao <- glResource
+  boundVertexArray $= emptyvao
+
+  pipeline <- [ $(embedShaderFile "res/glsl/sampling/drawRectangle.vert")
+              , $(embedShaderFile "res/glsl/sampling/tonemap.frag")]
+              `compileShaderPipeline` includePaths
+
+  Just (FragmentShader{..}) <- traverse fragmentUniforms =<< get (fragmentShader $ pipeline^.pipelineProgram)
+
+  outTexture <- liftIO . newIORef =<< createTexture2D GL_TEXTURE_2D (Tex2D 1 1) 1
+  fbo <- glResource
+  return $ mkStaticRenderPass $ \(sensor, sceneTex, mBloomTex) -> do
+    target <- get outTexture
+    when (target^.textureDimension /= sceneTex^.textureDimension) $ do
+      let V2 w h = sceneTex^.asRectangle.extend
+      newtarget <- (\t -> resizeTexture2D t w h) =<< get outTexture
+      outTexture $= newtarget
+      void $ attachFramebuffer fbo [mkAttachment newtarget] Nothing Nothing
+
+    boundFramebuffer RWFramebuffer $= fbo
+
+    glDisable GL_DEPTH_TEST
+    glDepthMask GL_FALSE
+    glDepthFunc GL_ALWAYS
+    glDisable GL_BLEND
+    glDisable GL_CULL_FACE
+    glFrontFace GL_CCW
+
+    boundVertexArray $= emptyvao
+    boundProgramPipeline $= pipeline^.pipelineProgram
+
+    iScene $= sceneTex
+    iBloom $= mBloomTex
+    iHdrSensor $= sensor
+    
+    glDrawArrays GL_TRIANGLES 0 3
+
+    get outTexture
+\end{haskell}
+
+\section[StateVar]{\texttt{StateVar}}
+\label{sec:src-statevar}
+
+\begin{haskell}[label={lst:statevar},caption={Definition \texttt{StateVar}}]
+data StateVar a = StateVar (IO a) (a -> IO ())
+
+($=) :: StateVar a -> a -> IO ()
+(StateVar _ setter) $= a = setter a
+
+get :: StateVar a -> IO a
+get (StateVar getter _) = getter
+\end{haskell}
+
+\begin{landscape}
+\section{Deferred PBR Pipeline Übersicht}
+\label{sec:src-pipeline}
+\lstinputlisting[language=Haskell]{src/deferred-pbr-pipeline.hs}
+\end{landscape}

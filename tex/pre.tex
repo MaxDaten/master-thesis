@@ -91,7 +91,6 @@ top=3cm, bottom=3cm]{geometry}
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{subfig}
-
 \usepackage{blindtext}
 \usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
 
@@ -118,7 +117,9 @@ top=3cm, bottom=3cm]{geometry}
     , pdfsubject={\thesisname}
     , pdfauthor={\authorname}
     }
+  \usepackage{pdflscape}
 \else
+  \usepackage{lscape}
 \fi
 
 %% Listings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
