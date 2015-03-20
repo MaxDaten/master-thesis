@@ -15,7 +15,7 @@ type ToneMapPass = RenderPass ResIO ToneMapInput ToneMapOutput
 
 Die Eingabe in unser |RenderPass| ist ein Triple aus |HDRSensor|, einer HDR Textur |Texture2D PixelHDR| und einer weiteren optionalen HDR Textur, die additiv mit der ersten gemischt wird. |HDRSensor| ist Teil einer |HDRCamera| und beinhaltet für das Tone-Mapping benötigte Größen, wie den Weiß-Punkt oder die Belichtung (Exposure). Die Ausgabe ist eine übliche RGB Textur.
 
-\begin{haskell}[label={lst:tonemap-pass-res},caption={\texttt{ToneMapPass} Resourcen Allokation},nolol,float,floatplacement=H]
+\begin{haskell}[label={lst:tonemap-pass-res},caption={\texttt{ToneMapPass} Resourcen Allokation},nolol]
 toneMap :: Resource ToneMapPass
 toneMap = do
   emptyvao <- glResource
@@ -32,9 +32,9 @@ toneMap = do
   return $ mkStaticRenderPass $ \(sensor, sceneTex, mBloomTex) -> do
 \end{haskell}
 
-In \fref{lst:tonemap-pass-res}, dem Ressourcenblock des Renderschritts, werden die Ressourcen akquiriert, die zur Ausführung der ab \fref{lst:tonemap-pass-run-resize} beschrieben Routine notwenig sind. Dazu gehören ein Vertex Array Objekt, Framebuffer Objekt und die aus dem Vertex-Shader |drawRectangle.vert| und dem Fragment-Shader |tonemap.frag| erzeugte OpenGL Pipeline\footnote{https://www.opengl.org/wiki/GLSL\_Object\#Program\_pipeline\_objects}. Die Uniform Variablen des Fragment-Shaders werden von |fragmentUniforms| als |StateVar|s gekappselt (siehe Verwendung \fref{lst:tonemap-pass-run-pipeline}). Zusätzlich erzeugen wir uns eine interne |IORef| für die Ausgabetextur. Da die verwendeten OpenGL Texturen\footnote{erzeugt mit \texttt{glTexStorage*}} in ihrer Größe unveränderlich sind, muss für neue Ausgabegrößen entsprechend auch jeweils eine neue Textur erzeugt werden (siehe \fref{lst:tonemap-pass-run-reize}). Dieses Texturobjekt speichern wir uns für den nächsten Aufruf in der |IORef|.
+In \fref{lst:tonemap-pass-res}, dem Ressourcenblock des Renderschritts, werden die Ressourcen akquiriert, die zur Ausführung der ab \fref{lst:tonemap-pass-run-resize} beschrieben Routine notwenig sind. Dazu gehören ein Vertex Array Objekt, Framebuffer Objekt und die aus dem Vertex-Shader |drawRectangle.vert| und dem Fragment-Shader |tonemap.frag| erzeugte OpenGL Pipeline\footnote{https://www.opengl.org/wiki/GLSL\_Object\#Program\_pipeline\_objects}. Die Uniform Variablen des Fragment-Shaders werden von |fragmentUniforms| als |StateVar|s gekapselt (siehe Verwendung \fref{lst:tonemap-pass-run-pipeline}). Zusätzlich erzeugen wir uns eine interne |IORef| für die Ausgabetextur. Da die verwendeten OpenGL Texturen\footnote{erzeugt mit \texttt{glTexStorage*}} in ihrer Größe unveränderlich sind, muss für neue Ausgabegrößen entsprechend auch jeweils eine neue Textur erzeugt werden (siehe \fref{lst:tonemap-pass-run-reize}). Dieses Texturobjekt speichern wir uns für den nächsten Aufruf in der |IORef|.
 
-\begin{haskell}[label={lst:tonemap-pass-run-reize},caption={[ToneMapPass Größenanpassung des Framebuffers]\texttt{ToneMapPass} Größenanpassung des Framebuffers},nolol,float,floatplacement=H]
+\begin{haskell}[label={lst:tonemap-pass-run-resize},caption={[ToneMapPass Größenanpassung des Framebuffers]\texttt{ToneMapPass} Größenanpassung des Framebuffers},nolol]
     target <- get outTexture
     when (target^.textureDimension /= sceneTex^.textureDimension) $ do
       let V2 w h = sceneTex^.asRectangle.extend
@@ -44,9 +44,9 @@ In \fref{lst:tonemap-pass-res}, dem Ressourcenblock des Renderschritts, werden d
     boundFramebuffer RWFramebuffer $= fbo
 \end{haskell}
 
-blablabla
+Gegebenenfalls wird die Ausgabetextur in ihrer Größe an die Größe der Basistextur angepasst. Da die Größenanpassung der Textur intern durch das Erzeugen einer neuen Textur durchgeführt wird, muss die neue Textur noch dem Framebuffer neu angefügt werden (\fref{lst:tonemap-pass-run-resize}).
 
-\begin{haskell}[label={lst:tonemap-pass-run-pipeline},caption={\texttt{ToneMapPass} Zuweisung an Uniform Variablen},nolol,float,floatplacement=H]
+\begin{haskell}[label={lst:tonemap-pass-run-pipeline},caption={\texttt{ToneMapPass} Zuweisung an Uniform Variablen},nolol]
     boundProgramPipeline $= pipeline^.pipelineProgram
 
     iScene $= sceneTex
@@ -54,12 +54,12 @@ blablabla
     iHdrSensor $= sensor
 \end{haskell}
 
-blablabla
+In \fref{lst:tonemap-pass-run-pipeline} wird die erzeugte Shaderpipline für diesen Renderschritt aktiviert und den in |StateVar|s gekapselten Uniform Variablen des Fragment-Shaders Werte zugewiesen.
 
-\begin{haskell}[label={lst:tonemap-pass-run-draw-and-out},caption={\texttt{ToneMapPass} Draw-Call und Textur ausgeben},nolol,float,floatplacement=H]
+\begin{haskell}[label={lst:tonemap-pass-run-draw-and-out},caption={\texttt{ToneMapPass} Draw-Call und Textur ausgeben},nolol]
     glDrawArrays GL_TRIANGLES 0 3
 
     get outTexture
 \end{haskell}
 
-blablabla
+Abschließend wird der Draw-Call abgesetzt und die nun von OpenGL gefüllte Textur als Ausgabe zurück gegeben (\fref{lst:tonemap-pass-run-draw-and-out}).
