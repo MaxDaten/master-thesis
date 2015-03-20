@@ -24,7 +24,9 @@ main = shakeArgs shakeOptions{shakeFiles=buildDir</>""} $ do
 
     buildDir </> targetName <.> outType *> \out -> do
         texs <- getDirectoryFiles "" ["//*.tex"]
+        srcs <- getDirectoryFiles "" ["/src/*.hs"]
         need texs
+        need srcs
         need [buildChapter]
         -- idiomatic not possible due whitespacing
         -- cmd "pdflatex -output-format=pdf -output-directory=" [ buildDir ] "-jobname=" [ targetName ] "main.tex"
