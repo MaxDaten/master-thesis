@@ -55,3 +55,6 @@ TBD
     + quine (einige Features sind und werden in quine integriert)
 
 ## Ideas
+
+## Duden Regeln
+* [Bindestrich Fremdwörter 41 u. 42](http://www.duden.de/sprachwissen/rechtschreibregeln/fremdwoerter#K41) 
