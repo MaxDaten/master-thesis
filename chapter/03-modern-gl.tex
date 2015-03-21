@@ -10,18 +10,9 @@ Während ursprünglich der Szene-Graph fest von OpenGL vorgegeben war und Vertic
 
 Schließlich konnte der bis dato wesentliche Flaschenhals und limitierende Faktor, der Bus zur Grafikkarte, optimal genutzt werden, und war oft nur noch in initialen oder sporadischen Befüllungsvorgängen limitierend. Wie so oft tat sich entsprechend ein neuer Engpass auf. Dieser lag nun, und liegt oft noch immer, in der Implementierung der API, dem Treiber.
 
-\section{Flexibilität}
+\section{Treiber Overhead \& Flexibilität}
 
-bla
-
-\paragraph{Seperable Shader Programs} bla
-\paragraph{Program Pipeline} bla
-
-% ### http://www.g-truc.net/post-0320.html
-
-\section{Treiber Overhead}
-
-Dabei ist die OpenGL API und ihre Treiberimplementierung nicht per se ein Flaschenhals, doch erlaubt die gewachsene und rückwärtskompatibel gehaltene API unterschiedliche Pfade zum annähernd gleichen Ziel. Einige ältere Pfade bringen oft mehr Overhead mit sich, neuere erlauben die effektive Reduzierung der API Aufrufe (siehe \fref{fig:opengl-pfade}). Die \ac{AZDO} Initiative von AMD, nVidia und Intel versucht seit ein bis zwei Jahren die schnelleren Pfade bei den Entwicklern bekannter zu machen. In einem knappen Überblick im folgenden dargestellt und in \fref{chap:haskell-modern-gl} auf ein mögliches Zusammenspiel mit Haskell genauer analysiert.
+Dabei ist die OpenGL API und ihre Treiberimplementierung nicht per se ein Flaschenhals, doch erlaubt die gewachsene und rückwärtskompatibel gehaltene API unterschiedliche Pfade zum annähernd gleichen Ziel. Einige ältere Pfade bringen oft mehr Overhead mit sich, neuere erlauben die effektive Reduzierung der API Aufrufe (siehe \fref{fig:opengl-pfade}). \warn{erhöhung Flexibilität erwähnen} Die \ac{AZDO} Initiative von AMD, nVidia und Intel versucht seit ein bis zwei Jahren die schnelleren Pfade bei den Entwicklern bekannter zu machen. In einem knappen Überblick im folgenden dargestellt und in \fref{chap:haskell-modern-gl} auf ein mögliches Zusammenspiel mit Haskell genauer analysiert.
 
 \begin{figure}
 	\includegraphics[width=\textwidth]{img/opengl-spread}
@@ -34,8 +25,13 @@ Dabei ist die OpenGL API und ihre Treiberimplementierung nicht per se ein Flasch
 
 \paragraph{\acl{DSA}} Ein weiterer Schritt zur Reduzierung des Treiber Overheads ist die \ac{DSA} Erweiterung von OpenGL \parencite{Killgard2014} die in den nächsten Jahren mit OpenGL 4.5 Einzug halten wird. Die unterschiedlichen OpenGL Objekte besitzen meistens einen eigenen internen Zustand. Soll dieser Zustand aktualisiert oder abgefragt werden, müssen die Objekte zuvor über Selektoren gebunden werden. Dies ist oft nicht nur fehleranfällig sondern sorgt für wenig intuitiven und lärmenden Quelltext. Zusätzlich erhöht es den API Overhead. 
 
-Mit \ac{DSA} fällt das Selektieren von Objekten vor dem Zugriff auf den Zustand weg und es werden neue Operationen bereit gestellt, die das entsprechende OpenGL Objekt als Parameter erwarten. So lässt sich der Zustand abfragen und manipulieren ohne dass das Objekt vorher im globalen Zustand gebunden werden muss. Dies reduziert den Overhead etwas. Im wesentlichen vereinfacht es die Programmierung mit OpenGL Objekten und erlaubt die Umsetzung von besser komponierbaren Bibliotheken \fref{chap:haskell-modern-gl}.
+Mit \ac{DSA} fällt das Selektieren von Objekten vor dem Zugriff auf den Zustand weg und es werden neue Operationen bereit gestellt, die das entsprechende OpenGL Objekt als Parameter erwarten. So lässt sich der Zustand abfragen und manipulieren ohne dass das Objekt vorher im globalen Zustand gebunden werden muss. Dies reduziert den Overhead etwas. Im wesentlichen vereinfacht es die Programmierung mit OpenGL Objekten und erlaubt die Kapselung von Funktionalitäten und erleichtert damit die Umsetzung von komponierbaren Bibliotheken \fref{chap:haskell-modern-gl}.
 
-\section{glNext}
+\paragraph{Separate Program Objects} Auch wenn \ac{DSA} erst mit OpenGL 4.5 breiten Einzug ins \textit{Core} Profil genommen hat, fand die Erweiterung |ARB_separate_program_objects| \parencite{Killgard2011} schon mit Version 4.1 ihren Weg in das \textit{Core} Profil. Zuvor mussten die unterschiedlichen Shader Stufen (Vertex, Geoemetry, Fragment usw.) in ein monolithisches Programm übersetzt werden. Mit der Erweiterung können die einzelnen Stufen unabhängig von einander übersetzt werden. Die Program-Objekte lassen sich dann, unter der Berücksichtungen der Schnittstellen, frei zu einer Programm-Pipeline zusammen setzen. Zusätzlich führt die Erweiterung \ac{DSA} für die Program-Objekte ein, so dass nicht mehr vor der Uniform-Variablenzuwesung die Shader-Objekte gebunden werden müssen. Stattdessen können die Zuweisungen direkt mit dem Program-Objekt durchgeführt werden \warn{link section: \fref{chap:haskell-modern-gl}}.
+
+
+% ### http://www.g-truc.net/post-0320.html
+
+\section{glNext / Vulkan}
 \cite{gamedevnet:glnext}
 
