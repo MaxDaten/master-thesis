@@ -44,9 +44,9 @@ Für die Konstruktion eines Mealy-Automatens mit lokalem Zustand folgt aus der f
 \begin{haskell}[label={lst:state-mealy-ctr},caption={[Konstruktion Mealy mit lokalem Zustand]Hilfsfunktion zur Konstruktion eines Mealy-Automatens mit lokalem Zustand}]
 localStateMealy :: (s -> a -> (b, s)) -> s -> Mealy a b
 localStateMealy stateTransition initState = run initState where
-	run state = Mealy (\input -> 
-  		let (output, state') = stateTransition state input 
-		in (output, stateTransition state'))
+  run state = Mealy (\input -> 
+    let (output, state') = stateTransition state input 
+    in (output, stateTransition state'))
 \end{haskell}
 
 Mit Hilfe der Funktion |localStateMealy| wird ein Mealy-Automat erzeugt, der bei jeder Ausführung die |stateTransition| Funktion auf die aktuellen Eingabe |input| und den momentanen Zustand |state| anwendet um eine Ausgabe |output| und einen neuen Zustand |state'| zu erzeugen. |output| wird in Verbindung mit dem für die nächste Ausführung neu konstruiertem Meleay-Automaten als Resultat zurück geliefert.
