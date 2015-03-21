@@ -2,31 +2,40 @@
 \label{cha:modern-opengl}
 
 \section{Von Fixed Pipeline zu Shadern}
-Mit der Abkehr von der Fixed Pipeline begann die Ära von Modern OpenGL. Seit dem ist es möglich mit eigenen Shader-Programmen, meist geschrieben in GLSL, die einzelnen Stufen der Renderpipline anzupassen. Anfangs beschränkten sich die Stufen auf den Vertex Shader und den Fragment Shader. Im Laufe der Zeit sind noch eine Vielzahl von weiteren programmierbaren Shader-Stufen hinzu gekommen.
+Mit der Abkehr von der Fixed Pipeline begann die Ära von Modern OpenGL. Seit dem ist es möglich mit eigenen Shader-Programmen, in OpenGL meist geschrieben in GLSL, die einzelnen Stufen der Renderpipline anzupassen. Anfangs beschränkten sich die Stufen auf den Vertex sowie Fragment Shader. Im Laufe der Zeit sind jedoch eine Vielzahl von weiteren programmierbaren Shader-Stufen hinzu gekommen.
 
-Die Abkehr von der Fixed Pipeline erlaubte völlig neue Konzepte im Echtzeit-Rendering. Anfangen von eigenen, anstatt fest vorgegeben, Beleuchtungsmodellen (siehe \fref{chap:pbr}) hin zu komplett Fragment Shader basierten Grafikdemos\footnote{https://www.shadertoy.com/view/Xtf3Rn} und gänzlich neuen Echzeit-Rendering Konzepten\footnote{http://iquilezles.org/www/articles/raymarchingdf/raymarchingdf.htm}.
+Die Abkehr von der Fixed Pipeline erlaubte völlig neue Konzepte im Echtzeit-Rendering, anfangen von eigenen, anstatt fest vorgegeben, Beleuchtungsmodellen (siehe \fref{chap:pbr}) hin zu ausschließlich Fragment Shader basierten Grafikdemos\footnote{https://www.shadertoy.com/view/Xtf3Rn} sowie gänzlich neuen Echzeit-Rendering Konzepten\footnote{http://iquilezles.org/www/articles/raymarchingdf/raymarchingdf.htm}.
 
-Während ursprünglich der Szene-Graph fest von OpenGL vorgegeben war und Vertices mindestens einmal jeweils und \textit{einzeln} von der CPU auf die GPU geladen werden mussten, änderte sich auch dies fundamental. Mit dem Ende der Fixed Pipeline wurden auch Buffer-Objekte immer wichtiger, so dass ganze Speicherbereiche direkt befüllen oder manipuliert werden konnten. Der Overhead Vertices zur Grafikkarte zu schicken reduzierte sich entsprechend deutlich. Inzwischen gibt es eine Vielzahl von unterschiedlichen Buffer-Typen für unterschiedliche Zwecke, bis hin zu generischen Buffern, die auschließlich von Compute Shadern befüllt werden können, ohne dass deren Daten jemals von der CPU über den Bus geschickt werden mussten.
+Während ursprünglich der Szene-Graph fest von OpenGL vorgegeben war und Vertices mindestens einmal jeweils und \textit{einzeln} von der CPU auf die GPU geladen werden mussten, änderte sich auch dies fundamental. Mit dem Ende der Fixed Pipeline wurden auch Buffer-Objekte immer wichtiger, so dass sich ganze Speicherbereiche direkt befüllen oder manipuliert ließen. Der Overhead, Vertices zur Grafikkarte zu schicken, reduzierte sich entsprechend deutlich. Inzwischen gibt es eine Vielzahl von unterschiedlichen Buffer-Typen für unterschiedliche Zwecke, die es sogar erlauben vollständig von Compute Shadern befüllt werden zu können.
 
 Schließlich konnte der bis dato wesentliche Flaschenhals und limitierende Faktor, der Bus zur Grafikkarte, optimal genutzt werden, und war oft nur noch in initialen oder sporadischen Befüllungsvorgängen limitierend. Wie so oft tat sich entsprechend ein neuer Engpass auf. Dieser lag nun, und liegt oft noch immer, in der Implementierung der API, dem Treiber.
 
+\section{Flexibilität}
+
+bla
+
+\paragraph{Seperable Shader Programs} bla
+\paragraph{Program Pipeline} bla
+
+% ### http://www.g-truc.net/post-0320.html
+
 \section{Treiber Overhead}
 
-Dabei ist die OpenGL API und ihre Treiberimplementierung nicht per se ein Flaschenhals, doch erlaubt die gewachsene und rückwärtskompatibel gehaltene API unterschiedliche Pfade zum annähernd gleichen Ziel. Einige ältere Pfade bringen oft mehr Overhead mit sich, neuere erlauben die effektive Reduzierung der API Aufrufe. \ac{AZDO}, eine Initiative von AMD, nVidia und Intel, versucht seit ein bis zwei Jahren die schnelleren Pfade bei den Entwicklern bekannter zu machen. Zu den sc\ac{MDI}, zu nutzen.
-
-\paragraph{\acl{MDI}} 
-\ac{MDI} beschreibt das Ausführen von mehreren Draw-Calls mit einen API Aufruf. Zuvor werden die für die Aufrufe notwendigen Parameter in OpenGL Buffer geschrieben. Die Parameter können entweder von der CPU aus bestimmt werden oder direkt von der GPU (z.B. durch View-Frustum Culling auf der GPU).
+Dabei ist die OpenGL API und ihre Treiberimplementierung nicht per se ein Flaschenhals, doch erlaubt die gewachsene und rückwärtskompatibel gehaltene API unterschiedliche Pfade zum annähernd gleichen Ziel. Einige ältere Pfade bringen oft mehr Overhead mit sich, neuere erlauben die effektive Reduzierung der API Aufrufe (siehe \fref{fig:opengl-pfade}). Die \ac{AZDO} Initiative von AMD, nVidia und Intel versucht seit ein bis zwei Jahren die schnelleren Pfade bei den Entwicklern bekannter zu machen. In einem knappen Überblick im folgenden dargestellt und in \fref{chap:haskell-modern-gl} auf ein mögliches Zusammenspiel mit Haskell genauer analysiert.
 
 \begin{figure}
-	\label{fig:opengl-pfade}
 	\includegraphics[width=\textwidth]{img/opengl-spread}
-	\caption{Unterschiede in den Pfaden \parencite[Seite 98]{Everitt2014}}
+	\caption[Unterschiede in den OpenGL Renderpfaden]{Unterschiede in den OpenGL Renderpfaden \parencite[Seite 98]{Everitt2014}}
+	\label{fig:opengl-pfade}
 \end{figure}
 
+\paragraph{\acl{MDI}} 
+\ac{MDI} beschreibt das Ausführen von mehreren Draw-Calls mit einen API Aufruf. Anstatt für jedes Objekt die notwendigen Aufrufparameter des Draw-Calls separat anzugeben, werden die für alle Objekte notwendigen Parameter in einem OpenGL Buffer (\textit{Command Buffer}) zusammengefasst. Der einzelne indirekte Draw-Call entspricht im wesentlichen nur noch einem Aufruf mit einem Zeiger auf den Inhalt des Command Buffers. Die Parameter können entweder von der CPU aus bestimmt werden oder direkt auf der GPU (z.B. durch View-Frustum Culling auf der GPU). Das Konzept des indirekten Renderns fasst das indexbasierte Rendern und instanziiertes Rendern zusammen\footnote{https://www.opengl.org/wiki/Vertex\_Rendering\#Indirect\_rendering}. Der Command-Buffer in Verbindung mit dem Draw-Call beschreibt ausschließlich die Gestalt des für allen Objekte gemeinsamen \textit{Vertex}-Buffers. Da nun für jedes Objekt kein seperater Draw-Call ausgeführt wird, können auch keine individuellen Daten per Object (zum Beispiel Transformationsmatrizen) an die Shader übergeben werden. Das macht es erforderlich entsprechende Daten gebündelt in einem Array oder \ac{SSBO} dem Shader zu übergeben. Der indizierte Zugriff kann im Shader dann über eingebaute Variablen erfolgen. Dies reduziert zusätzlich den Overhead.
 
-Große Buffer (z.B. für Shader), Daten in Blöcken anstatt einzeln
+\paragraph{\acl{DSA}} Ein weiterer Schritt zur Reduzierung des Treiber Overheads ist die \ac{DSA} Erweiterung von OpenGL \parencite{Killgard2014} die in den nächsten Jahren mit OpenGL 4.5 Einzug halten wird. Die unterschiedlichen OpenGL Objekte besitzen meistens einen eigenen internen Zustand. Soll dieser Zustand aktualisiert oder abgefragt werden, müssen die Objekte zuvor über Selektoren gebunden werden. Dies ist oft nicht nur fehleranfällig sondern sorgt für wenig intuitiven und lärmenden Quelltext. Zusätzlich erhöht es den API Overhead. 
 
+Mit \ac{DSA} fällt das Selektieren von Objekten vor dem Zugriff auf den Zustand weg und es werden neue Operationen bereit gestellt, die das entsprechende OpenGL Objekt als Parameter erwarten. So lässt sich der Zustand abfragen und manipulieren ohne dass das Objekt vorher im globalen Zustand gebunden werden muss. Dies reduziert den Overhead etwas. Im wesentlichen vereinfacht es die Programmierung mit OpenGL Objekten und erlaubt die Umsetzung von besser komponierbaren Bibliotheken \fref{chap:haskell-modern-gl}.
 
-\ac{DSA}
-
+\section{glNext}
 \cite{gamedevnet:glnext}
+
