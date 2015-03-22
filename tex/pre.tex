@@ -1,9 +1,11 @@
 \documentclass
-    [ BCOR=10mm
+    [ ngerman
+    , BCOR=10mm
     , openright
     , parskip=half
-    % , 12pt
-    , draft
+    , 11pt
+    , oneside
+    % , draft
     ]{scrreprt}
 
 \usepackage{scrhack}
@@ -31,6 +33,8 @@
 \usepackage{yhmath}
 \usepackage{amsmath}
 \usepackage{subfig}
+\usepackage{wrapfig}
+\usepackage{picins}
 \usepackage{blindtext}
 \usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
 
@@ -38,6 +42,7 @@
 \graphicspath{{./img/}}
 
 \usepackage[german,vario]{fancyref}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 %% http://www.schlosser.info/in-latex-mit-varioreffancyref-automatisch-ab-seite-statt-auf-seite-setzen/
 \makeatletter
@@ -111,7 +116,7 @@
 \renewcommand{\lstlistlistingname}{Quelltextverzeichnis}
 \renewcommand{\lstlistingname}{Quelltext}
 \lstset
-  { basicstyle=\smaller\ttfamily\footnotesize
+  { basicstyle=\tiny\ttfamily\footnotesize
   , breaklines=true
   , captionpos=b
   , showstringspaces=false
@@ -127,7 +132,13 @@
     \noindent
     \minipage{\linewidth}
     \vspace{0.5\baselineskip}
-    \lstset{language=Haskell,tabsize=2,frame=single,#1}
+    \lstset
+        { basicstyle=\footnotesize\ttfamily
+        , language=Haskell
+        , tabsize=2
+        , frame=single
+        , #1
+        }
 }{\endminipage}
 
 \newcommand{\haskellinput}[2][]{
@@ -145,6 +156,6 @@
 
 \newcommand{\mylisting}[2][]{
 \begin{spacing}{1}
-\lstinputlisting[frame=lines,aboveskip=2\bigskipamount,#1]{#2}
+\lstinputlisting[basicstyle=\footnotesize\ttfamily, frame=lines,tabsize=2,aboveskip=2\bigskipamount,#1]{#2}
 \end{spacing}
 }

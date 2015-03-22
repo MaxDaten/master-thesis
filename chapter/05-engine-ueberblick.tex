@@ -1,11 +1,13 @@
-\chapter{Überblick über die Engine}
+\chapter{Überblick über den Kern der Engine}
 \label{chap:ueberblick-pipeline}
-
-\section{Das Rendersystem}
 
 \warn{Wir beschreiben den sinn und zweck des Renderystems hier. Das Rendersystem ist der Kern der Renderkomponente der Engine. Die Aufgabe des Rendersystems ist eine Eingabe zu einem Bild darzustellen... Im Konkreten Fall erhält das RenderSystem eine Szenenbeschreibung als Eingabe und führt auf Basis dieser alle definierten Schritte um die Szene in der gewünschten Darstellung als Bild zu synthetisieren.}
 
-\subsection{Mealy als Formale Basis}
+\section{Das Rendersystem}
+
+bla
+
+\subsection{Mealy als formale Basis}
 
 Das Rendersystem basiert auf dem Konzept eines Mealy Automatens \parencite{Mealy1955}. Ein Mealy Automat ist \ac{FST}, ein spezieller endlicher Automat, der nicht nur seine Eingabesprache vom Eingabeband akzeptiert sondern auch eine Ausgabe auf einem Ausgabeband erzeugt. Ein Transduktor übersetzt die Eingabesprache in eine Ausgabesprache. Bei dem Mealy Automaten als spezielle Form eines \ac{FST} definiert sich die Ausgabe über den momentanen Zustand und die Eingabe auf diesem Zustand. Formal lässt sich ein Mealy Automat $\mathbfcal{M}$ als 6-Tupel wie folgt definieren:
 
@@ -25,7 +27,7 @@ Das Rendersystem basiert auf dem Konzept eines Mealy Automatens \parencite{Mealy
 
 Die Definition ließe sich noch um die Menge der finalen Endzustände $F \subseteq Q$ hin zu einem 7-Tupel erweitern. In unserem Konzept verzichten wir auf definierte Endzustände, da wir prinzipiell jede Eingabe akzeptieren. Nicht akzpetierbare Eingaben stellen wir als externe Ausnahmefälle (Exceptions) dar. Ein vereinfachtes Beispiel für eine nicht akzeptierbare Eingabe ist die Eingabe $\bot$, nach der unser gesamtes System in einen undefinierten Zustand $\bot$ wechselt.
 
-\subsubsection{Abstrakte Definition in Haskell}
+\paragraph{Abstrakte Definition in Haskell}
 \label{sec:abstrakte-definition-haskell}
 
 Ein Mealy Automat lässt sich in Haskell abstrakt wie in \fref{lst:haskell-mealy} definieren. {\ttfamily a} beschreibt die Eingabe als Äquivalent zum Eingabealphabet $\Sigma$ der formalen Definition und analog beschreibt |b| die Ausgabe als Äquivalent zum Ausgabealphabet $\Omega$. Die Zustandsübergangsfunktion $\delta$ und die Ausgabefunktion $\lambda$ ergibt sich aus der jeweils konkreten Implementierung des Mealy. Die Menge der Zustände $Q$ wird jeweils von der konkreten Mealy Implementierung gekapselt wie in \fref{lst:state-mealy-beispiel} anhand eines Beispiels veranschaulicht. Aber es lässt sich bereits feststellen, dass die gewählte Form des Mealy Automatens weit mehr als nur ein endlicher Automat ist, da die Mächtigkeit des Ein- und Ausgabealphabets unendlich sein kann, wie dies zum Beispiel bei der Menge der natürlichen Zahlen (abzählbar unendlich) der Fall ist. Daraus folgt zusätzlich, dass auch die Menge der Zustände unendlich sein kann (Zählmaschine).

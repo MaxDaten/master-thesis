@@ -53,18 +53,18 @@ toneMap = do
 \section[StateVar]{\texttt{StateVar}}
 \label{sec:src-statevar}
 
-\begin{haskell}[label={lst:statevar},caption={[Definition StateVar]Definition \texttt{StateVar}}]
-data StateVar a = StateVar (IO a) (a -> IO ())
+\haskellcode[caption={[Definition StateVar]Definition \texttt{StateVar}},firstline=4]{src/statevar.hs}
 
-($=) :: StateVar a -> a -> IO ()
-(StateVar _ setter) $= a = setter a
-
-get :: StateVar a -> IO a
-get (StateVar getter _) = getter
-\end{haskell}
+\clearpage
+\begin{landscape}
+\section{Shader Interface}
+\haskellcode[caption={Shader-Schnittstelle},label={lst:uniform-beispiel}]{src/uniform-beispiel.hs}
+\end{landscape}
 
 \begin{landscape}
 \section{Deferred PBR Pipeline Übersicht}
 \label{sec:src-pipeline}
-\lstinputlisting[language=Haskell,caption={Deferred PBR Pipeline Übersicht}]{src/deferred-pbr-pipeline.hs}
+\haskellcode[caption={Deferred PBR Pipeline Übersicht}]{src/deferred-pbr-pipeline.hs}
 \end{landscape}
+
+

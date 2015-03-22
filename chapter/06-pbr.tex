@@ -168,7 +168,7 @@ Betrachten wir diffuse und spekulare Reflexionen als diffuse und spekulare indir
 
 Für einen perfekt spiegeligen Oberflächenpunkt reduziert sich der Raumwinkel $\Omega$ auf einen Strahl, mit steigender Rauheit $m$ rauhe Oberflächen vergrößert sich der Raumwinkel bis hin zur ganzen Hemisphäre. Da die Auswertung für beliebige $m$ zur Laufzeit zu aufwändig ist, wenden wir eine entsprechende Faltung für abgestufte Werte von $m$ im Bereich $[0,1]$ auf die Umgebungstextur an, und werten die \ac{BRDF} im Integral aus. Die gefalteten Umgebungstexturen werden in den Mipmap-Stufen der Umgebungstextur gespeichert. Dies ermöglicht die Berechnung der Werte $f_{s_{indirect}}$ und $f_{d_{indirect}}$ auf Basis der gefilterten Umgebungstextur zur Laufzeit, indem wir den Rauheitswert $m$ auf die entsprechende Mipmap Stufe abbilden und den \warn{Radiance?} Wert der Umgebungstextur auswerten.
 
-\warn{Bild PMREM stufen}
+\warn{Bild PMREM Stufen}
 \warn{Engine-Bild diffuse ambient, spekular ambient}
 
 \section{Wo wird es eingesetzt?}
