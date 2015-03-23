@@ -6,15 +6,11 @@ Auf Grund des Umfangs des Projekts ist es nicht möglich einen all umfassenden �
 \section{Das Rendersystem}
 
 % anforderung
-Moderne Renderverfahren (wie zum Beispiel \warn{Deferred Rendering}) bestehen aus mehreren einzelnen Renderschritten. In der Regel erzeugt jeder Renderschritt Daten, oft in Form von Texturen oder Buffern, die dann im fortlaufenden Verfahren als Basis für weitere Renderschritte dienen.
-% Netzwerk
+Moderne Renderverfahren, wie zum Beispiel \warn{Deferred Rendering}, bestehen aus mehreren einzelnen Renderschritten. In der Regel erzeugt jeder Renderschritt Daten, oft in Form von Texturen oder Buffern, die dann den nachfolgenden Renderschritten als Basis für weitere Berechnungen dienen. Daraus ergibt sich ein Abhängigkeitsnetzwerk aus Eingabe und Ausgaben einzelner Renderschritte. Auch kann ein Renderschritt wiederum aus kleineren Renderschritten zusammengesetzt sein.
 
-% Ziel
-% - äußere logik komponierbar / flexibilät
-% - vermeidung von Implementierungdetails in der äußeren logik
-% - implementierungen nah an opengl (verzicht auf abstraktionsschicht)
+Bei der Entwicklung der Renderkomponente wurde das Ziel verfolgt die einzelen Renderschritte möglichst komponierbar anzuwenden sind. Die einzelen Renderschritte sollen die Möglichkeit erhalten ihren inneren Zustand selbst zu verwalten und Implementierungsdetails zu verbergen. Auf Kompositionsebene sollen Implementierungsdetails möglichst vermeidbar sein.
 
-Die Konzeption des Rendersystem wurde mit dem Ziel verfolgt die einzelnen Renderschritte eines modernen verzögerten Rendersystems 
+Die Konzeption des Renderystems startet mit einer formal abstrakten Definition auf Basis eines Mealy Automatens. Die formale Definition wird mit weiteren abstrakten funktionalen Konzepten schrittweise erweitert. Kleine praxisnahe Beispiele demonstrieren, wie die Erweiterungen die Flexibilität und Komponierbarkeit der Renderschritte erhöhen.
 
 \subsection{Mealy als formale Basis}
 
