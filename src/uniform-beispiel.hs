@@ -1,9 +1,16 @@
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RecordWildCards #-}
 import StateVar
 import Data.Word
+import Control.Applicative
+import Control.Monad
+import Misc (str, getCurrentTime)
 
+-- * GLSL Uniforms
 type TextureUnit = Int
-type GLId = Int
-data Program = Program GLId
+type GLId 			 = Int
+type UniformName = String
+data Program 		 = Program GLId
 
 -- | any GLSL 'uniform' variable
 type UniformVar = SettableStateVar
@@ -11,6 +18,7 @@ type UniformVar = SettableStateVar
 data UniformSampler dim px = UniformSampler TextureUnit (UniformVar (Maybe (Texture dim px)))
 
 data Tex2D
+data PixelRGBA
 type UniformSampler2D = UniformSampler Tex2D
 
 -- | Captures the OpenGL object identifier
@@ -27,41 +35,64 @@ data Material dim px = Material
 	, texture :: Texture dim px
 	}
 
-{- Example GLSL Fragment Shader Code
+createMaterial :: Color -> FilePath -> IO (Material dim px)
+createMaterial = undefined
 
+-- | GL Program Handle
+materialUniform :: Program -> TextureUnit -> UniformName -> IO (UniformVar (Material dim px))
+materialUniform prog unit varname = do
+	colorVar 		<- colorUniform prog (varname ++ "Color")
+	textureVar 	<- textureUniform prog unit (varname ++ "Texture")
+	return $ SettableStateVar $ \mat -> do
+		colorVar   $= color mat
+		textureVar $= Just (texture mat)
+
+colorUniform :: Program -> UniformName -> IO (UniformVar Color)
+colorUniform = undefined -- see implementation "Yage.Uniform.Material" ~5 lines of code
+
+textureUniform :: Program -> TextureUnit -> UniformName -> IO (UniformVar (Maybe (Texture dim px)))
+textureUniform = undefined -- see implementation "Yage.Uniform.Material" ~5 lines of code
+
+intUniform :: Program -> UniformName -> IO (UniformVar Int)
+intUniform = undefined
+
+-- * Shader Compilation
+data ShaderType = VertexShader | FragmentShader
+
+compileProgram :: String -> ShaderType -> IO Program
+compileProgram = undefined
+
+-- * Application
+
+-- | Example GLSL Fragment Shader Code
+fragmentSrc :: String
+fragmentSrc = [str|
 uniform vec4 			MaterialColor;
 uniform int       Time;
 uniform sampler2D MaterialTexture;
-
 in 			vec2 			inUV; // from one of the previous stages (e.g. vertex shader)
+out 		vec4 			fragColor;
+void main () { fragColor = MaterialColor * texture(MaterialTexture, inUV); }
+|]
 
-out vec4 fragColor;
-
-void main ()
-{
-	fragColor = MaterialColor * texture(MaterialTexture, inUV);
-}
--}
-
--- | GL Program Handle
-materialUniform :: Program -> String -> IO (UniformVar (Material dim px))
-materialUniform prog varname = do
-	colorVar 		<- colorUniform prog (varname ++ "Color")
-	textureVar 	<- textureUniform prog (varname ++ "Texture")
-	return $ SettableStateVar $ \material -> do
-		colorVar   $= color material
-		textureVar $= Just (texture material)
-
-colorUniform :: Program -> String -> IO (UniformVar Color)
-colorUniform prog varname = undefined -- see implementation "Yage.Uniform.Material" ~5 lines of code
-
-textureUniform :: Program -> String -> IO (UniformVar (Maybe (Texture dim px)))
-textureUniform prog varname = undefined -- see implementation "Yage.Uniform.Material" ~5 lines of code
-
----------------------
-
-data FragmentShader = FragmentShaderInterface
-	{ material :: UniformVar (Material dim px) 
-	, time     :: UniformVar Integer
+data FragmentShaderInterface = FragmentShaderInterface
+	{ uMaterial :: UniformVar (Material Tex2D PixelRGBA) 
+	, uTime     :: UniformVar Int
 	}
 
+fragmentInterface :: Program -> IO FragmentShaderInterface
+fragmentInterface prog = FragmentShaderInterface 
+	<$> materialUniform prog 1 "Material"
+	<*> intUniform prog "Time"
+
+setFragmentShaderUniforms :: IO ()
+setFragmentShaderUniforms = do
+	-- init
+	FragmentShaderInterface{..} <- fragmentInterface =<< compileProgram fragmentSrc FragmentShader
+	mat 				<- createMaterial (Color 255 255 0 255) "path/to/texture.png"
+	
+	-- some looping
+	forever $ do
+		currentTime <- getCurrentTime
+		uTime 		 $= currentTime
+		uMaterial  $= mat
