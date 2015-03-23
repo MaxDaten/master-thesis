@@ -1,11 +1,20 @@
 \chapter{Überblick über den Kern der Engine}
 \label{chap:ueberblick-pipeline}
 
-\warn{Wir beschreiben den sinn und zweck des Renderystems hier. Das Rendersystem ist der Kern der Renderkomponente der Engine. Die Aufgabe des Rendersystems ist eine Eingabe zu einem Bild darzustellen... Im Konkreten Fall erhält das RenderSystem eine Szenenbeschreibung als Eingabe und führt auf Basis dieser alle definierten Schritte um die Szene in der gewünschten Darstellung als Bild zu synthetisieren.}
+Auf Grund des Umfangs des Projekts ist es nicht möglich einen all umfassenden Überblick über die Engine zu geben. Die Betrachtung im Detail beschränk sich im Folgenden auf die entwickelte Renderkomponente der Engine und die dahinter stehenden Konzepte und Überlegungen.
 
 \section{Das Rendersystem}
 
-bla
+% anforderung
+Moderne Renderverfahren (wie zum Beispiel \warn{Deferred Rendering}) bestehen aus mehreren einzelnen Renderschritten. In der Regel erzeugt jeder Renderschritt Daten, oft in Form von Texturen oder Buffern, die dann im fortlaufenden Verfahren als Basis für weitere Renderschritte dienen.
+% Netzwerk
+
+% Ziel
+% - äußere logik komponierbar / flexibilät
+% - vermeidung von Implementierungdetails in der äußeren logik
+% - implementierungen nah an opengl (verzicht auf abstraktionsschicht)
+
+Die Konzeption des Rendersystem wurde mit dem Ziel verfolgt die einzelnen Renderschritte eines modernen verzögerten Rendersystems 
 
 \subsection{Mealy als formale Basis}
 
