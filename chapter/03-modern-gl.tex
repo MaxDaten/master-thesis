@@ -32,6 +32,17 @@ Mit \ac{DSA} fällt das Selektieren von Objekten vor dem Zugriff auf den Zustand
 
 % ### http://www.g-truc.net/post-0320.html
 
-\section{glNext / Vulkan}
-\cite{gamedevnet:glnext}
+\section{Vulkan}
+
+\textit{Vulkan} (vormals \textit{glNext}) und \textit{SPIR-V} ist der nächste Schritt (oder Versuch) der \textit{Khronos Group} sich der über Jahrzente gesammelten Altlasten der OpenGL-API zu entledigen. Vulkan wurde im März 2015 als frischer Neustart der Grafik-API angekündigt. Noch ist die Spezifikation am entstehen, aber das erklärte Ziel von Vulkan ist die Reduzierung des CPU Overheads, die breitere Ermöglichung von Multi-Threading und die Abschaffung des impliziten OpenGL Context hin zu einer expliziten API. Neben \textit{Vulkan} wurde \textit{SPIR-V} als eine neue Shader \ac{IL} bzw. Zwischensprache vorgestellt. SPIR-V soll neue Freiräume schaffen eigene Shader-Sprachen sowie Analsyse- und Debuggingtools zu entwickeln\parencite{Olson2015}.
+
+Die Gründe für einen harten Schnitt in der API sind auf zwei Seiten zu suchen. Zum einen ist für den API-Anwender die OpenGL-API wie bereits erwähnt voller Fallstricke. Auf der anderen Seite sind die aktuellen OpenGL Treiber zu einem großen Flickenteppich verkommen. Viele Treiberimplementierungen sind voller Weichen und und Spezialfällen, um bekannte Fehler in der Anwendung der API abzufangen oder potenziell langsame Pfade in schnellere Pfade zu übersetzen \parencite{gamedevnet:glnext}.
+
+\begin{figure}
+	\label{fig:microfacet}
+	\includegraphics[width=.5\textwidth]{Vulkan_Mar15}
+	\includegraphics[width=.5\textwidth]{SPIR_Nov14}
+	\caption{Vulkan \& SPIR-V}
+\end{figure}
+
 
