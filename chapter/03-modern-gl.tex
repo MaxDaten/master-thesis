@@ -4,6 +4,12 @@
 \section{Von Fixed Pipeline zu Shadern}
 Mit der Abkehr von der Fixed Pipeline begann die Ära von Modern OpenGL. Seit dem ist es möglich mit eigenen Shader-Programmen, in OpenGL meist geschrieben in GLSL, die einzelnen Stufen der Renderpipline anzupassen. Anfangs beschränkten sich die Stufen auf den Vertex sowie Fragment Shader. Im Laufe der Zeit sind jedoch eine Vielzahl von weiteren programmierbaren Shader-Stufen hinzu gekommen.
 
+\begin{wrapfigure}{r}{0.5\linewidth}
+\begin{centering}
+	\includegraphics[width=.5\textwidth]{OpenGL_Nov14}
+\end{centering}
+\end{wrapfigure}
+
 Die Abkehr von der Fixed Pipeline erlaubte völlig neue Konzepte im Echtzeit-Rendering, anfangen von eigenen, anstatt fest vorgegeben, Beleuchtungsmodellen (siehe \fref{chap:pbr}) hin zu ausschließlich Fragment Shader basierten Grafikdemos\footnote{https://www.shadertoy.com/view/Xtf3Rn} sowie gänzlich neuen Echzeit-Rendering Konzepten\footnote{http://iquilezles.org/www/articles/raymarchingdf/raymarchingdf.htm}.
 
 Während ursprünglich der Szene-Graph fest von OpenGL vorgegeben war und Vertices mindestens einmal jeweils und \textit{einzeln} von der CPU auf die GPU geladen werden mussten, änderte sich auch dies fundamental. Mit dem Ende der Fixed Pipeline wurden auch Buffer-Objekte immer wichtiger, so dass sich ganze Speicherbereiche direkt befüllen oder manipuliert ließen. Der Overhead, Vertices zur Grafikkarte zu schicken, reduzierte sich entsprechend deutlich. Inzwischen gibt es eine Vielzahl von unterschiedlichen Buffer-Typen für unterschiedliche Zwecke, die es sogar erlauben vollständig von Compute Shadern befüllt werden zu können.
@@ -38,11 +44,10 @@ Mit \ac{DSA} fällt das Selektieren von Objekten vor dem Zugriff auf den Zustand
 
 Die Gründe für einen harten Schnitt in der API sind auf zwei Seiten zu suchen. Zum einen ist für den API-Anwender die OpenGL-API wie bereits erwähnt voller Fallstricke. Auf der anderen Seite sind die aktuellen OpenGL Treiber zu einem großen Flickenteppich verkommen. Viele Treiberimplementierungen sind voller Weichen und und Spezialfällen, um bekannte Fehler in der Anwendung der API abzufangen oder potenziell langsame Pfade in schnellere Pfade zu übersetzen \parencite{gamedevnet:glnext}.
 
-\begin{figure}
-	\label{fig:microfacet}
-	\includegraphics[width=.5\textwidth]{Vulkan_Mar15}
-	\includegraphics[width=.5\textwidth]{SPIR_Nov14}
-	\caption{Vulkan \& SPIR-V}
-\end{figure}
+\begin{figure*}
+\centering
+	\includegraphics[height=2cm]{Vulkan_Mar15}
+	\includegraphics[height=2cm]{SPIR_Nov14}
+\end{figure*}
 
 
