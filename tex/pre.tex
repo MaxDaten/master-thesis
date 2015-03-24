@@ -33,10 +33,11 @@
 \usepackage[german]{algorithm2e}
 \usepackage{yhmath}
 \usepackage{amsmath}
-\usepackage{subcaption}
+\usepackage{caption}        % customize captions
+\usepackage{subcaption}     % captions for sub figures
 \usepackage{wrapfig}
 \usepackage{blindtext}
-\usepackage{epigraph} % nice quotes
+\usepackage{epigraph}       % nice quotes
 \usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
 
 \usepackage{graphicx}
@@ -114,15 +115,22 @@
 \usepackage{listings}
 \usepackage{sourcecodepro} % now the default typewriter font
 \KOMAoptions{listof=totoc} % necessary because of scrhack
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{black!50}{\parbox{\linewidth}{#1#2#3}}}
+\captionsetup{format=listing,labelfont=white,textfont=white,font=bf}
 \renewcommand{\lstlistlistingname}{Quelltextverzeichnis}
 \renewcommand{\lstlistingname}{Quelltext}
 \lstset
   { basicstyle=\tiny\ttfamily\footnotesize
   , breaklines=true
-  , captionpos=b
+  , captionpos=t
   , showstringspaces=false
-  , keywordstyle=\color{blue}
-  , backgroundcolor=\color{black!3}
+  , rulecolor=\color{black!50}
+  , commentstyle=\scriptsize
+  , numbers=left
+  , frameshape={}{n}{n}{YnY}
+  % , keywordstyle=\color{blue}
+  % , backgroundcolor=\color{black!3}
   }
 
 % \lstnewenvironment{inlinehaskell}
@@ -137,7 +145,6 @@
         { basicstyle=\footnotesize\ttfamily
         , language=Haskell
         , tabsize=2
-        , frame=single
         , #1
         }
 }{\endminipage}
