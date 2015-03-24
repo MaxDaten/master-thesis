@@ -24,18 +24,18 @@ Damit die physikalischen Eigenschaften der Oberflächen möglichst realistisch a
 \begin{align}
 	\label{eq:brdf-dekonstruiert}
 	% \caption{Dekonstruierte BRDF}
-	f(\mathbf V,\mathbf L) &= f_d(\mathbf V,\mathbf L) + f_s(\mathbf V,\mathbf L)
+	f(\vV,\vL) &= f_d(\vV,\vL) + f_s(\vV,\vL)
 \end{align}
 
 \begin{table}
 \centering
 \begin{tabular}{c l}
 \hline
-	$\mathbf V$ & Richtungsvektor zum Betrachter \\
-	$\mathbf L$ & Richtungsvektor zur Lichtquelle \\
-	$\mathbf N$ & Oberflächennormale \\
-	$\mathbf H$ & Winkelhalbierende ($\frac{V + L}{\|V + L\|}$) \\
-	$\mathbf R$ & Reflexion von $L$ an $N$ \\
+	$\vV$ & Richtungsvektor zum Betrachter \\
+	$\vL$ & Richtungsvektor zur Lichtquelle \\
+	$\vN$ & Oberflächennormale \\
+	$\vH$ & Winkelhalbierende ($\frac{V + L}{\|V + L\|}$) \\
+	$\vR$ & Reflexion von $L$ an $N$ \\
 	$m$ 	 	& Rauheitswert der Oberfläche (\textit{Roughness}) \\
  	$f$ 		& \textit{BRDF} \\
 	$f_d$ 		& Diffuser Term der \textit{BRDF} \\
@@ -66,38 +66,38 @@ Eines von ihnen ist das Cook-Torrance Modell \parencite{Cook1981}, welches mit d
 \begin{align}
 	\label{eq:cook-torrance-model}
 	% \caption{Cook-Torrance Illumination}
-	f_s(\mathbf V,\mathbf L) = \frac{\mathcal{F}(\mathbf V,\mathbf L)D(\mathbf V,\mathbf L)G(\mathbf V,\mathbf L)}{4(\mathbf N \cdot \mathbf V)(\mathbf N \cdot \mathbf L)}
+	f_s(\vV,\vL) = \frac{\mathcal{F}(\vV,\vL)D(\vV,\vL)G(\vV,\vL)}{4(\vN \cdot \vV)(\vN \cdot \vL)}
 \end{align}
 
-Der spekulare Beitrag $f_s$ wird durch die drei Faktoren bestimmt: Dem Fresnel $\mathcal{F}$ Term, der Microfacet Richtungsverteilung, $\mathbf D$ und der geometrischen Abschwächung (Geometrical Attenuation) $\mathbf G$. Die Auswahl der konkreten Approximationen folgt der aus \cite[Seite 3]{Karis2013}.
+Der spekulare Beitrag $f_s$ wird durch die drei Faktoren bestimmt: Dem Fresnel $\mathcal{F}$ Term, der Microfacet Richtungsverteilung, $D$ und der geometrischen Abschwächung (Geometrical Attenuation) $G$. Die Auswahl der konkreten Approximationen folgt der aus \cite[Seite 3]{Karis2013}.
 
 \subsubsection[Fresnel]{Fresnel $\mathcal{F}$}
-Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen stärker reflektieren, umso flacher der Betrachtungswinkel wird. Als Approximation wurde die \textit{Schlick Approximation} \parencite{Schlick1994} gewählt. In \cite{Lagarde2012} wurde eine weitere Modifikation vorgeschlagen um den Berechnungsaufwand zu reduzieren. Diese findet hier ebenso ihre Anwendung. $F_0$ beschreibt die Reflektanz für parallel zur Normale $\mathbf N$ einfallendes Licht.
+Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen stärker reflektieren, umso flacher der Betrachtungswinkel wird. Als Approximation wurde die \textit{Schlick Approximation} \parencite{Schlick1994} gewählt. In \cite{Lagarde2012} wurde eine weitere Modifikation vorgeschlagen um den Berechnungsaufwand zu reduzieren. Diese findet hier ebenso ihre Anwendung. $F_0$ beschreibt die Reflektanz für parallel zur Normale $\vN$ einfallendes Licht.
 
 \begin{align}
 	\label{eq:fresnel-schlick}
-	\mathcal F(\mathbf V,\mathbf L) = F_0  + (1 - F_0) 2^{(-5.55473 (\mathbf V \cdot \mathbf H) - 6.98316 (\mathbf V \cdot \mathbf H))}
+	\mathcal F(\vV,\vL) = F_0  + (1 - F_0) 2^{(-5.55473 (\vV \cdot \vH) - 6.98316 (\vV \cdot \vH))}
 \end{align}
 
 
 \subsubsection[Facetten Normalverteilung]{Facetten Normalverteilung $D$} 
-$D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets entsprechend der \warn{Winkelhalbierenden?} $H$. Die Microfacets von glatten Oberflächen sind überwiegend gleich ausgerichtet, so dass Licht hauptsächlich entlang $R$ reflektiert wird. Raue Oberflächen besitzen eher zufällig ausgerichtete Mircofacets, so dass das reflektierte Licht breiter gestreut wird. Die Rauheit der Oberfläche wird mit $m$ im Intervall $[0,1]$ ausgedrückt. Zur Approximation von $D$ finden sich wiederum eine vielzahl von Modelle. Die Implementierung verwendet das als \textit{GGX} in \cite{Walter2007} vorgestellte Modell (siehe \fref{eq:ggx}).
+$D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets entsprechend der Winkelhalbierenden $\vH$. Die Microfacets von glatten Oberflächen sind überwiegend gleich ausgerichtet, so dass Licht hauptsächlich entlang $R$ reflektiert wird. Raue Oberflächen besitzen eher zufällig ausgerichtete Mircofacets, so dass das reflektierte Licht breiter gestreut wird. Die Rauheit der Oberfläche wird mit $m$ im Intervall $[0,1]$ ausgedrückt. Zur Approximation von $D$ finden sich wiederum eine vielzahl von Modelle. Die Implementierung verwendet das als \textit{GGX} in \cite{Walter2007} vorgestellte Modell (siehe \fref{eq:ggx}).
 
 \begin{align}
 	\label{eq:ggx}
-	D(\mathbf V,\mathbf L) = \frac{m^4}{ \pi \left(\left( \mathbf N \cdot \mathbf H \right)^2\left(m^4 - 1\right) + 1\right)^2}
+	D(\vV,\vL) = \frac{m^4}{ \pi \left(\left( \vN \cdot \vH \right)^2\left(m^4 - 1\right) + 1\right)^2}
 \end{align}
 
 
 \subsubsection[Geometrische Abschwächung]{Geometrische Abschwächung $G$} 
-$G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich gegenseitig einfallendes oder reflektiertes Licht blockieren und sich somit gegenseitig schattieren ($G_1(\mathbf L)$) oder Reflexionen maskieren ($G_1(\mathbf V)$) können. Verwendet wird eine modifizierte Version der \textit{Schlick} Approximation, damit sie sich dem physikalisch präziseren Smith Modell annähert. Eine genauere Analyse des Smith Modells findet sich in \cite[Kapitel 6, Seite 33]{Heitz2014}.
+$G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich gegenseitig einfallendes oder reflektiertes Licht blockieren und sich somit gegenseitig schattieren ($G_1(\vL)$) oder Reflexionen maskieren ($G_1(\vV)$) können. Verwendet wird eine modifizierte Version der \textit{Schlick} Approximation, damit sie sich dem physikalisch präziseren Smith Modell annähert. Eine genauere Analyse des Smith Modells findet sich in \cite[Kapitel 6, Seite 33]{Heitz2014}.
 
 \begin{align}
 	\label{eq:geometric-schlick}
 	k &= \frac{(m + 1)^2}{8}\\
-	G_1(\mathbf V) &= \frac{\mathbf N \cdot \mathbf V}{(\mathbf N \cdot \mathbf V)(1-k)+k}\\
-	G_1(\mathbf L) &= \frac{\mathbf N \cdot \mathbf L}{(\mathbf N \cdot \mathbf L)(1-k)+k}\\
-	G(\mathbf V,\mathbf L) &= G_1(\mathbf V) G_1(\mathbf L)
+	G_1(\vV) &= \frac{\vN \cdot \vV}{(\vN \cdot \vV)(1-k)+k}\\
+	G_1(\vL) &= \frac{\vN \cdot \vL}{(\vN \cdot \vL)(1-k)+k}\\
+	G(\vV,\vL) &= G_1(\vV) G_1(\vL)
 \end{align}
 
 
@@ -157,7 +157,7 @@ Idealerweise lässt sich die Pipeline um ein umfassendes \acf{GI}\footnote{\acl{
 
 Darum, und weil die Implementierung einfacherer ist, findet ein vorberechnetes Verfahren anwendung. Zum Einsatz kommt ein erweitertes \acf{IBL} Verfahren, dass die Umgebungstexturen im Preprozess für die unterschiedlichen Frequenzen vorintegriert. Die Vorintegration läuft aktuell noch nicht direkt in der Pipeline ab sondern wird offline mit dem von Sébastien Lagarde modifiziertem Programm \textit{AMD Cubemapgen} durchgeführt \parencite{Lagarde2012a}. Dazu wird eine HDR-Cubemap in das Programm geladen und mit den passenden Einstellungen gefiltert. Das Resultat ist eine \ac{PMREM} die dann geladen und in der Auswertung der \ac{BRDF} verwendet wird.
 
-\paragraph{\acl{PMREM}} Betrachten wir die Reflexion an einem Oberflächenpunkt aus Sicht des Betrachters, so bestimmt sich die Reflexion aus der Streuung des reflektierten Sichtstrahls ($\mathbf R$). Ein perfekter Spiegel reflektiert den Sichtstrahl ohne jegliche Streuung während rauhe Oberflächen den Strahl mit zunehmender Rauheit entsprechend breiter streuen, bis hin zur ausschließlich diffusen Streuung.
+\paragraph{\acl{PMREM}} Betrachten wir die Reflexion an einem Oberflächenpunkt aus Sicht des Betrachters, so bestimmt sich die Reflexion aus der Streuung des reflektierten Sichtstrahls ($\vR$). Ein perfekter Spiegel reflektiert den Sichtstrahl ohne jegliche Streuung während rauhe Oberflächen den Strahl mit zunehmender Rauheit entsprechend breiter streuen, bis hin zur ausschließlich diffusen Streuung.
 
 Betrachten wir diffuse und spekulare Reflexionen als diffuse und spekulare indirekte Beleuchtung der Umgebung, lässt sich aus \fref{eq:brdf-indirect-dekonstruiert} folgern, dass sich Reflexionen mit dem $f_{indirect}$ Term abbilden lassen. Für die Rauheit der Oberflächen wurde $m$ als Einflussgröße für den spekularen Anteil der \ac{BRDF} eingeführt. Betrachten wir Umgebungstexturen (\textit{Environment Maps}) als Repräsentation des einfallenden Lichts, können wir Umgebungstexturen für die Berechnung des ambienten Terms $f_{indirect}$ verwenden. Entsprechend der Oberflächen Rauheit muss dafür das einfallende Licht über einen Ausschnitt der Hemisphäre aufgesammelt werden. Dies entspricht der Auswertung der \ac{BRDF} über dem entsprechenden Raumwinkel $\Omega$ (siehe \fref{eq:ambient-integral}). Dies führt zu dem in \fref{eq:ambient-integral} aufgeführtem Integral.
 
