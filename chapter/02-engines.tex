@@ -17,7 +17,25 @@ Zusätzlich hat sich der Fokus der aktuellen Engines deutlich verschoben. Währe
 \caption{Unreal Engine 4 Blueprint Beispiel}
 \end{figure}
 
-\section{Grafik Engines in Haskell}
-http://www.hgamer3d.org/
+
+
+\section{Grafik-Engines in Haskell}
+
+\subsection{HGamer3D}
+
+\textit{HGamer3D}\footnote{http://www.hgamer3d.org/} basiert auf (nich kompletten) Haskell-Bindings zu \textit{Ogre}\footnote{http://www.ogre3d.org/}. Ogre ist eine objektorientierte Open-Source Grafik-Engine geschrieben in C++. Ohne weiter auf die Fähigkeiten der Ogre Engine einzugehen, stellt sich oft die Adaptierunung von imperativen Bibliotheken auf funktionale Konzepte als aufwändig und nicht immer optimal heraus. Insbesondere das Erzeugen von Bindings zu komplexen \acsp{API}s ist immer noch eine hohe Hürde.
+
+Auch wenn Ogre als Framework viele Strukturen und Lösungsansätze für gängige Probleme in der 3D Computergrafik und Spieleprogrammierung bereitstellt, ließen sich viele Ansätze auch direkt funktional umsetzen, ohne große und schwerfällige \acsp{API}s zähmen zu müssen.
+
+Zum Beispiel verfolgen beide Welten zum Teil gänzlich andere Grundprinzipien. So sind Daten in Haskell prinzipiell unveränderlich während in C++ Daten prinzipiell veränderlich sind. Haskell erlaubt unter anderem deswegen andere Ansätze der Nebenläufigkeit (Concurrency). Speziell Nebenläufigkeiten stellen immer noch in komplexen Softwareprojekten eine große Hürde dar. Die Adaption einer C++-Biblithek kann das Ausnutzen vieler Vorteile von Haskell behindern (weitere Ausführungen in \fref{sec:warum-haskell}).
+
+Zusätzlich entstehen durch Bindings zu externen Biblitheken neue Abhängigkeiten, die oft eine Anpassung der Tool-Chain erfordern, da sie nicht in das bestehende Ökosystem passen. Dies erhöht die Komplexität des Gesamtsystems. Die Erfahrung des Autos hat gezeigt, dass eigentlich jedes externes Binding früher oder später zu Komplikationen führt. Meistens spätestens dann, wenn die Anwendung die Entwicklerumgebung verlässt.
+
+\subsection{LambdaCube 3D}
 https://lambdacube3d.wordpress.com/
+
+\subsection{Elm}
+
+\subsection{Gloss}
 Gloss (2d)
+
