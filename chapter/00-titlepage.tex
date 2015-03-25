@@ -51,21 +51,23 @@
  \end{minipage}
 }
 
-\uppertitleback{
-  {\huge \titel}\bigskip\\  
-  {\Large \untertitel}\bigskip\\
-  {\large \thesisname von \authorname}
-  \begin{abstract}
-  Das ist ein Einleitungstext!
-  \end{abstract}
-}
-
-\lowertitleback{
-
-Copyright {\small \copyright} 2015 \authorname \bigskip\\
-CC0 1.0 Universal
-Layout done with {\rmfamily \LaTeXe}, {\sffamily \KOMAScript} and {\rmfamily B\textsc{ib}\TeX}.
-}
-
 \maketitle
 
+% our back titlepage
+\begin{titlepage}
+\centering
+{\huge \titel}\bigskip\\  
+{\Large \untertitel}\bigskip\\
+{\large \thesisname\ von\ \authorname}\bigskip\\
+\KOMAoptions{titlepage=false}
+\begin{abstract}
+\warn{\blindtext}
+\end{abstract}
+\par\vfill
+\authorname \bigskip\\
+\ccbysa\\
+Dieses Werk ist lizenziert unter einer Creative Commons Namensnennung\\
+Weitergabe unter gleichen Bedingungen 4.0 International Lizenz.\bigskip\\
+Layout done with {\rmfamily \LaTeXe}, {\sffamily \KOMAScript} and {\rmfamily \textsc{ib}\LaTeX}.
+\end{titlepage}
+\clearpage
