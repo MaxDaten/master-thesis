@@ -29,13 +29,19 @@ Auch wenn Ogre als Framework viele Strukturen und Lösungsansätze für gängige
 
 Zum Beispiel verfolgen beide Welten zum Teil gänzlich andere Grundprinzipien. So sind Daten in Haskell prinzipiell unveränderlich während in C++ Daten prinzipiell veränderlich sind. Haskell erlaubt unter anderem deswegen andere Ansätze der Nebenläufigkeit (Concurrency). Speziell Nebenläufigkeiten stellen immer noch in komplexen Softwareprojekten eine große Hürde dar. Die Adaption einer C++-Biblithek kann das Ausnutzen vieler Vorteile von Haskell behindern (weitere Ausführungen in \fref{sec:warum-haskell}).
 
-Zusätzlich entstehen durch Bindings zu externen Biblitheken neue Abhängigkeiten, die oft eine Anpassung der Tool-Chain erfordern, da sie nicht in das bestehende Ökosystem passen. Dies erhöht die Komplexität des Gesamtsystems. Die Erfahrung des Autos hat gezeigt, dass eigentlich jedes externes Binding früher oder später zu Komplikationen führt. Meistens spätestens dann, wenn die Anwendung die Entwicklerumgebung verlässt.
+Zusätzlich entstehen durch Bindings zu externen Biblitheken neue Abhängigkeiten, die oft eine Anpassung der Tool-Chain erfordern, da sie nicht in das bestehende Ökosystem passen. Dies erhöht die Komplexität des Gesamtsystems. Die Erfahrung des Autos hat gezeigt, dass eigentlich jedes externes Binding früher oder später zu Komplikationen führt, spätestens dann, wenn die Anwendung die Entwicklungsumgebung verlässt. Doch lässt sich nicht jede Abhhängigkeit zu anderen Sprachen vermeiden. Insbesondere in der Grafikprogrammierung mit OpenGL werden die eigentlichen Bindings zu der OpenGL-API benötigt. Zusätzlich muss noch ein platformabhängiger Render-Kontext erzeugt werden.
+
+Meinung des Autors: Es sollten möglichst wenige Fremdabhängigkeiten aus anderen Sprachen genutzt werden, leider ist dies nicht immer möglich (Weitere Ausführungen in \fref{sec:probleme-haskell}). Mit den Ogre Bindings wird die eine komplexe schwer funktional bezwingbare \acs{API} (z.B. OpenGL) mit einer anderen ersetzt.
 
 \subsection{LambdaCube 3D}
-https://lambdacube3d.wordpress.com/
 
-\subsection{Elm}
+\textit{LambdaCube 3D}\footnote{https://lambdacube3d.wordpress.com/} ist eine in Haskell definierte und beeindruckende \ac{DSL}, die es erlaubt Grafikanwendungen bis hin zum Shader komplett in Haskell zu formulieren. Da OpenGL eine komplexe und übersichtliche \acs{API} ist, ist die \ac{DSL} entsprechend komplex und unübersichtlich. Zusätzlich basiert das OpenGL Backend noch auf der Version 3.2. Die Dokumentation beschränkt sich auf den Blog und eine handvoll Beispielen, so dass es schwer ist einen Zugang zu der DSL zu erhalten.
 
-\subsection{Gloss}
-Gloss (2d)
+Aber generell stellt sich die bei OpenGL die Frage, wie sinnvoll es ist die komplexe \acs{API} in einer anderen Sprache komplett abzubilden, mit all ihren erlaubten und nicht erlaubten Zuständen, die zusätzlich noch treiberspezifisch sind. Hinzu kommen diverse Erweiterungen, die oft Verhaltensweisen der \acs{API} massiv beeinflussen.
 
+Die persönliche Einschätzung des Autors ist, dass sich OpenGL nicht in einem vertretbaren Aufwand komplett abbilden lässt. Der Aufwand wäre ungefähr mit dem vergleichbar, den Grafikkartenhersteller bei der Implementierung ihrer Grafikkartentreiber betreiben (weitere Ausführungen in \fref{chap:modern-opengl}). Deswegen sollte eine Auswahl der direkten OpenGL Bindings getroffen werden um sie punktuell in funktionale Konzepte zu gießen.
+
+% \subsection{Elm}
+
+% \subsection{Gloss}
+% Gloss (2d) ist ein schönes Beispiel dafür wie sich mit einem OpenGL backend und mit der konzentration auf das wesentliche eine klare funktionale api schaffen lässt die einfach anzuwenden ist.
