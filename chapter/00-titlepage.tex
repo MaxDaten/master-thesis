@@ -58,19 +58,21 @@
 
 % our back titlepage
 \begin{titlepage}
+{
 \centering
 {\huge \titel}\bigskip\\  
 {\Large \untertitel}\bigskip\\
 {\large \thesisname\ von\ \authorname}\bigskip\\
-\KOMAoptions{titlepage=false}
-\begin{abstract}
-\warn{\blindtext}
-\end{abstract}
+}
+\paragraph{Abstrakt:}\warn{\blindtext}
 \par\vfill
+\centering
+\footnotesize{
 \authorname \bigskip\\
 \ccbysa\\
 Dieses Werk ist lizenziert unter einer Creative Commons Namensnennung\\
 Weitergabe unter gleichen Bedingungen 4.0 International Lizenz.\bigskip\\
 Layout done with {\rmfamily \LaTeXe}, {\sffamily \KOMAScript} and {\rmfamily B\textsc{ib}\LaTeX}.
+}
 \end{titlepage}
 \clearpage
