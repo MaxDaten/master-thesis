@@ -1,12 +1,18 @@
 \documentclass
     [ ngerman
     , BCOR=10mm
+    , DIV=calc
+    , paper=a4
     , openright
     , parskip=half
     , 11pt
-    , oneside
+    % , oneside
+    , twoside
+    , footinclude=true
+    , headinclude=true
+    , cleardoublepage=empty
     % , draft
-    ]{scrreprt}
+    ]{scrbook}
 
 \usepackage{scrhack}
 \usepackage{lmodern}
@@ -14,18 +20,15 @@
 \usepackage[T1]{fontenc}
 \usepackage{datetime}
 \usepackage[backend=biber,style=authoryear]{biblatex} % style=alphabetic
-\usepackage[a4paper,top=3cm, bottom=3cm]{geometry}
 \usepackage{setspace}
 \usepackage[automark]{scrpage2}
 \usepackage[multiple]{footmisc}
+\usepackage[ngerman]{babel}
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
-% \usepackage{fancyhdr}
 \usepackage{lipsum}
 \usepackage{microtype}
-\usepackage[clearempty]{titlesec}
-\usepackage[ngerman]{babel}
-\usepackage[footnote]{acronym}
+\usepackage{acronym}
 \usepackage{array}
 \usepackage{pst-pdf}
 \usepackage{multicol}
@@ -40,12 +43,13 @@
 \usepackage{epigraph}       % nice quotes
 \usepackage[scale=2]{ccicons}
 \usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
-
 \usepackage{graphicx}
 \graphicspath{{./img/}}
-
 \usepackage[german,vario]{fancyref}
-
+\usepackage[top=3cm, bottom=3cm]{geometry}
+\usepackage[osf,sc]{mathpazo}
+\usepackage{palatino,eulervm}
+%\usepackage[pdfspacing,linedheaders,eulermath,dottedtoc]{classicthesis}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 %% http://www.schlosser.info/in-latex-mit-varioreffancyref-automatisch-ab-seite-statt-auf-seite-setzen/
 \makeatletter
