@@ -1,4 +1,5 @@
 # Dinge die noch nicht fertig ausformuliert sind
+- Warum haskell? Drop-In & gefahrloses bzw leichteres Refactoring im vorbeigehen
 
 Abstract:
 TBD
