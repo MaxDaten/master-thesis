@@ -1,0 +1,18 @@
+\chapter{Analyse}
+\label{chap:analyse}
+Argument performance. auch wenn engines und echtzeit performance kritisch sind, gibt es hotspots.
+Der Gründer von Epic Games (Unreal Engine) würde 10\% der Performance für 10\% mehr Produktivität opfern \parencite[Seite 20]{Sweeney2006} % Next Mainstream Programming Language
+
+Bezüglich der Implementierung eines Renderschritts wurde auf eine Abstraktion der Grafik-API verzichtet, so dass Implementierungen direkt in OpenGL umgesetzt sind.
+
+opt-in extensions
+
+führt aber zu eher imperativen (opengl) implementierungen der einzelnen renderschritte
+
+\section{Probleme bei Haskell}\label{sec:probleme-haskell}
+
+Die produktive Verwendung von Haskell bringt aber auch einige Probleme mit sich. Oft sind die Probleme aber eher organisatorischer und menschlicher Natur. Zum einen sind die funktionalen Konzepte im Vergleich zu den beispielsweise OOP Konzepten nicht auf breiter Front bekannt und erfordern auch oft neue Denkmuster. Da die bestehenden Denkmuster sich jahrelang verfestigen konnten, dürften neue Denkansätze auf einigen Widerstand stoßen. Das schrittweise Einführen von Haskell dürfte auch in Unternehmensumgebungen naturgemäß einige Widerstände und Skepsis mit sich bringen.
+
+Generell ist das schrittweise Einführen (Drop In Replacement) von Haskell aber auch praktisch nicht immer einfach. Während in modernen Serverarchitekturen sich selektiv einige kleine isolierte Dienste mit Haskellimplementierungen ersetzen ließen, dürfte sich dies bei monolithischen Projekten als schwerer herausstellen. Auch die Verknüpfung von Haskell mit C++, in der Spieleindustrie Quasi-Standard, ist noch nicht umfassend gelöst.
+
+Tools (voll integrierte entwicklungsumgeben - abseits von Emacs)
