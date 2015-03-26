@@ -1,24 +1,30 @@
-\chapter{Einführung und Wegweiser}
+\chapter{Einführung}
 
 Diese Einführung dient als Wegweiser durch diese Arbeit und soll einen kurzen Überblick über die folgenden Kapitel und deren Inhalt geben.
 
-\section{Überblick \& Motivation}
-In \fref{chap:engine-uebersicht} wird mit einer einer kleinen Übersicht über die aktuellen Strömungen der Spiele- und Grafik-Engine-Entwicklung begonnen. Spiele-Engines zählen schon länger mit zu den komplexesten und dynamischsten Softwareprojekten. Aus den Anforderungen an Spiele- und Grafik-Engines lassen sich Schlüsse und Erfahrungswerte ableiten, die sich generell auf andere komplexe Softwareporjekte übertragen lassen.
+\section{Überblick}
 
-Abseits der Komplexität von Spiele-Engines gibt es seit wenigen Jahren Bestrebungen die bestehenden, über die Jahre gewachsenen, Grafikschnittstellen wie \textit{DirectX} oder \textit{OpenGL} flexibler zu gestalten aber auch in vielen Bereichen deutlich zu \warn{entschlacken}. Das \fref{chap:modern-opengl} betrachtet diese Entwicklung exemplarisch an \textit{OpenGL}, und konkretisiert den Begriff \textit{Modern OpenGL} mit praktischen Bezügen.
+In \fref{chap:engine-uebersicht} wird mit einer Übersicht über die aktuellen Strömungen der Spiele- und Grafik-Engine-Entwicklung begonnen. Das Kapitel wird aufzeigen, dass Spieleengines komplexe, dynamische und interdisziplinäre Softwareprojekte sind. Wie viele Softwareprojekte, teilen sich die unterschiedlichen Engines oft gemeinsame Anforderungen und Herausforderungen. Das Kapitel wird einige der gemeinsamen Herausforderungen aufzeigen, von denen sich viele auch auf Projekte aus anderen Branchen übertragen lassen.
 
-Viele Neuerungen ermöglichen oder erzwingen neue Denkansätze für die Entwicklung von Grafikanwendungen. In Kombination mit den Anforderungen und Bedingungen von komplexen Softwareprojekten wird in \fref{chap:haskell-modern-gl} anhand von Haskell analysiert, ob und wie funktionale Programmierung bei der Erfüllung der Anforderungen hilfreich sein kann.
+Abseits der Komplexität von Spiele-Engines gibt es seit wenigen Jahren Bestrebungen die bestehenden, über die Jahre gewachsenen, Grafikschnittstellen wie \textit{DirectX} oder \textit{OpenGL} flexibler zu gestalten aber auch in vielen Bereichen deutlich zu entschlacken. Das \fref{chap:modern-opengl} betrachtet diese Entwicklung exemplarisch an \textit{OpenGL}, und konkretisiert den Begriff \textit{Modern OpenGL} mit praktischen Bezügen.
+
+\section{Motivation}
+
+Aus den gewachsenen Anforderungen an komplexe Softwareprojekte wird in \fref{chap:haskell-modern-gl} die Motivation entwickelt, nach neuen Hilfmitteln und Konzepten zu suchen, die Komplexität beherrschbar zu halten und die Anforderungen besser zu erfüllen. Das Kapitel diskutiert anhand von Haskell, ob und wie funktionale Programmierung bei der Erfüllung der Anforderungen hilfreich sein kann. 
+
+Viele Neuerungen in den Grafikschnittstellen ermöglichen oder erzwingen neue Denkansätze für die Entwicklung von Grafikanwendungen. Das Kapitel zeigt auf, welche Möglichkeiten sich für den Einsatz von Haskell mit den Neuerungen in den Grafikschnittstellen auftun. Anschließend werden aktuelle Grafik-Engines in Haskell diskutiert \warn{worauf}.
 
 \section{Ziel}
-Der Kern der Arbeit wird damit befassen, eine flexible und komponierbare Grafikpipeline in Haskell zu entwickeln. In \fref{chap:ueberblick-pipeline} werden eine Hand voll abstrakter funktionaler Konzepte erläutert und dazu verwendet, eine möglichst hohe Komponierbarkeit der Pipeline-Bausteine zu erreichen. Es wird anhand von kleinen Beispielen demonstriert, wie sich diese Bausteine entwickeln und leicht zu zu größeren Systemen zusammensetzen lassen. Die kurz vorgestellte sogenannte Arrow-Notation soll dabei helfen, komplexe Systeme übersichtlich und verständlich zu halten.
 
-Als aktueller Stand der Technik unter den Echtzeit Rendering-Verfahren gilt das Konzept des \acl{PBR}. Dieses Verfahren wird in theoretischen und praktischen Grundlagen in \fref{chap:pbr} vorgestellt. Praktisches Ziel wird es sein, das \ac{PBR} Konzept mithilfe des zuvor entwickelten Pipeline-Konzepts zur Anwendung zu bringen.
+Der Kern der vorliegenden Arbeit befasst sich damit, eine flexible und komponierbare Grafikpipeline in Haskell zu entwickeln. Aufbauend auf dem Konzept eines Mealy-Automatens wird in \fref{chap:ueberblick-pipeline} die grundlegende Form der Pipeline-Bausteine entwickelt. Anschließend werden einige abstrakte funktionale Konzepte erläutert und zur Anwendung gebracht. Es wird anhand von kleinen Beispielen demonstriert, wie die funktionalen Konzepte dabei helfen, dass sich die Bausteine komponieren und zu komplexeren Systmen zusammensetzen lassen. Zusätzlich hilft die kurz vorgestellte sogenannte Arrow-Notation (\warn{wo vorgestellt}), komplexe Systeme übersichtlich und verständlich zu halten.
+
+Das Konzept des \acl{PBR} gilt als aktueller Stand der Technik in den Echtzeit Rendering-Verfahren. Es soll die Komposition der Texturen in unterschiedlichen Beleuchtungssituationen vereinfachen und vereinheitlichen. \ac{PBR} wird in theoretischen und praktischen Grundlagen in \fref{chap:pbr} vorgestellt. Unter Verwendung des zuvor entwickelten Pipeline-Konzepts, wird das praktisches Ziel dieser Arbeit die Umzusetzung einer \ac{PBR} Pipeline sein.
 
 \section{Ergebnis}
-In \fref{chap:anwendung} wird exemplarisch ein Renderschritt der Pipeline als Baustein implementiert, und in \fref{lst:src-pipeline} im Appendix das zusammengesetzte Gesamtsystem der Implementierung abgebildet. Darüber hinaus ist das Gesamtprojekt zu dieser Arbeit als DVD im Appendix in \fref{chap:dvd} angefügt.
+Da die entwickelte \ac{PBR} Pipeline zu umfangreich für eine umfassende Betrachtung im Detail ist, wird in \fref{chap:anwendung} exemplarisch ein Renderschritt der Pipeline als Baustein implementiert. Einen zusätzlichen Überblick über das Gesamtsystem der praktischen Implementierung bietet \fref{lst:src-pipeline} im Appendix. Darüber hinaus ist das Gesamtprojekt zu dieser Arbeit als DVD im Appendix in \fref{chap:dvd} angefügt.
 
-Die entwicklete \ac{PBR}-Pipeline wird in \fref{chap:analyse} sowohl auf ihr Echtzeitverhalten als auch grafische Qualität beurteilt. Zusätzlich werden die produktiven Gesichtspunkte, wie zum Beispiel Flexibilität und Wartbarkeit, beleuchtet. Probleme und Stolpersteine, die sich während der praktischen Umsetzung möglicherweise aufgetan haben, werden ebenso kurz benannt und eingeordnet.
+Die entwicklete \ac{PBR}-Pipeline wird in \fref{chap:analyse} sowohl auf ihr Echtzeitverhalten als auch grafische Qualität beurteilt. Zusätzlich werden die produktiven Gesichtspunkte, beispielsweise Flexibilität und Wartbarkeit, untersucht. Probleme und Herausforderungen, die sich während der praktischen Umsetzung aufgetan haben, werden ebenso kurz benannt und eingeordnet.
 
-Abgeschlossen wird der schriftliche Teil der Arbeit in \fref{chap:ausblick} mit einem kleinen Überblick über zukünftige Ansätze und Bereiche, in denen die Grafik-Engine sich sinnvoll erweitern oder anwenden ließe.
+Abgeschlossen wird der schriftliche Teil der Arbeit in \fref{chap:ausblick} mit einem Überblick über zukünftige Ansätze und Bereiche, in denen die Grafik-Engine sich sinnvoll erweitern oder anwenden ließe.
 
 \warn{Image}
