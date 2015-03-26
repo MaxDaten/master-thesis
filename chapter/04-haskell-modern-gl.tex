@@ -11,6 +11,9 @@ Die genannten wesentlichen Eigenschaften erlauben in Kombination das Schreiben v
 
 \warn{bridge}
 
+% http://www.gamasutra.com/view/news/218947/What_separates_CryEngine_from_its_competition.php
+% While Unity has a core team of around 150 engineers, and Epic has around 100 concentrating on Unreal Engine 4, Jones says it's hard for him to compare -- because while there are only around 50 engineers working directly on the engine, every Crytek project across its eight studios has its own engine R&D team, and "every single one of those games is delivering technology back into the engine."
+
 Tim Sweeny von \textit{Epic Games} nennt das "`Shared State Concurrency"' Model aus C++/Java/C\# selber eine "`Huge productivity burden"' und weiter sagt er: "`Purely Functional is the right default"' \parencite[Vgl.][Seite 42 u. Seite 56]{Sweeney2006}. John Carmack, Gründer von \textit{id Software} und nun CTO bei \textit{Oculus VR}: "`[...] banning mutable shared state. Easier said than done, of course."' und zusätzlich "`Static analysis helps, but NULL problems remain the top fault in our codebase."'\footnote{Quelle: https://twitter.com/id\_aa\_carmack/status/325019679720615936}.
 
 Es lässt sich durchaus schlussfolgern, dass Haskell die richtigen Lösungen (z.B.: Unveränderlichkeit von Daten, |Maybe| statt |NULL|, \textit{rein funktional} als Grundprinzip) für viele Probleme in komplexen Softwareprojekten bereits mit sich bringt. Und deswegen stellen Bindings zu komplexen externen Frameworks keine optimale Lösung dar, auch wenn dies oft aus kurz bis mittelfristigen Gründer der Produktivität immer noch erforderlich ist. Dies stellt ein gewisses Henne-Ei-Problem dar: Auf Grund der 
