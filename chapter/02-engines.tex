@@ -1,50 +1,53 @@
-\chapter{Aktuelle Engineentwicklung}
+\chapter{Aktuelle Engine-Entwicklung}
 \label{chap:engine-uebersicht}
 
 %% Zitat:
 % https://twitter.com/CompSciFact/status/527816734863265792
 \epigraph{"`Even if your code was perfect when you released it, it still needs to be maintained because the world around it is changing."'}{Unbekannt}
 
-Spiele- und Grafikengines sind inzwischen äußerst komplexe Softwareprojekte. Früher wurden Spiele von Einzelpersonen oder kleinen Teams entwickelt, heute sind Teamstärken von über 100 Entwicklern aus unterschiedlichen Disziplinen keine Seltenheit. Komplexe Softwareprojekte erfordern neue Projektstrukturen, und dementsprechend haben sich die Projektstrukturen aber auch die Organisationformen der Teams im Laufe der Zeit gewandelt.
+Spiele- und Grafikengines sind inzwischen äußerst komplexe Softwareprojekte. Zu den Anfangszeiten der Spieleentwicklung konnten Spiele von Einzelpersonen oder sehr kleinen Teams entwickelt werden. Gegenwärtig sind Gesamtteamstärken von über 100 Kernentwicklern aus unterschiedlichen Disziplinen keine Seltenheit \parencite[Kapitel 8, Abschnitt: "`The Problem with Large Teams"']{keith2010agile}.
 
-Mit der Professionalisierung der Branche sind auch die Anforderungen an die Software zumindest inzwischen klar definiert: Das Softwareprojekt ist langfristing angelegt (Spiele-Engines auf Jahrzente), soll dem entsprechend robust und flexibel, wartbar, zugänglich und angemessen verständlich sein. Projektstrukturen sind inzwischen häufig auf kurze Iterationszyklen ausgelegt. Durch die kurzen Iterationszyklen werden konkrete Ziele in Reichweite gesteckt, damit sich das Erreichen oder Nichterreichen zeitnah abschätzen lässt. Weiter sollen kurze Iterationszyklen dem Entwicklerteam ermöglichen, auf die verändernde Umwelt zu reagieren und sich neuen Anforderungen flexibel anzupassen.
+\begin{quote}
+% 
+"`While Unity has a core team of around 150 engineers, and Epic has around 100 concentrating on Unreal Engine 4, Jones says it's hard for him to compare --- because while there are only around 50 engineers working directly on the engine, every Crytek project across its eight studios has its own engine R\&D team, and `every single one of those games is delivering technology back into the engine.'"'\footnote{Juni http://www.gamasutra.com/view/news/218947/What\_separates\_CryEngine\_from\_its\_competition.php}
+\end{quote}
 
-Im letzten Jahr hat sich der Markt der kommerziellen Spiele- und Grafik-Engines sehr verändert. Die wichtigsten Entwickler von kommerziellen Engines, wie \textit{Epic Games} oder \textit{Crytek}, haben ihre Projekte der Allgemeinheit gegenüber geöffnet, während früher noch sechsstellige Beträge für den Einblick in den Quelltext zu zahlen waren. Inzwischen rufen die Entwickler direkt zur Mitarbeit an ihrer Engine auf. Das bringt für beide Seiten Vorteile. Zwar muss der beitragende Entwickler auf seine Rechte am Code verzichten\footnote{Abschnitt 8. 8. Feedback and Contributions: https://www.unrealengine.com/eula}, doch kann er direkten Einfluss auf die Entwicklung kommerzieller Schlüsselsoftware nehmen. Und auf der anderen Seite kann das Unternehmen den Eifer der Entwickler kommerziell verwerten aber auch neue fähige Mitarbeiter sichten und gegebenfalls rekrutieren.
+Im Vergleich: Das erste \textit{Prince of Persia} wurde in der Zeit von 1985 bis 1989 alleine von Jordan Mechner entwickelt \parencite{Mechner1993} und das erste \textit{Doom} in der Zeit von 1992 bis 1993 von John Carmack, John Romero und Dave D. Taylor \parencite{Kushner2003}.
 
-Zusätzlich hat sich der Fokus der aktuellen Engines deutlich verschoben. Während vor ein paar Jahren die Editoren komplex zu bedienen waren und tiefergehende Programmierkenntnisse benötigt wurden, sind die aktuellen Editoren deutlich einsteigerfreundlicher geworden. Erste Prototypen oder einfache Spiele sind in Editoren wie dem \textit{Unreal Editor} über das \textit{Blueprint} genannte System ohne eigentliche Programmierkenntnisse umsetzbar. Werden komplexere und spezifische Blueprints benötigt, können \textit{Blueprints} in C++ umgesetzt werden.
+Im letzten Jahr hat sich der Markt der kommerziellen Spiele- und Grafik-Engines sehr verändert. Neben veränderten Lizenzmodellen hat einer der wichtigsten Entwickler von kommerziellen Engines, \textit{Epic Games}, die \textit{Unreal Engine 4} der Allgemeinheit gegenüber geöffnet. Zuvor mussten noch sechsstellige Beträge für den Zugang zum Quelltext bezahlt werden. 
 
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{ue4-blueprint}
-\caption{Unreal Engine 4 Blueprint Beispiel}
-\end{figure}
+Inzwischen ruft \textit{Epic Games} zur direkten Mitarbeit an ihrer Engine auf. Das bringt für beide Seiten Vorteile. Zwar muss der beitragende Entwickler auf seine Rechte am Code verzichten\footnote{Abschnitt 8. 8. Feedback and Contributions: https://www.unrealengine.com/eula}, doch kann er direkten Einfluss auf die Entwicklung kommerzieller Schlüsselsoftware nehmen. Und auf der anderen Seite kann das Unternehmen den Eifer der Entwickler kommerziell verwerten und eine Gemeinschaft um die Engine aufbauen.
 
-\section{Grafik-Engines in Haskell}
+\section{Agile Projektstrukturen}\label{sec:engines-projektstrukturen}
 
-C bzw. C++ ist quasi der Industriestandard in der Grafik- und Spieleprogrammierung. Doch gibt es auch einige Open-Source Engines die in anderen Sprachen implementiert wurden. Die folgende Betrachtung beschränkt sich auf Engines die entweder direkt in Haskell umgesetzt wurden oder die auf Bindings zu bestehenden Open-Source Engines basieren.
+Komplexe Softwareprojekte erfordern neue Projektstrukturen, und dementsprechend haben sich die Projektstrukturen aber auch die Organisationformen der Teams im Laufe der Zeit gewandelt. Mit der Professionalisierung der Branche sind auch die Anforderungen an die Software klar definiert: Das Softwareprojekt ist langfristing angelegt (Spiele-Engines auf Jahrzente), soll dementsprechend robust und flexibel, wartbar, zugänglich und angemessen verständlich sein. Projektstrukturen sind inzwischen häufig auf kurze Iterationszyklen ausgelegt. Unternehmen wie \textit{Blizzard Entertainment}\footnote{http://eu.blizzard.com/de-de/company/careers/university-relations/job-desc/new-grad/engineer-automation.html} oder \textit{CPP Games} \parencite[Kapitel 8]{keith2010agile} setzen auf agile Softwareentwicklung.
 
-\subsection{HGamer3D}
+Durch die kurzen Iterationszyklen werden konkrete Ziele in Reichweite gesteckt, damit sich das Erreichen oder Nichterreichen zeitnah abschätzen lässt. Zusätzlich helfen sie den Überblick über den momentanen Aufgabenbereich zu behalten und das Ziel nicht aus den Augen zu verlieren. Weiter sollen die kurze Iterationszyklen dem Entwicklerteam ermöglichen, auf die sich verändernde Umwelt zu reagieren und sich auf neue Anforderungen flexibel einzustellen. 
 
-\textit{HGamer3D}\footnote{http://www.hgamer3d.org/} basiert auf (nich kompletten) Haskell-Bindings zu \textit{Ogre}\footnote{http://www.ogre3d.org/}. Ogre ist eine objektorientierte Open-Source Grafik-Engine geschrieben in C++. Ohne weiter auf die Fähigkeiten der Ogre Engine einzugehen, stellt sich oft die Adaptierunung von imperativen Bibliotheken auf funktionale Konzepte als aufwändig und nicht immer optimal heraus. Insbesondere dass die Haskell-Bindings zu komplexen C++ \acsp{API} größtenteils von Hand erzeugt werden müssen, setzt immer noch hohe Hürden.
+% Mit zunehmender Teamgröße steigt der Kommunikationaufwand zwischen den Teammitgliedern. 
+Ja nach Umsetzung der Projektorganisation, werden autonome Teams aus maximal 7-11 Personen und interdisziplinär zusammengestellt \parencite[Kapitel 8]{keith2010agile}. Die Teamgröße wird möglichst klein gehalten, da mit wachsener Teamgröße der Kommunikationsaufwand deutlich\footnotemark ansteigt.
 
-Auch wenn Ogre als Framework viele Strukturen und Lösungsansätze für gängige Probleme in der 3D Computergrafik und Spieleprogrammierung bereitstellt, ließen sich viele Ansätze auch direkt funktional umsetzen, ohne große und schwerfällige \acsp{API} adaptieren zu müssen.
+\footnotetext{Mit der Formel $n*(n - 1)/2$, mit $n$ für die Anzahl der Teammitglieder, lässt sich die Anzahl der paarweisen Kommunikationskanäle zwischen Teammitgliedern errechen. Dies entspricht einem exponentiellen Wachstum.}
 
-Zum Beispiel verfolgen beide Welten zum Teil gänzlich andere Grundprinzipien. So sind Daten in Haskell prinzipiell unveränderlich während in C++ Daten prinzipiell veränderlich sind. Haskell erlaubt unter anderem deswegen andere Ansätze der Nebenläufigkeit (Concurrency). Speziell Nebenläufigkeiten stellen immer noch in komplexen Softwareprojekten eine große Hürde dar. Die Adaption einer C++-Biblithek kann das Ausnutzen vieler Vorteile von Haskell behindern (weitere Ausführungen in \fref{sec:warum-haskell}).
+\section{Herausforderungen}\label{sec:engines-herausforderungen}
 
-Zusätzlich entstehen durch Bindings zu externen Bibliotheken neue Abhängigkeiten, die oft eine Anpassung der Tool-Chain erfordern, da sie nicht in das bestehende Ökosystem passen. Dies erhöht die Komplexität des Gesamtsystems. Die Erfahrung des Autors hat gezeigt, dass externe Bindings oft zu Komplikationen führen, spätestens dann, wenn die Anwendung die Entwicklungsumgebung verlässt. In der Praxis lassen sich aber selten Abhhängigkeiten zu anderen Sprachen komplett vermeiden. Insbesondere in der Grafikprogrammierung mit \textit{OpenGL} werden die eigentlichen Bindings zu der \textit{OpenGL}-API benötigt. Zusätzlich muss noch ein plattformabhängiger Render-Kontext erzeugt werden. Dessen Erzeugung ist nicht Teil von \textit{OpenGL} und erfordert eine weitere externe Komponente.
+Besonders Engines unterliegen besonderen Anforderungen. Im Gegensatz zu Computerspielen, die meistens einem abgesteckten Entwicklungszyklus und Lebenszyklus unterliegen, werden Engines mit langfristigen Zielen entwickelt. Da Engines, wie \textit{Unity} oder die \textit{Unreal Engine}, als Framework das Rückrat für viele unterschiedliche Spiele bilden, sollten sie robust aber auch flexibel, erweiterbar und wartbar sein. Dies sind klassische nichtfunktionale Anforderungen an Softwareprojekte, die sich nicht direkt messen lassen.
 
-Meinung des Autors: Es sollten möglichst wenige Fremdabhängigkeiten aus anderen Sprachen genutzt werden, leider ist dies nicht immer möglich (Weitere Ausführungen in \fref{sec:probleme-haskell}). Mit den Ogre Bindings wird die eine komplexe schwer funktional bezwingbare \acs{API} (z.B. \textit{OpenGL}) mit einer anderen ersetzt. Vorteil ist unbestritten, dass die Engine ausgereift ist und vieles nicht erst neu implementiert werden muss.
+Die technischen Anforderungen in der Spielebranche verändern sich durch die kurzen Hardware-Lebenszyklen jährlich, insbesondere im PC und mobilen Sektor. Hinzu kommt, dass die Branche starken Trends unterworfen ist. Dies erhöht zusätzlich die Anforderungen an die Wart- und Erweiterbarkeit.
 
-\subsection{LambdaCube 3D}
+In der Softwareentwicklung, in der mehrere kleinere Teams auf einer gemeinsamen Codebasis arbeiten, ist der Quelltext Hauptkommunikationmittel unter den Softwareentwicklern. Die Form der Zusammenarbeit und die Produktivität bestimmt sich aus der Architektur der Software und umgekehrt bestimmt die Form der Teamorganisation die Architektur \parencite[Foreword, Seite xix u. Kapitel 1, Seite 13f]{Martin2008}. Das misst der Codebasis eine tragende Rolle im Projekt bei. Dem entsprechend ist auch die Wahl der Programmiersprache wichtig, da die Programmiersprache und deren Ökosystem über die Möglichkeiten der Entwickler entscheidet.
 
-\textit{LambdaCube 3D}\footnote{https://lambdacube3d.wordpress.com/} ist eine in Haskell definierte und mächtige \ac{DSL}, die es erlaubt Grafikanwendungen bis hin zum Shader komplett in Haskell zu formulieren. Da \textit{OpenGL} eine komplexe und unübersichtliche \acs{API} ist, ist die \ac{DSL} entsprechend komplex und unübersichtlich. Zusätzlich basiert das \textit{OpenGL}-Backend noch auf der Version 3.2, sodass viele neue Shader-Möglichkeiten (z.B. Compute Shader ab 4.3) gar nicht abgedeckt sind. Die Dokumentation beschränkt sich auf den Blog und eine handvoll Beispielen, so dass es schwer ist einen Zugang zu der DSL zu erhalten.
+% Collaboration
+% Refactoring
 
 
-Auch generell stellt sich bei \textit{OpenGL} die Frage, wie sinnvoll es ist die komplexe \acs{API} in einer anderen Sprache komplett abzubilden. \textit{OpenGL} besitzt viele erlaubte und nicht erlaubten Zustände. Die erlaubten und nicht erlaubten Zustände sind zudem mitunter treiberspezifisch. Hinzu kommen diverse Erweiterungen, die die Verhaltensweise der \acs{API} massiv beeinflussen und gültige und ungültige Zustände hinzufügen oder entfernen können.
+% Zusätzlich hat sich der Fokus der aktuellen Engines deutlich verschoben. Während vor ein paar Jahren die Editoren komplex zu bedienen waren und tiefergehende Programmierkenntnisse benötigt wurden, sind die aktuellen Editoren deutlich einsteigerfreundlicher geworden. Erste Prototypen oder einfache Spiele sind in Editoren wie dem \textit{Unreal Editor} über das \textit{Blueprint} genannte System ohne eigentliche Programmierkenntnisse umsetzbar. Werden komplexere und spezifische Blueprints benötigt, können \textit{Blueprints} in C++ umgesetzt werden.
 
-Die persönliche Einschätzung des Autors ist, dass sich OpenGL nicht in einem vertretbaren Aufwand komplett abbilden lässt. Der Aufwand wäre ungefähr mit dem vergleichbar, den Grafikkartenhersteller bei der Implementierung ihrer Grafikkartentreiber betreiben (weitere Ausführungen in \fref{chap:modern-opengl}). Deswegen sollte eine Auswahl der direkten OpenGL Bindings getroffen werden um sie punktuell in funktionale Konzepte zu gießen.
+% \begin{figure}
+% \centering
+% \includegraphics[width=\textwidth]{ue4-blueprint}
+% \caption{Unreal Engine 4 Blueprint Beispiel}
+% \end{figure}
 
-% \subsection{Elm}
-
-% \subsection{Gloss}
-% Gloss (2d) ist ein schönes Beispiel dafür wie sich mit einem OpenGL backend und mit der konzentration auf das wesentliche eine klare funktionale api schaffen lässt die einfach anzuwenden ist.
+% http://www.osnews.com/story/19266/WTFs_m
+% http://www.gamasutra.com/view/news/239732/Gabe_Newell_shares_how_a_flat_structure_helps_Valve_succeed.php
