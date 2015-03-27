@@ -75,23 +75,26 @@ out 		vec4 			fragColor;
 void main () { fragColor = MaterialColor * texture(MaterialTexture, inUV); }
 |]
 
+-- | Shader Interface Data
 data FragmentShaderInterface = FragmentShaderInterface
 	{ uMaterial :: UniformVar (Material Tex2D PixelRGBA) 
 	, uTime     :: UniformVar Int
 	}
 
+-- | Constructs the 'ShaderInterface' from a Program
 fragmentInterface :: Program -> IO FragmentShaderInterface
 fragmentInterface prog = FragmentShaderInterface 
 	<$> materialUniform prog 1 "Material"
 	<*> intUniform prog "Time"
 
+-- Example Application
 setFragmentShaderUniforms :: IO ()
 setFragmentShaderUniforms = do
 	-- init
 	FragmentShaderInterface{..} <- fragmentInterface =<< compileProgram fragmentSrc FragmentShader
-	mat 				<- createMaterial (Color 255 255 0 255) "path/to/texture.png"
+	mat <- createMaterial (Color 255 255 0 255) "path/to/texture.png"
 	
-	-- some looping
+	-- in your game loop
 	forever $ do
 		currentTime <- getCurrentTime
 		uTime 		 $= currentTime
