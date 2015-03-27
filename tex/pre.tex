@@ -36,7 +36,9 @@
 \usepackage{multirow}
 \usepackage[german]{algorithm2e}
 \usepackage{yhmath}
+\usepackage{ragged2e}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{caption}        % customize captions
 \usepackage{subcaption}     % captions for sub figures
 \usepackage{wrapfig}
@@ -118,13 +120,16 @@
 \else
   \usepackage{lscape}
 \fi
+%% Theorem Definitions
+\theoremstyle{theorem}
+\newtheorem{definition}{Definition}
 
 %% Listings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{listings}
 \usepackage{sourcecodepro} % now the default typewriter font
 \KOMAoptions{listof=totoc} % necessary because of scrhack
 \DeclareCaptionFont{white}{\color{white}}
-\DeclareCaptionFormat{listing}{\colorbox{black!50}{\parbox{\linewidth}{#1#2#3}}}
+\DeclareCaptionFormat{listing}{\colorbox{halfgray}{\parbox{\linewidth}{#1#2#3}}}
 \captionsetup{format=listing,labelfont=white,textfont=white,font=bf}
 \renewcommand{\lstlistlistingname}{Quelltextverzeichnis}
 \renewcommand{\lstlistingname}{Quelltext}
@@ -133,7 +138,7 @@
   , breaklines=true
   , captionpos=t
   , showstringspaces=false
-  , rulecolor=\color{black!50}
+  , rulecolor=\color{halfgray}
   , commentstyle=\scriptsize
   , numbers=left
   , frameshape={}{n}{n}{YnY}
@@ -165,7 +170,7 @@
   \end{spacing}
 }
 
-\lstMakeShortInline[columns=fixed,language=Haskell]|
+\lstMakeShortInline[columns=fixed,language=Haskell,basicstyle=\normalsize\ttfamily]|
 % \newcommand{\inlinehaskell}{
 %   \lstinline[language=Haskell]
 % }
