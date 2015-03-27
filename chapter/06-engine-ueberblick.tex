@@ -1,4 +1,4 @@
-\chapter{Überblick über den Kern der Engine}
+\chapter{Überblick über das Rendersystem der Engine}
 \label{chap:ueberblick-pipeline}
 
 Auf Grund des Umfangs des Projekts ist es nicht möglich einen all umfassenden Überblick über die Engine zu geben. Die Betrachtung im Detail beschränk sich im Folgenden auf die entwickelte Renderkomponente der Engine und die dahinter stehenden Konzepte und Überlegungen.
@@ -6,16 +6,17 @@ Auf Grund des Umfangs des Projekts ist es nicht möglich einen all umfassenden �
 \section{Das Rendersystem}
 
 % anforderung
-Moderne Renderverfahren, wie zum Beispiel \warn{Deferred Rendering}, bestehen aus mehreren einzelnen Renderschritten. In der Regel erzeugt jeder Renderschritt Daten, oft in Form von Texturen oder Buffern, die dann den nachfolgenden Renderschritten als Basis für weitere Berechnungen dienen. Daraus ergibt sich ein Abhängigkeitsnetzwerk aus Eingabe und Ausgaben einzelner Renderschritte. Auch kann ein Renderschritt wiederum aus kleineren Renderschritten zusammengesetzt sein.
+Moderne Renderverfahren, wie zum Beispiel Deferred Rendering, bestehen aus mehreren einzelnen Renderschritten. In der Regel erzeugt jeder Renderschritt Daten, oft in Form von Texturen oder Buffern. Die Daten dienen den nachfolgenden Renderschritten als Basis für weitere Berechnungen. Daraus ergibt sich ein Abhängigkeitsnetzwerk aus Eingabe und Ausgaben einzelner Renderschritte. Ein Renderschritt kann wiederum aus kleineren Renderschritten zusammengesetzt sein.
 
-Bei der Entwicklung der Renderkomponente wurde das Ziel verfolgt die einzelen Renderschritte möglichst komponierbar anzuwenden sind. Die einzelen Renderschritte sollen die Möglichkeit erhalten ihren inneren Zustand selbst zu verwalten und Implementierungsdetails zu verbergen. Auf Kompositionsebene sollen Implementierungsdetails möglichst vermeidbar sein.
+Bei der Entwicklung der Renderkomponente wurde das Ziel verfolgt, dass sich die einzelen Renderschritte möglichst komponierbar anwenden lassen. Weiter sollen die einzelen Renderschritte die Möglichkeit erhalten ihren inneren Zustand selbst zu verwalten und Implementierungsdetails zu verbergen. Auf Kompositionsebene sollen Implementierungsdetails möglichst vermeidbar sein.
 
 Die Konzeption des Renderystems startet mit einer formal abstrakten Definition auf Basis eines Mealy Automatens. Die formale Definition wird mit weiteren abstrakten funktionalen Konzepten schrittweise erweitert. Kleine praxisnahe Beispiele demonstrieren, wie die Erweiterungen die Flexibilität und Komponierbarkeit der Renderschritte erhöhen.
 
 \subsection{Mealy als formale Basis}
 
-Das Rendersystem basiert auf dem Konzept eines Mealy Automatens \parencite{Mealy1955}. Ein Mealy Automat ist \ac{FST}, ein spezieller endlicher Automat, der nicht nur seine Eingabesprache vom Eingabeband akzeptiert sondern auch eine Ausgabe auf einem Ausgabeband erzeugt. Ein Transduktor übersetzt die Eingabesprache in eine Ausgabesprache. Bei dem Mealy Automaten als spezielle Form eines \ac{FST} definiert sich die Ausgabe über den momentanen Zustand und die Eingabe auf diesem Zustand. Formal lässt sich ein Mealy Automat $\mathbfcal{M}$ als 6-Tupel wie folgt definieren:
+Das Rendersystem basiert auf dem Konzept eines Mealy Automatens \parencite{Mealy1955}. Ein Mealy Automat ist ein \acl{FST}, ein spezieller endlicher Automat, der nicht nur seine Eingabesprache vom Eingabeband akzeptiert, sondern auch eine Ausgabe auf einem Ausgabeband erzeugt. Ein Transduktor übersetzt die Eingabesprache in eine Ausgabesprache. Bei dem Mealy Automaten, als spezielle Form eines \ac{FST}, definiert sich die Ausgabe über den momentanen Zustand und die Eingabe auf diesem Zustand. Formal lässt sich ein Mealy Automat $\mathbfcal{M}$ als 6-Tupel wie folgt definieren:
 
+\begin{definition}
 \begin{align}
 \mathbfcal{M} = \left( Q, \Sigma, \Omega, \delta, \lambda, q_0 \right)
 \label{def:mealy-formal}
@@ -29,22 +30,27 @@ Das Rendersystem basiert auf dem Konzept eines Mealy Automatens \parencite{Mealy
 	\lambda &:\text{Ausgabefunktion}\ Q \times \Sigma \rightarrow \Omega \\
 	q_0 &: \text{Startzustand}
 \end{align*}
+\end{definition}
 
 Die Definition ließe sich noch um die Menge der finalen Endzustände $F \subseteq Q$ hin zu einem 7-Tupel erweitern. In unserem Konzept verzichten wir auf definierte Endzustände, da wir prinzipiell jede Eingabe akzeptieren. Nicht akzpetierbare Eingaben stellen wir als externe Ausnahmefälle (Exceptions) dar. Ein vereinfachtes Beispiel für eine nicht akzeptierbare Eingabe ist die Eingabe $\bot$, nach der unser gesamtes System in einen undefinierten Zustand $\bot$ wechselt.
 
 \paragraph{Abstrakte Definition in Haskell}
 \label{sec:abstrakte-definition-haskell}
 
-Ein Mealy Automat lässt sich in Haskell abstrakt wie in \fref{lst:haskell-mealy} definieren. {\ttfamily a} beschreibt die Eingabe als Äquivalent zum Eingabealphabet $\Sigma$ der formalen Definition und analog beschreibt |b| die Ausgabe als Äquivalent zum Ausgabealphabet $\Omega$. Die Zustandsübergangsfunktion $\delta$ und die Ausgabefunktion $\lambda$ ergibt sich aus der jeweils konkreten Implementierung des Mealy. Die Menge der Zustände $Q$ wird jeweils von der konkreten Mealy Implementierung gekapselt wie in \fref{lst:state-mealy-beispiel} anhand eines Beispiels veranschaulicht. Aber es lässt sich bereits feststellen, dass die gewählte Form des Mealy Automatens weit mehr als nur ein endlicher Automat ist, da die Mächtigkeit des Ein- und Ausgabealphabets unendlich sein kann, wie dies zum Beispiel bei der Menge der natürlichen Zahlen (abzählbar unendlich) der Fall ist. Daraus folgt zusätzlich, dass auch die Menge der Zustände unendlich sein kann (Zählmaschine).
+Ein Mealy Automat lässt sich in Haskell abstrakt wie in \fref{lst:haskell-mealy} definieren. {\ttfamily a} beschreibt die Eingabe als Äquivalent zum Eingabealphabet $\Sigma$ der formalen Definition und analog beschreibt |b| die Ausgabe als Äquivalent zum Ausgabealphabet $\Omega$. Die Zustandsübergangsfunktion $\delta$ und die Ausgabefunktion $\lambda$ ergibt sich aus der jeweils konkreten Implementierung des Mealy. Die Menge der Zustände $Q$ wird jeweils von der konkreten Mealy Implementierung gekapselt, wie in \fref{lst:state-mealy-beispiel} anhand eines Beispiels veranschaulicht wird.
+
+Es lässt sich bereits feststellen, dass die in Haskell gewählte Form des Mealy Automatens weit mehr als nur ein endlicher Automat ist, da die Mächtigkeit des Ein- und Ausgabealphabets unendlich sein kann, wie dies zum Beispiel bei der Menge der natürlichen Zahlen (abzählbar unendlich) der Fall ist. Daraus folgt zusätzlich, dass auch die Menge der Zustände unendlich sein kann (Zählmaschine).
 
 \begin{haskell}[label={lst:haskell-mealy},caption={[Definition Mealy in Haskell]Definition Mealy in Haskell\protect\footnotemark}]
-newtype Mealy a b = Mealy { runMealy :: a -> (b, Maely a b) }
+newtype Mealy a b = Mealy { runMealy :: a -> (b, Mealy a b) }
 \end{haskell}
 \footnotetext{https://hackage.haskell.org/package/machines-0.4.1/docs/Data-Machine-Mealy.html}
 
-Für diese Definition einer Meleay lassen sich einige nützlicher Klassen finden, die wir aber hier überspringen da wir in \fref{sec:konkret-rendersystem} für unsere erweiterte monadische Definition eigene Implementierungen entwickeln werden.
+Für diese Definition einer Meleay existieren einige nützliche Klassen. Die Klassen werden an dieser Stelle übersprungen, da 
+später für die erweiterte monadische Definition eigene Implementierungen entwickelt werden (\fref{sec:konkret-rendersystem}).
 
-Allgemein lässt sich die Funktionsweise von |Mealy| wie folgt beschreiben: Zu jeder Eingabe |a| erzeugt die Ausfühung von |Mealy| durch |runMealy| eine Ausgabe |b| und einen neuen Mealy-Automaten, der die selbe Eingabesprache in die selbe Ausgabesprache übersetzt. Im einfachsten Fall ist der neu erzeugte Mealy-Automat exakt der gleiche aus dem vorherigen Schritt. Ist dies für das gesamte Eingabealphabet gegeben gilt der Automat als zustandslos.
+Allgemein lässt sich die Funktionsweise von |Mealy| wie folgt beschreiben:\\
+|runMealy| führt mit einer Eingabe vom Typ |a| den |Mealy| aus und erzeugt eine Ausgabe vom Typ |b| und einen neuen Mealy-Automaten, der die selbe Eingabesprache in die selbe Ausgabesprache übersetzt. Im einfachsten Fall ist der neu erzeugte Mealy-Automat exakt der gleiche aus dem vorherigen Schritt. Ist dies für das gesamte Eingabealphabet gegeben, gilt der Automat als zustandslos.
 
 Für die Konstruktion eines Mealy-Automatens mit lokalem Zustand folgt aus der formalen Definition \ref{def:mealy-formal} die Notwendigkeit einer Zustandsübergangsfunktion $\delta$ und einem Startzustand $q_0$. Hiefür definieren wir uns in \fref{lst:state-mealy-ctr} die Hilfsfunktion |localStateMealy|. Der erste Parameter |s -> a -> (b, s)| beschreibt die Kombination der beiden Funktionen $\delta$ und $\lambda$, der zweite Parameter den Startzustand $q_0$.
 
@@ -53,10 +59,10 @@ localStateMealy :: (s -> a -> (b, s)) -> s -> Mealy a b
 localStateMealy stateTransition initState = run initState where
   run state = Mealy (\input -> 
     let (output, state') = stateTransition state input 
-    in (output, stateTransition state'))
+    in (output, run state'))
 \end{haskell}
 
-Mit Hilfe der Funktion |localStateMealy| wird ein Mealy-Automat erzeugt, der bei jeder Ausführung die |stateTransition| Funktion auf die aktuellen Eingabe |input| und den momentanen Zustand |state| anwendet um eine Ausgabe |output| und einen neuen Zustand |state'| zu erzeugen. |output| wird in Verbindung mit dem für die nächste Ausführung neu konstruiertem Meleay-Automaten als Resultat zurück geliefert.
+Mit Hilfe der Funktion |localStateMealy| wird ein Mealy-Automat erzeugt, der bei jeder Ausführung die |stateTransition| Funktion auf die aktuellen Eingabe |input| und den momentanen Zustand |state| anwendet, um eine Ausgabe |output| und einen neuen Zustand |state'| zu erzeugen. |output| und der rekursiv mit dem neuen Zustand erzeugte Meleay-Automat werden als Resultat zurück geliefert.
 
 In \fref{lst:state-mealy-beispiel} konstruieren wir einen einfachen Mealy-Automaten der ganzzahlige Eingaben akkumuliert und ausgibt. Abschließend wird in \fref{lst:state-mealy-ausfuehrung} ein Ausführungsbeispiel für |sumMealy| demonstriert.
 
@@ -68,14 +74,14 @@ sumMealy = localStateMealy sumInState 0 where
 
 \begin{haskell}[label={lst:state-mealy-ausfuehrung},nolol,caption={Ausführung Mealy-Automat mit lokalem Zustand}]
 > let m0 = sumMealy
-> let m1 = runMealy m 5
-> fst m1
+> let (a,m1) = runMealy m0 5
+> a
 0
-> let m2 = runMealy m1 8
-> fst m2
+> let (b,m2) = runMealy m1 8
+> b
 5
-> let m3 = runMealy m2 0
-> fst m3
+> let (c,m3) = runMealy m2 0
+> c
 13
 \end{haskell}
 
