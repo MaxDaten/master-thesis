@@ -1,14 +1,14 @@
 \chapter{Überblick über das Rendersystem der Engine}
 \label{chap:ueberblick-pipeline}
 
-Auf Grund des Umfangs des Projekts ist es nicht möglich einen all umfassenden Überblick über die Engine zu geben. Die Betrachtung im Detail beschränk sich im Folgenden auf die entwickelte Renderkomponente der Engine und die dahinter stehenden Konzepte und Überlegungen.
+Auf Grund des Umfangs des Projekts ist es nicht möglich einen all umfassenden Überblick über die Engine zu geben. Die Betrachtung im Detail beschränkt sich im Folgenden auf die entwickelte Renderkomponente der Engine und die dahinter stehenden Konzepte und Überlegungen. Es wird anhand der Quelltextbeispiele demonstriert, dass sich der Umfang der funktionalen Konzepte überschaubar gestaltet. Und dennoch ermöglichen diese Konzepte eine hohe Flexibilität. Sobald die Konzepte verstanden sind, erhöht die Kompaktheit dieser Konzepte die Lesbarkeit und erleichtert den Zugang zu strukturellen ähnlich gelagerten Problemen.
 
 \section{Das Rendersystem}
 
 % anforderung
 Moderne Renderverfahren, wie zum Beispiel Deferred Rendering, bestehen aus mehreren einzelnen Renderschritten. In der Regel erzeugt jeder Renderschritt Daten, oft in Form von Texturen oder Buffern. Die Daten dienen den nachfolgenden Renderschritten als Basis für weitere Berechnungen. Daraus ergibt sich ein Abhängigkeitsnetzwerk aus Eingabe und Ausgaben einzelner Renderschritte. Ein Renderschritt kann wiederum aus kleineren Renderschritten zusammengesetzt sein.
 
-Bei der Entwicklung der Renderkomponente wurde das Ziel verfolgt, dass sich die einzelen Renderschritte möglichst komponierbar anwenden lassen. Weiter sollen die einzelen Renderschritte die Möglichkeit erhalten ihren inneren Zustand selbst zu verwalten und Implementierungsdetails zu verbergen. Auf Kompositionsebene sollen Implementierungsdetails möglichst vermeidbar sein.
+Bei der Entwicklung der Renderkomponente wurde das Ziel verfolgt, dass sich die einzelen Renderschritte möglichst komponierbar anwenden lassen. Zusätzlich sollen die einzelen Renderschritte die Möglichkeit erhalten ihren inneren Zustand selbst zu verwalten und Implementierungsdetails zu verbergen. Auf Kompositionsebene sollen Implementierungsdetails möglichst vermeidbar sein.
 
 Die Konzeption des Renderystems startet mit einer formal abstrakten Definition auf Basis eines Mealy Automatens. Die formale Definition wird mit weiteren abstrakten funktionalen Konzepten schrittweise erweitert. Kleine praxisnahe Beispiele demonstrieren, wie die Erweiterungen die Flexibilität und Komponierbarkeit der Renderschritte erhöhen.
 
@@ -39,7 +39,7 @@ Die Definition ließe sich noch um die Menge der finalen Endzustände $F \subset
 
 Ein Mealy Automat lässt sich in Haskell abstrakt wie in \fref{lst:haskell-mealy} definieren. {\ttfamily a} beschreibt die Eingabe als Äquivalent zum Eingabealphabet $\Sigma$ der formalen Definition und analog beschreibt |b| die Ausgabe als Äquivalent zum Ausgabealphabet $\Omega$. Die Zustandsübergangsfunktion $\delta$ und die Ausgabefunktion $\lambda$ ergibt sich aus der jeweils konkreten Implementierung des Mealy. Die Menge der Zustände $Q$ wird jeweils von der konkreten Mealy Implementierung gekapselt, wie in \fref{lst:state-mealy-beispiel} anhand eines Beispiels veranschaulicht wird.
 
-Es lässt sich bereits feststellen, dass die in Haskell gewählte Form des Mealy Automatens weit mehr als nur ein endlicher Automat ist, da die Mächtigkeit des Ein- und Ausgabealphabets unendlich sein kann, wie dies zum Beispiel bei der Menge der natürlichen Zahlen (abzählbar unendlich) der Fall ist. Daraus folgt zusätzlich, dass auch die Menge der Zustände unendlich sein kann (Zählmaschine).
+Im Gegensatz zur formalen Definition eines Mealy Automatens lässt sich feststellen, dass die in Haskell gewählte Form des Mealy Automatens weit mehr als nur ein endlicher Automat ist. Die Mächtigkeit des Ein- und Ausgabealphabets ist in der Haskell-Definition nicht beschränkt. Beispielsweise lässt sich ein Haskell-Mealy Automat als Zählmaschine umsetzen. Die Maschine akzeptiert die Menge der natürlichen Zahlen (abzählbar unendlich) und zählt zum Beispiel die geraden Zahlen. Daraus folgt, dass bei dem Haskell-Mealy Automaten die Menge der Zustände unendlich sein kann.
 
 \begin{haskell}[label={lst:haskell-mealy},caption={[Definition Mealy in Haskell]Definition Mealy in Haskell\protect\footnotemark}]
 newtype Mealy a b = Mealy { runMealy :: a -> (b, Mealy a b) }
@@ -50,9 +50,9 @@ Für diese Definition einer Meleay existieren einige nützliche Klassen. Die Kla
 später für die erweiterte monadische Definition eigene Implementierungen entwickelt werden (\fref{sec:konkret-rendersystem}).
 
 Allgemein lässt sich die Funktionsweise von |Mealy| wie folgt beschreiben:\\
-|runMealy| führt mit einer Eingabe vom Typ |a| den |Mealy| aus und erzeugt eine Ausgabe vom Typ |b| und einen neuen Mealy-Automaten, der die selbe Eingabesprache in die selbe Ausgabesprache übersetzt. Im einfachsten Fall ist der neu erzeugte Mealy-Automat exakt der gleiche aus dem vorherigen Schritt. Ist dies für das gesamte Eingabealphabet gegeben, gilt der Automat als zustandslos.
+|runMealy| führt mit einer Eingabe vom Typ |a| den |Mealy| aus und erzeugt eine Ausgabe vom Typ |b| und einen neuen Mealy-Automaten, der die selbe Eingabesprache in die selbe Ausgabesprache übersetzt. Im einfachsten Fall ist der neu erzeugte Mealy Automat exakt der gleiche aus dem vorherigen Schritt. Ist dies für das gesamte Eingabealphabet gegeben, gilt der Automat als zustandslos.
 
-Für die Konstruktion eines Mealy-Automatens mit lokalem Zustand folgt aus der formalen Definition \ref{def:mealy-formal} die Notwendigkeit einer Zustandsübergangsfunktion $\delta$ und einem Startzustand $q_0$. Hiefür definieren wir uns in \fref{lst:state-mealy-ctr} die Hilfsfunktion |localStateMealy|. Der erste Parameter |s -> a -> (b, s)| beschreibt die Kombination der beiden Funktionen $\delta$ und $\lambda$, der zweite Parameter den Startzustand $q_0$.
+Für die Konstruktion eines Mealy Automaten mit lokalem Zustand folgt aus der formalen Definition \ref{def:mealy-formal} die Notwendigkeit einer Zustandsübergangsfunktion $\delta$ und einem Startzustand $q_0$. Hiefür definieren wir uns in \fref{lst:state-mealy-ctr} die Hilfsfunktion |localStateMealy|. Der erste Parameter |s -> a -> (b, s)| beschreibt die Kombination der beiden Funktionen $\delta$ und $\lambda$, der zweite Parameter den Startzustand $q_0$.
 
 \begin{haskell}[label={lst:state-mealy-ctr},caption={[Konstruktion Mealy mit lokalem Zustand]Hilfsfunktion zur Konstruktion eines Mealy-Automatens mit lokalem Zustand}]
 localStateMealy :: (s -> a -> (b, s)) -> s -> Mealy a b
@@ -62,17 +62,17 @@ localStateMealy stateTransition initState = run initState where
     in (output, run state'))
 \end{haskell}
 
-Mit Hilfe der Funktion |localStateMealy| wird ein Mealy-Automat erzeugt, der bei jeder Ausführung die |stateTransition| Funktion auf die aktuellen Eingabe |input| und den momentanen Zustand |state| anwendet, um eine Ausgabe |output| und einen neuen Zustand |state'| zu erzeugen. |output| und der rekursiv mit dem neuen Zustand erzeugte Meleay-Automat werden als Resultat zurück geliefert.
+Mit Hilfe der Funktion |localStateMealy| wird ein Mealy Automat erzeugt, der bei jeder Ausführung die |stateTransition| Funktion auf die aktuellen Eingabe |input| und den momentanen Zustand |state| anwendet, um eine Ausgabe |output| und einen neuen Zustand |state'| zu erzeugen. |output| und der rekursiv mit dem neuen Zustand erzeugte Meleay-Automat werden als Resultat zurück geliefert.
 
 In \fref{lst:state-mealy-beispiel} konstruieren wir einen einfachen Mealy-Automaten der ganzzahlige Eingaben akkumuliert und ausgibt. Abschließend wird in \fref{lst:state-mealy-ausfuehrung} ein Ausführungsbeispiel für |sumMealy| demonstriert.
 
-\begin{haskell}[label={lst:state-mealy-beispiel},caption={[Beispiel Mealy-Automat mit lokalem Zustand]Beispiel Mealy-Automat mit lokalem Zustand}]
+\begin{haskell}[label={lst:state-mealy-beispiel},caption={[Beispiel Mealy Automat mit lokalem Zustand]Beispiel Mealy Automat mit lokalem Zustand}]
 sumMealy :: Mealy Int Int
 sumMealy = localStateMealy sumInState 0 where
 	sumInState state input = (state, state + input)
 \end{haskell}
 
-\begin{haskell}[label={lst:state-mealy-ausfuehrung},nolol,caption={Ausführung Mealy-Automat mit lokalem Zustand}]
+\begin{haskell}[label={lst:state-mealy-ausfuehrung},nolol,caption={Ausführung Mealy Automat mit lokalem Zustand}]
 > let m0 = sumMealy
 > let (a,m1) = runMealy m0 5
 > a
@@ -88,16 +88,18 @@ sumMealy = localStateMealy sumInState 0 where
 \subsection{Konkrete Definition des Rendersystems}
 \label{sec:konkret-rendersystem}
 
-In diesem Abschnitt wird die Anforderungen an das Rendersystem konkretisiert. Aus der konkreten Anforderungen wird die Notwenigkeit abgleitet, die bisherige Haskell Definition der Mealy zu erweitern. Abschließend werden eine Reihe funktionaler Konzepte für die erweiterte Version des Mealy-Automatens entwickelt. Es wird aufgezeigt, wie diese Konzepte bei der Komposition der Mealy-Automaten helfen, une wie sich die kleinen Bausteine zu einem Rendersystem zusammensetzen lassen.
+In diesem Abschnitt wird die Anforderungen an das Rendersystem konkretisiert. Aus der konkreten Anforderungen wird die Notwenigkeit abgleitet, die bisherige Haskell Definition der Mealy zu erweitern. Abschließend werden eine Reihe funktionaler Konzepte für die erweiterte Version des Mealy Automatens entwickelt. Es wird aufgezeigt, wie diese Konzepte bei der Komposition der Mealy Automaten helfen, une wie sich die kleinen Bausteine zu einem Rendersystem zusammensetzen lassen.
 
 \subsubsection{Anforderung}
-Ein konkretes Rendersystem soll sich aus mehreren Renderschritten, den Renderpasses\footnote{oder Passes, Singular Pass}, zusammensetzen. Durch die rekursive Definition kann ein Renderpass wiederum ein beliebig komplexes Rendersystem darstellen, so dass zwischen Rendersystem und Renderpass nur semantisch unterschieden wird. Jeder konkrete Pass soll einen konkret definierten Eingabetypen und einen konkret definierten Ausgabetypen besitzen. Ein Renderpass übersetzt die Eingabe in eine Ausgabe und kapselt alle dafür notwendigen Zustände und Vorgänge. Zustandsveränderungen sollen nicht direkt von außen vorgenommen werden können. Zu dem internen Zustand eines Renderpasses gehören beispielsweise Ressourcen wie Framebuffer oder Shader. Der interne Zustand soll nur vom Renderpass selbst sichbar gemacht werden können, und dass auch nur, wenn (ein Teil-) Zustand vom Renderpass in die Ausgabe geleitet wird. Direkte Veränderungen des internen Zustands sind von vornherein ausgeschlossen, da in Haskell Daten unveränderlich\footnote{ausgenommen über Konstrukte wie \texttt{MVars} oder \texttt{IORefs}} sind.
+Ein konkretes Rendersystem soll sich aus mehreren Renderschritten, gennannt Renderpasses\footnote{oder Passes, Singular Pass}, zusammensetzen. Durch die rekursive Definition kann ein Renderpass wiederum ein beliebig komplexes Rendersystem darstellen, so dass zwischen Rendersystem und Renderpass nur semantisch unterschieden wird. Jeder konkrete Pass soll einen konkret definierten Eingabetypen und einen konkret definierten Ausgabetypen besitzen. Ein Renderpass übersetzt die Eingabe in eine Ausgabe und kapselt alle dafür notwendigen Zustände und Vorgänge. Zustandsveränderungen sollen nicht direkt von außen vorgenommen werden können. Zu dem internen Zustand eines Renderpasses gehören beispielsweise Ressourcen wie Framebuffer oder Shader. Der interne Zustand soll nur vom Renderpass selbst sichbar gemacht werden können, und dass auch nur, wenn (ein Teil-) Zustand vom Renderpass in die Ausgabe geleitet wird. Direkte Veränderungen des internen Zustands sind von vornherein ausgeschlossen, da in Haskell Daten unveränderlich\footnote{ausgenommen über Konstrukte wie \texttt{MVars} oder \texttt{IORefs}} sind.
 
-Die Definition des Mealy-Typens aus \fref{lst:haskell-mealy} dient als gedankliche Grundlage für die folgende Definition des Rendersystem, da mit \ref{lst:state-mealy-ctr} gezeigt wurde, dass sich Zustände kapseln lassen. Aus den Anforderungen an das Rendersystem OpenGL-Methoden aufzurufen zu können ergibt sich, dass das Konzept des Mealy-Typen noch um einen monadischen Basistypen erweitert werden muss. Wird eine |IO| basierte Monade als monadischer Basistyp verwendet, erlaubt das die Ausführung von |IO| Operationen innerhalb der Mealy. Damit die Mealy auf keinen konkreten monadischen Typen festlegen werden muss, wird das Rendersystem als monadischer Transformator (Monad-Transformer) konstruiert. Die Form des monadischen Transformators erlaubt es, Operationen aus einer anderen Monade, der Basismonade, in unsere Ausführung zu heben (lifting). So kann das Rendersystem über eine |Writer|-Monade die Fähigkeit erhalten, Vorgänge zu protokollieren. Über eine |Reader|-Monade können sich die Renderschritte eine unveränderliche Umgebung (Environment), zum Beispiel als Konfiguration, teilen. Durch das sogenannte `Stacken' von Monaden ist es möglich die Eigenschaften der unterschiedlichsten Monaden unter einer Monade zusammenzufassen, es entsteht ein Monad-Stack, mit allen kombinierten Eigenschaften jeder Monade.
+Die Definition des Mealy-Typens aus \fref{lst:haskell-mealy} dient als gedankliche Grundlage für die folgende Definition des Rendersystem, da mit \ref{lst:state-mealy-ctr} gezeigt wurde, dass sich Zustände kapseln lassen. Aus den Anforderungen an das Rendersystem OpenGL-Methoden aufzurufen zu können ergibt sich, dass das Konzept des Mealy-Typen noch um einen monadischen Basistypen erweitert werden muss. Wird eine |IO| basierte Monade als monadischer Basistyp verwendet, erlaubt das die Ausführung von |IO| Operationen innerhalb der Mealy. Damit die Mealy auf keinen konkreten monadischen Typen festlegen werden muss, wird das Rendersystem als monadischer Transformator (Monad-Transformer) konstruiert. Die Form des monadischen Transformators erlaubt es, Operationen aus einer anderen Monade, der Basismonade, in unsere Ausführung zu heben (lifting). So kann das Rendersystem, beispielsweise über eine |Writer|-Monade, die Fähigkeit erhalten, Vorgänge zu protokollieren und über üine |Reader|-Monade können sich die Renderschritte eine unveränderliche Umgebung (Environment), zum Beispiel als Konfiguration, teilen. Durch das sogenannte `Stacken' von Monaden ist es möglich die Eigenschaften der unterschiedlichsten Monaden unter einer Monade zusammenzufassen, es entsteht ein Monad-Stack, mit allen kombinierten Eigenschaften jeder Monade. Werden zum Beispiel die |ReaderT|\footnotemark und |WriterT|\footref{note:reader-writer-trans} Monaden gestackt, entsteht eine Monade die sowohl eine unveränderliche Umgebung bereitstellt und als auch Vorgänge protokollieren kann\footnote{http://en.wikibooks.org/wiki/Haskell/Monad\_transformers}.
+
+\footnotetext{\label{note:reader-writer-trans}Monadische Transformater Version von \texttt{Reader} bzw. \texttt{Writer}}
 
 \subsubsection{Definition}
 
-Aus den oben gegebenen Anforderungen kann jetzt die Definition für |RenderSystem| in \fref{lst:definition-rendersystem} formuliert werden. |m| entspricht der Basismonade, |i| ist der Typparameter für die Eingabe in das Rendersystem und respektive |o| der Typparameter für die Ausgabe. Das Ausführen eines |RenderSystems| liefert, im Gegensatz zum Mealy-Automaten, als Ergebnis eine monadische Operation mit der Ausgabe |o| und dem neuen |RenderSystem| für die nächste Ausführung. In \fref{lst:rendersystem-beispiel-reader} wird ein einfaches zustandsloses |RenderSystem| auf Basis der |Reader|-Monade definiert und in \fref{lst:rendersystem-ausfuehrung-beispiel} exemplarisch ausgeführt. Das |RenderSystem| gibt den momentanen Integerwert der Umgebung auf stdout aus und liefert den Eingabewert unverändert zurück. Der Integerwert der Reader-Monade könnte zum Beispiel einen globalen Frame-Counter repräsentieren.
+Aus den oben gegebenen Anforderungen kann jetzt die Definition für |RenderSystem| in \fref{lst:definition-rendersystem} formuliert werden. |m| entspricht der Basismonade, |i| ist der Typparameter für die Eingabe in das Rendersystem und respektive |o| der Typparameter für die Ausgabe. Das Ausführen eines |RenderSystems| liefert, im Gegensatz zum Mealy Automaten, als Ergebnis eine monadische Operation mit der Ausgabe |o| und dem neuen |RenderSystem| für die nächste Ausführung. In \fref{lst:rendersystem-beispiel-reader} wird exemplarisch ein einfaches zustandsloses |RenderSystem| auf Basis der |Reader|-Monade definiert und in \fref{lst:rendersystem-ausfuehrung-beispiel} die Funktionsweise demonstiert. Das |RenderSystem| gibt den momentanen Integerwert der Umgebung auf stdout aus und liefert den Eingabewert unverändert zurück. Der Integerwert der Reader-Monade könnte zum Beispiel einen globalen Frame-Counter repräsentieren.
 
 \begin{haskell}[label={lst:definition-rendersystem},caption={Definition Rendersystem}]
 newtype RenderSystem m i o = RenderSystem { runRenderSystem :: i -> m (o, RenderSystem m i o) }
@@ -158,7 +160,7 @@ mkDynamicRenderPass = RenderSystem
 \subsubsection{Klassen-Instanzen}
 \label{sec:rendersystem-klassen-instanzen}
 
-In \fref{sec:abstrakte-definition-haskell} wurde bereits erwähnt, dass sich für den Mealy-Typen nützliche Klassen-Instanzen implementieren lassen. Die konkreten Implementierungen für den Mealy-Typen wurden übersprungen aber in diesem Kapitel werden äquivalente Implementierungen für unseren Typen |RenderSystem| entwickelt. Aus Platzgründen werden nur die jeweils minimal notwendigen Definitionen angegeben, vollständige Definition finden sich im Modul |Yage.Rendering.RenderSystem| im Projekt.
+In \fref{sec:abstrakte-definition-haskell} wurde bereits erwähnt, dass sich für den Mealy-Typen nützliche Klassen-Instanzen implementieren lassen. Die konkreten Implementierungen für den Mealy-Typen wurden übersprungen aber in diesem Kapitel werden äquivalente Implementierungen für unseren Typen |RenderSystem| entwickelt. Aus didaktischen werden nur die jeweils minimal notwendigen Definitionen angegeben, vollständige Definition finden sich im Projekt-Modul |Yage.Rendering.RenderSystem|.
 
 Praktische Anwendungen werden in \fref{chap:anwendungsbeispiele} gegeben, doch eine umfassende Übersicht kann auf Grund des Umfangs nicht gegegeben werden. Umfassende Beispiele finden sich ebenso im Projekt beispielsweise im Modul \linebreak|Yage.Rendering.Pipeline.Deferred|.
 
@@ -168,7 +170,7 @@ Praktische Anwendungen werden in \fref{chap:anwendungsbeispiele} gegeben, doch e
 %%%
 
 \paragraph{Functor} 
-Funktoren, im Folgenden Functor genannt, beschreiben in der Kategorientheorie eine strukturerhaltene Abbildung (Homomorphismus) zwischen zwei Kategorien. In Haskell ist die Klasse der Functoren wie in \fref{lst:class-functor} definiert. Das erste intuitive Verständnis eines |Functor|s in Haskell ist eine Containerstruktur, deren Inhalt von einem Typen |a| auf den Typen |b| überführt werden kann, ähnlich dem |map| für die Listen. Zur Klasse der Functoren gehören darüber hinaus noch weit mehr Strukturen. Zum Beispiel lassen sich auch die Ergebnisse von Funktionen homomorph in eine andere Kategorie überführen ohne die Struktur der Berechnung zu verändern.
+Funktoren, im Folgenden Functor genannt, beschreiben in der Kategorientheorie einer strukturerhaltene Abbildung (Homomorphismus) zwischen zwei Kategorien. In Haskell ist die Klasse der Functoren wie in \fref{lst:class-functor} definiert. Das erste intuitive Verständnis eines |Functor|s in Haskell ist eine Containerstruktur, deren Inhalt von einem Typen |a| auf den Typen |b| überführt werden kann, ähnlich dem |map| für die Listen. Zur Klasse der Functoren gehören darüber hinaus noch weit mehr Strukturen. Zum Beispiel lassen sich auch die Ergebnisse von Funktionen homomorph in eine andere Kategorie überführen ohne die Struktur der Berechnung zu verändern.
 
 \begin{haskell}[label={lst:class-functor},caption={Functor Klasse\protect\footnotemark},nolol]
 class Functor f where
@@ -176,7 +178,7 @@ class Functor f where
 \end{haskell}
 \footnotetext{http://hackage.haskell.org/package/base-4.7.0.2/docs/Data-Functor.html}
 
-\Fref{lst:rendersystem-functor} definiert eine Functor Instanz für den |RenderSystem| Typen. Beschrieben wird die Überführung des Ergebnistypens |o| in einen neuen Ergebnistypen |c| (siehe konkrete Signatur für |fmap|). Die Implementierung verdeutlich, dass die Struktur der Berechnung nicht verändert wird. Es wird lediglich der Ausgabetyp des \linebreak|RenderSystem| in einen neuen Ausgabetyp überführt. Diese Functor Instanz ermöglicht es beispielsweise den Ausgabetypen eines |RenderPass|es, mit Hilfe einer Tranformationsfunktion |f| als Adapter, in den Eingabetypen eines nachfolgenden \linebreak|RenderPass|es zu überführen.
+\Fref{lst:rendersystem-functor} definiert eine Functor Instanz für den |RenderSystem| Typen. Beschrieben wird die Überführung des Ergebnistypens |o| in einen neuen Ergebnistypen |c| (siehe konkrete Signatur für |fmap|). Die Implementierung verdeutlicht, dass die Struktur der Berechnung nicht verändert wird. Es wird lediglich der Ausgabetyp des \linebreak|RenderSystem| in einen neuen Ausgabetyp überführt. Diese Functor Instanz ermöglicht es beispielsweise den Ausgabetypen eines |RenderPass|es, mit Hilfe einer Tranformationsfunktion |f| als Adapter, in den Eingabetypen eines nachfolgenden \linebreak|RenderPass|es zu überführen.
 
 \begin{haskell}[label={lst:rendersystem-functor},caption={Functor Instanz für RenderSystem}]
 instance Monad m => Functor (RenderSystem m i) where
@@ -286,7 +288,7 @@ class Category cat where
 
 Auch |RenderSystem| beschreibt einen Morphismus von der Eingabe |i| zur Ausgabe |o|. Folglich gehört auch |RenderSystem| der Klasse der Category an. \fref{lst:rendersystem-category} listet die Implementierng der |Category| Klasse für |RenderSystem|. 
 
-Der Identitätsmorphismus ist ein |RenderSystem|, dass die Eingabe unverändert ausgibt. Die Komposition ist dadurch implementiert, dass  zuerst die am weitesten rechts stehende Eingabe |a| in das rechtes |RenderSystem| |mab| eingeben wird und die entsprechende Ausgabe |b| an das linke |RenderSystem| |mbc| weiter geleitet wird, um die finale Ausgabe |c| zu erhalten. Da die jeweiligen |RenderSysteme| sich dynamisch verändern können, werden die neu erzeugten RenderSysteme ebenso komponiert (mit |mbc' . mab'|). 
+Der Identitätsmorphismus ist ein |RenderSystem|, dass die Eingabe unverändert ausgibt. Die Komposition ist dadurch implementiert, dass  zuerst die am weitesten rechts stehende Eingabe |a| in das rechte |RenderSystem| |mab| eingeben wird und die entsprechende Ausgabe |b| an das linke |RenderSystem| |mbc| weiter geleitet wird, um die finale Ausgabe |c| zu erhalten. Da die jeweiligen |RenderSysteme| sich dynamisch verändern können, werden die neu erzeugten RenderSysteme ebenso komponiert (mit |mbc' . mab'|). 
 
 Die erlaubt auf elegenate Weise unterschiedliche Stufen eines |RenderSystems| hintereinander zu schalten und zu einem größeren Gesamtsystem zu komponieren. \Fref{lst:rendersystem-komposition-beispiel} zeigt an einem Beispiel, wie ein, durch die Komposition zweier unabhängig von einander definierten Textur-Filter, neuer Filter |bloom| erzeugt werden kann.
 
