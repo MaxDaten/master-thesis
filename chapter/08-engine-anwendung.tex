@@ -1,11 +1,13 @@
 \chapter{Anwendungsbeispiele}
 \label{chap:anwendung}
 
-Es folgt eine exemplarische Implementierung eines Tone-Map Render"-schritts. Die Aufgabe des Render"-schritts besteht darin eine HDR-Textur auf einen vom Monitor darstellbaren RGB Farbraum abzubilden. Die eigentliche Abbildung der Farbwerte wird im Shader |"res/glsl/sampling/tonemap.frag"| vorgenommen und ist hier, mit einem Verweis auf die Implementierung, nicht weiter aufgeführt. Die folgende Implementierung wird schrittweise erläutert und in Teilen aus didaktischen Gründen etwas gegenüber der eigentlichen Implementierung vereinfacht. Der zusammenhängende Quellcode dieses Beispiels findet sich in \fref{lst:tonemap-pass-vollstaendig}.
+Es folgt eine exemplarische Implementierung eines Tone-Map Render"-schritts. Die Aufgabe des Render"-schritts besteht darin eine HDR-Textur auf einen vom Monitor darstellbaren RGB Farbraum abzubilden. Die Berechnung der Farbwerte wird im Shader |"res/glsl/sampling/tonemap.frag"| vorgenommen und ist hier, mit einem Verweis auf die Implementierung, nicht weiter aufgeführt. Die folgende Implementierung wird schrittweise erläutert und in Teilen aus didaktischen Gründen etwas gegenüber der eigentlichen Implementierung vereinfacht. Der zusammenhängende Quellcode dieses Beispiels findet sich in \fref{lst:tonemap-pass-vollstaendig}.
 
 \paragraph{Ressourcenverwaltung} In der Implementierung wird eine eigene |Resource| Monade zur Verwaltung der Ressourcen auf Basis des |resourcet|\footnote{https://hackage.haskell.org/package/resourcet} Pakets verwendet. In dieser |Resource| Monade lassen sich Ressourcen akquirieren (zum Beispiel mit |glResource|) und über die |Applicative| und |Functor| Instanzen kombinieren. Verlässt das Programm den Kontext der |Resource| Monade, zum Beispiel beim Beenden der Renderloop, werden alle Ressourcen über die registrierte Operation freigegeben.
 
-\paragraph{StateVars} StateVars sind eine einfache Kapselung von zwei IO Operationen, von der eine Operation einen Wert abfragt und und die andere Operation einen Wert setzt. Oft werden StateVars in Verbindung mit externen (foreign) Biblitheken verwendet um veränderliche Zustände zu kapseln. StateVars können als normale Haskell Datenobjekte verwendet werden. Eine Ad-Hoc Implementierung findet sich in \fref{lst:statevar}.
+\paragraph{StateVars} |StateVars| kapseln zwei IO Operationen, von der eine Operation einen Wert abfragt und und die andere Operation einen Wert setzt. Oft werden StateVars in Verbindung mit externen (foreign) Biblitheken verwendet um veränderliche Zustände zu kapseln. StateVars können als normale Haskell Datenobjekte verwendet werden. Eine Ad-Hoc Implementierung findet sich in \fref{lst:statevar}.
+
+\newpage
 
 \begin{haskell}[label={lst:tonemap-pass-sig},caption={\texttt{ToneMapPass} Signatur},nolol]
 type ToneMapInput = (HDRSensor, Texture2D PixelHDR, Maybe (Texture2D PixelHDR))
@@ -13,7 +15,7 @@ type ToneMapOutput = (Texture2D PixelRGB8)
 type ToneMapPass = RenderPass ResIO ToneMapInput ToneMapOutput
 \end{haskell}
 
-Die Eingabe in unser |RenderPass| ist ein Triple aus |HDRSensor|, einer HDR Textur |Texture2D PixelHDR| und einer weiteren optionalen HDR Textur, die additiv mit der ersten gemischt wird. |HDRSensor| ist Teil einer |HDRCamera| und beinhaltet für das Tone-Mapping benötigte Größen, wie den Weiß-Punkt oder die Belichtung (Exposure). Die Ausgabe ist eine übliche RGB Textur.
+Die Eingabe in |ToneMapPass| ist ein Triple aus |HDRSensor|, einer HDR Textur |Texture2D PixelHDR| und einer weiteren optionalen HDR Textur, die additiv mit der ersten im Fragment-Shader gemischt wird. |HDRSensor| ist Teil einer |HDRCamera| und beinhaltet für das Tone-Mapping benötigte Größen, wie den Weiß-Punkt oder die Belichtung (Exposure). Die Ausgabe von |ToneMapPass| ist eine übliche RGB Textur.
 
 \begin{haskell}[label={lst:tonemap-pass-res},caption={\texttt{ToneMapPass} Resourcen Allokation},nolol]
 toneMap :: Resource ToneMapPass
@@ -32,7 +34,7 @@ toneMap = do
   return $ mkStaticRenderPass $ \(sensor, sceneTex, mBloomTex) -> do
 \end{haskell}
 
-In \fref{lst:tonemap-pass-res}, dem Ressourcenblock des Renderschritts, werden die Ressourcen akquiriert, die zur Ausführung der ab \fref{lst:tonemap-pass-run-resize} beschrieben Routine notwenig sind. Dazu gehören ein Vertex Array Objekt, Framebuffer Objekt und die aus dem Vertex-Shader |drawRectangle.vert| und dem Fragment-Shader |tonemap.frag| erzeugte OpenGL Pipeline\footnote{https://www.opengl.org/wiki/GLSL\_Object\#Program\_pipeline\_objects}. Die Uniform Variablen des Fragment-Shaders werden von |fragmentUniforms| als |StateVar|s gekapselt (siehe Verwendung \fref{lst:tonemap-pass-run-pipeline}). Zusätzlich erzeugen wir uns eine interne |IORef| für die Ausgabetextur. Da die verwendeten OpenGL Texturen\footnote{erzeugt mit \texttt{glTexStorage*}} in ihrer Größe unveränderlich sind, muss für neue Ausgabegrößen entsprechend auch jeweils eine neue Textur erzeugt werden (siehe \fref{lst:tonemap-pass-run-reize}). Dieses Texturobjekt speichern wir uns für den nächsten Aufruf in der |IORef|.
+In \fref{lst:tonemap-pass-res}, dem Ressourcenblock des Renderschritts, werden die Ressourcen akquiriert, die zur Ausführung der ab \fref{lst:tonemap-pass-run-resize} beschrieben Routine notwenig sind. Dazu gehören ein Vertex Array Objekt, Framebuffer Objekt und die aus dem Vertex-Shader |drawRectangle.vert| und dem Fragment-Shader |tonemap.frag| erzeugte OpenGL Pipeline\footnote{https://www.opengl.org/wiki/GLSL\_Object\#Program\_pipeline\_objects}. Die Uniform Variablen des Frag"-ment-Sha"-ders werden von |fragmentUniforms| als |StateVar|s gekapselt (siehe Verwendung \fref{lst:tonemap-pass-run-pipeline}). Zusätzlich wird eine ausschließlich intern verwendete |IORef| für die Ausgabetextur erzeugt. Da die verwendeten OpenGL Texturen\footnote{erzeugt mit \texttt{glTexStorage*}} in ihrer Größe unveränderlich sind, muss für neue Ausgabegrößen eine neue Textur erzeugt werden (siehe \fref{lst:tonemap-pass-run-resize}). |resizeTexture2D| nimmt diese Operation vor, in dem es die benötigten Werte der alten Textur übernimmt und eine neue Textur neuer Größe erzeugt. Die alte Textur wird freigegeben. Dieses Texturobjekt speichern wir uns für den nächsten Aufruf in der |IORef|.
 
 \begin{haskell}[label={lst:tonemap-pass-run-resize},caption={[ToneMapPass Größenanpassung des Framebuffers]\texttt{ToneMapPass} Größenanpassung des Framebuffers},nolol]
     target <- get outTexture
@@ -44,7 +46,7 @@ In \fref{lst:tonemap-pass-res}, dem Ressourcenblock des Renderschritts, werden d
     boundFramebuffer RWFramebuffer $= fbo
 \end{haskell}
 
-Gegebenenfalls wird die Ausgabetextur in ihrer Größe an die Größe der Basistextur angepasst. Da die Größenanpassung der Textur intern durch das Erzeugen einer neuen Textur durchgeführt wird, muss die neue Textur noch dem Framebuffer neu angefügt werden (\fref{lst:tonemap-pass-run-resize}).
+Die Größenanpassung der Ausgabetextur erzeugt eine neue Textur, so dass die neue Textur noch dem Framebuffer neu angefügt werden muss (\fref{lst:tonemap-pass-run-resize}).
 
 \begin{haskell}[label={lst:tonemap-pass-run-pipeline},caption={\texttt{ToneMapPass} Zuweisung an Uniform Variablen},nolol]
     boundProgramPipeline $= pipeline^.pipelineProgram
@@ -54,7 +56,7 @@ Gegebenenfalls wird die Ausgabetextur in ihrer Größe an die Größe der Basist
     iHdrSensor $= sensor
 \end{haskell}
 
-In \fref{lst:tonemap-pass-run-pipeline} wird die erzeugte Shaderpipline für diesen Renderschritt aktiviert und den in |StateVar|s gekapselten Uniform Variablen des Fragment-Shaders Werte zugewiesen.
+In \fref{lst:tonemap-pass-run-pipeline} wird die erzeugte Shaderpipline für diesen Renderschritt global aktiviert und den, in |StateVar|s gekapselten, Uniform Variablen des Fragment-Shaders Werte des Sensors zugewiesen. Zusätzlich werden die Texturen an die jeweiligen Texture-Einheiten von OpenGL gebunden. Die Zuweisung ist auch entsprechend in den |StarVar|s gekapselt.
 
 \begin{haskell}[label={lst:tonemap-pass-run-draw-and-out},caption={\texttt{ToneMapPass} Draw-Call und Textur ausgeben},nolol]
     glDrawArrays GL_TRIANGLES 0 3
