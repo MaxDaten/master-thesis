@@ -5,11 +5,13 @@ In der vorliegenden Arbeit wurde eingangs in \fref{chap:engine-uebersicht} aus d
 
 Jede Branche und jedes Projekt besitzt eigene individuelle Anforderungen und Herausforderungen. In der Grafik-Engine-Entwicklung stellen die Grafik-\ac{API}s die Kernherausforderungen. In \fref{chap:modern-opengl} wurde am Beispiel von \textit{OpenGL} die Entwicklung der Grafik-\ac{API} betrachtet und welche Herausforderungen und Möglichkeiten diese Schnittstelle mit sich bringt.
 
-\fref{chap:loesungen-durch-fp} zitierte Entwicklergrößen aus der Spielebranche. Die getroffenen Aussagen geben die aktuellen Probleme in der Spiele- und Engine-Entwicklung wieder. Es wurde gezeigt, dass viele wesentlichen Probleme, die sich in den Industriesprachen C++ / C# oder Java auftun, in anderen Sprachen entweder konzeptionell keine Probleme darstellen oder bereits gelöst sind. Diese Diskussion wird in diesem Kapitel in \fref{xp:haskell} noch einmal abschließend aufgegriffen und um persönliche Einschätzungen des Autors erweitert.
+\fref{chap:loesungen-durch-fp} zitierte Entwicklergrößen aus der Spielebranche. Die getroffenen Aussagen geben die aktuellen Probleme in der Spiele- und Engine-Entwicklung wieder. Es wurde gezeigt, dass viele wesentlichen Probleme, die sich in den Industriesprachen C++, C\# oder Java auftun, in anderen Sprachen entweder konzeptionell keine Probleme darstellen oder bereits gelöst sind. Diese Diskussion wird in diesem Kapitel in \fref{sec:xp-haskell} noch einmal abschließend aufgegriffen und um persönliche Einschätzungen des Autors erweitert.
 
-% Aus der Motiviation heraus neue Wege und Konzepte für aktuelle Probleme in der Engine-Entwicklung zu su
+Aus der Motiviation heraus neue Wege und Lösungen für aktuelle Probleme in der Engine-Entwicklung zu suchen, wurde in \fref{chap:ueberblick-pipeline} eine Renderkomponente einer Engine in Haskell entwickelt. Es wurde gezeigt, dass einfache funktionale Konzepte zu einer hohen Komponierbarkeit mit geringen Reibungsverlusten der einzelen Bausteien führt.
 
-\section{Diskussion der Implementierung}
+Neben der theoretischen Konzeption war ein wesentlicher Teil dieser Arbeit die praktische Anwendung des Konzept. Es wurde Eingangs das Ziel gesteckt, dass in \fref{chap:pbr} beschriebene Verfahren, mit der entwickelten Renderkomponente umzusetzen. Die praktische Umsetzung eines aktuellen Echtzeit-Rendering-Verfahrens dient dabei als praktischer Beweis der Machbarkeit. Die Implementierung wird in diesem Kapitel in \fref{sec:diskussion-impl} noch einmal genauer beleuchtet.
+
+\section{Diskussion der Implementierung}\label{sec:diskussion-impl}
 
 \section{Erfahrungen mit Haskell}\label{sec:xp-haskell}
 
