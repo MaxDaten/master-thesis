@@ -1,41 +1,41 @@
 \chapter{Physically Based Rendering}
 \label{chap:pbr}
 
-\acl{PBR} beschreibt ein relativ neues Oberflächenmaterial- und Beleuchtungskonzept in der Spieleindustrie. Es basiert auf dem von Disney vorgestelltem Beleuchtungsmodell \parencite{Burley2012} oder \parencite{Gotanda}. Während Disney ein festes Beleuchtungsmodell entwickelte, gibt \ac{PBR} kein festes Regelwerk vor und ist daher vielmehr als ein Paradigma zu verstehen, das erlaubt die Wechselwirkung von Licht, Oberflächen und Betrachter allgemeingültig und möglichst akkurat zu simulieren \parencite[Kapitel 1]{Rousiers2014}. Es führt dabei auch kein weiteres Beleuchtungsmodell ein, sondern lässt sich mit unterschiedlichen Approximationen der BRDF nutzen. Nicht desto trotz bedeutet die Umstellung auf ein \ac{PBR} Verfahren eine komplette Umstellung der Produktions- und Renderpipeline. In diesem Kapitel geben wir einen kurzen Überblick über die Prinzipien von \ac{PBR} und Beweggründe, warum es sich lohnen könnte, dieses Konzept praktisch umzusetzen.
+\acl{PBR} beschreibt ein relativ neues Oberflächenmaterial- und Beleuchtungskonzept in der Spieleindustrie. Es basiert auf der Analyse der physikalischen Eigenschaften von Licht und Materialien von \cite{Gotanda}. Disney analysierte die unterschiedlichen beitragenen Komponenten der \ac{BRDF} und entwickelte für das Unternehmen ein festes Beleuchtungsmodell \parencite{Burley2012}. Während Disney ein festes Beleuchtungsmodell entwickelte, gibt \ac{PBR} keine festen Modelle vor. Es ist als ein Paradigma zu verstehen, das erlaubt die Wechselwirkung von Licht, Oberflächen und Betrachter allgemeingültig und möglichst akkurat zu simulieren \parencite[Kapitel 1]{Rousiers2014}. \ac{PBR} führt dabei auch kein weiteres Beleuchtungsmodell ein, sondern lässt sich mit unterschiedlichen Approximationen der BRDF nutzen. Die Beleuchtunsmodelle, die in der Praxis Verwendung finden, sind auch nicht neu. Trotzdem bedeutet die Umstellung auf ein \ac{PBR} Verfahren eine komplette Umstellung der Produktions- und Renderpipeline. Dieses Kapitel gibt einen kurzen Überblick über die Prinzipien von \ac{PBR} und die Beweggründe, warum es sich lohnen könnte, dieses Konzept praktisch umzusetzen.
 
-\section{Gründe für \acl{PBR}}
+\section{Gründe für Physically Based Rendering}
 \label{sec:pbr-warum}
 
-Die Fähigkeiten einer Grafikengine werden oft daran beurteilt wie plausibel und realistisch die synthetisierten Bilder wirken. Um entsprechende Bilder in Echtzeit rendern zu können, müssen Kompromisse eingegangen werden. Während offline Renderverfahren mehr Freiheiten haben sich dem Realismus anzunähern, sorgen die Approximationen der Ad-hoc Shading Modelle \parencite{Martinez2010} oft für Probleme.
+Die Fähigkeiten einer Grafikengine werden anhand der Plausibilität und dem Realismus der gerenderten Bilder beurteilt. Um entsprechende Bilder in Echtzeit rendern zu können, müssen Kompromisse eingegangen werden. Während offline Renderverfahren mehr Freiheiten haben sich dem Realismus anzunähern, sorgen die Approximationen der Ad-hoc Shading Modelle \parencite{Martinez2010} oft für Probleme.
 
-Der Künstler produziert 3D Modelle oft in einer von der Echtzeitengine isolierten Software Umgebung die ihre eigenen realistischem Beleuchtungsmodell besitzen. In den Ad-Hoc Modellen  gibt in der Regel nur wenige Oberflächenparameter, die zusätzlich in keinem physikalischen Zusammenhang zueinader gesetzt werden. Oft lassen sich die unterschiedlichen Parameter gar nicht direkt in einen physikalen Zusammenhang setzen, da sie überwiegend unabhängig von einander eingeführt wurden. Zum Beispiel wird das Ob und Wie Oberflächen die Umgebung spiegeln oft unabhängig vom sonstigen Lichtreflexionsverhalten (z.B. Spekularer Wert) gesteuert. Dies führt oft zu physikalisch inkorrekten Beleuchtungen. Dies führt zu vielen Spezialfällen und vielen Iterationen auf Künstlerseite, bis das Objekt mit der gewünschten Oberflächenbeleuchtung in der speziellen Szeneneinstellung dargestellt wird. Ändern sich die Beleuchtungsparameter und Szeneneinstellungen sind die mühsam justierten Einstellungen wieder hinfällig. 
+Der Künstler produziert 3D Modelle und die zugehörigen Texturen oft in einer von der Echtzeitengine isolierten Software Umgebung, das ihr eigenes realistisches Beleuchtungsmodell besitzt. In den Ad-Hoc Modellen gibt in der Regel nur wenige Oberflächenparameter, die zusätzlich in keinem physikalischen Zusammenhang zueinader gesetzt werden. Viele unterschiedlichen Parameter lassen sich gar nicht direkt in einen physikalen Zusammenhang setzen, da sie überwiegend unabhängig von einander eingeführt wurden. Zum Beispiel wird das Ob und Wie Oberflächen die Umgebung spiegeln in den Ad-Hoc Modellen unabhängig vom sonstigen Lichtreflexionsverhalten der Oberfläche (z.B. Spekularer Wert) gesteuert. Dies führt oft zu physikalisch inkorrekten Beleuchtungen und führt zu vielen Spezialfällen und vielen Iterationen auf Künstlerseite, bis das Objekt mit der gewünschten Oberflächenbeleuchtung in der speziellen Szeneneinstellung dargestellt wird. Ändern sich die Beleuchtungsparameter und Szeneneinstellungen sind die mühsam justierten Einstellungen wieder hinfällig.
 
-Mit \ac{PBR} werden die klassischen Ad-hoc zusammengestellten Beleuchtungsmodelle verworfen, damit Beleuchtungsmodelle entworfen werden können, deren Parameter sich in einem physikalisch sinnvollem Zusammenhang setzen lassen. Nur dadurch lassen sich Spezialfälle vermeiden und es lässt sich eine visuelle Konsistenz herstellen. Visuelle Konsistenz bedeutet in diesem Zusammhang, dass sich einmal konfigurierte Oberflächeneigenschaften in unterschiedlichen Beleuchtungssituationen realistisch plausibel und verhersagbar verhalten. 
+Mit \ac{PBR} werden die klassischen Ad-hoc zusammengestellten Beleuchtungsmodelle verworfen, damit Beleuchtungsmodelle entworfen werden können, deren Parameter sich in einem physikalisch sinnvollem Zusammenhang setzen lassen. Nur dadurch lassen sich Spezialfälle vermeiden und es lässt sich eine visuelle Konsistenz herstellen. Visuelle Konsistenz bedeutet in diesem Zusammhang, dass sich einmal konfigurierte Oberflächeneigenschaften in unterschiedlichen Beleuchtungssituationen realistisch plausibel und verhersagbar verhalten. Durch die Allgemeingültigkeit des Beleuchtungsmodells wird die Wiederverwendbarkeit und Komponierbarkeit der Oberflächenmaterialien erhöht.
 
 Dies wird dadurch erreicht, dass die Eigenschaften der Lichtquellen, die Oberflächeneingenschaften und der Betrachter von einander entkoppelt werden. Ziel ist meist ein einheitliches Beleuchtungsmodell zu entwickeln, das für alle möglichen Szeneneinstellungen geeignet ist und in sich konsistent ist.
 
 \section{Theoretische Grundlagen}
 \label{sec:pbr-grundlagen}
 
-Beleuchtungsmodelle werden unter dem Begriff \acf{BRDF} zusammengefasst. Allgemein beschreibt eine \ac{BRDF} das Reflexionsverhalten von Oberflächen. Sie lässt sich aus den zwei getrennten Termen für die diffuse $f_d$ und spekulare Reflexion $f_s$ zusammensetzen \parencite[Kapitel 3.1.2, Seite 7]{Rousiers2014}, so dass sich beide Terme getrennt von einander betrachten lassen. Das ermöglicht für $f_d$ und $f_s$ unterschiedliche unterschiedliche Modelle und spezialisierte Approximationen.
+Beleuchtungsmodelle werden unter dem Begriff \acf{BRDF} zusammengefasst. Allgemein beschreibt eine \ac{BRDF} das Reflexionsverhalten von Oberflächen. Sie lässt sich aus den zwei getrennten Termen für die diffuse $f_d$ und spekulare Reflexion $f_s$ zusammensetzen \parencite[Kapitel 3.1.2, Seite 7]{Rousiers2014}, so dass sich beide Terme getrennt von einander betrachten lassen. Das erlaubt die Wahl von unterschiedlichen Modellen und spezialisierten Approximationen für jeweils $f_d$ und $f_s$.
 
-Damit die physikalischen Eigenschaften der Oberflächen möglichst realistisch abgebildet werden können, wird ein geeignetes Beleuchtungsmodell (\acf{BRDF}) als Grundlage für die Lichtberechnung benötigt. Die klassischen Modelle wie Phong oder Blinn-Phong bieten hierbei wenige physikalische Einflussgrößen, und sind deswegen ungeeignet. Bei Phong bzw. Blinn-Phong wird zum Beispiel der spekulare Beitrag von Parametern beeinflusst, die sich weder intutiv greifen noch sich ohne weiteres direkt aus physikalischen Oberflächeneingenschaften ableiten lassen. Im Folgenden betrachten wir das Cook-Torrance Modell als Grundlage für unsere \ac{PBR} Implementierung und verwenden die in \fref{tab:pbr-notation} genannte Notation.
+Damit die physikalischen Eigenschaften der Oberflächen möglichst realistisch abgebildet werden können, wird ein geeignetes Beleuchtungsmodell (\ac{BRDF}) als Grundlage für die Lichtberechnung benötigt. Die klassischen Modelle, wie Phong oder Blinn-Phong, bieten hierbei wenige physikalische Einflussgrößen, und sind deswegen ungeeignet. Bei Phong bzw. Blinn-Phong wird beispielsweise der spekulare Beitrag von empirischen Parametern beeinflusst, die sich weder intutiv greifen noch sich direkt aus physikalischen Oberflächeneingenschaften ableiten lassen. Im Folgenden betrachten wir das Cook-Torrance Modell als Grundlage für unsere \ac{PBR} Implementierung und verwenden die in \fref{tab:pbr-notation} genannte Notation.
 
 \begin{align}
-	\label{eq:brdf-dekonstruiert}
 	% \caption{Dekonstruierte BRDF}
 	f(\vV,\vL) &= f_d(\vV,\vL) + f_s(\vV,\vL)
+	\label{eq:brdf-dekonstruiert}
 \end{align}
 
 \begin{table}
 \centering
 \begin{tabular}{c l}
 \hline
-	$\vV$ & Richtungsvektor zum Betrachter \\
-	$\vL$ & Richtungsvektor zur Lichtquelle \\
-	$\vN$ & Oberflächennormale \\
-	$\vH$ & Winkelhalbierende ($\frac{V + L}{\|V + L\|}$) \\
-	$\vR$ & Reflexion von $L$ an $N$ \\
+	$\vV$ 		& Richtungsvektor zum Betrachter \\
+	$\vL$ 		& Richtungsvektor zur Lichtquelle \\
+	$\vN$ 		& Oberflächennormale \\
+	$\vH$ 		& Winkelhalbierende ($\frac{V + L}{\|V + L\|}$) \\
+	$\vR$ 		& Reflexion von $L$ an $N$ \\
 	$m$ 	 	& Rauheitswert der Oberfläche (\textit{Roughness}) \\
  	$f$ 		& \textit{BRDF} \\
 	$f_d$ 		& Diffuser Term der \textit{BRDF} \\
@@ -50,9 +50,11 @@ Damit die physikalischen Eigenschaften der Oberflächen möglichst realistisch a
 
 \subsection{Cook-Torrance Modell}
 
-Das Reflexionsverhalten von Oberflächen wird in der Realität wesentlich von der Oberflächenbeschaffenheit des Materials bestimmt. Polierte Oberflächen spiegeln, im Gegensatz zu rauhen Oberflächen, die Umgebung und erhalten Glanzlichter bei direkter Beleuchtung. Irreguläre rauhe Oberflächen streuen das einfallende Licht ungleichmäßig in alle Richtungen.
+Das Reflexionsverhalten von Oberflächen wird in der Realität wesentlich von der Oberflächenbeschaffenheit des Materials aber auch dem Material an sich bestimmt. Ein realistisches Reflexionsmodell muss diese Oberflächenbeschaffenheiten und das Material berücksichtigen. Je mehr Oberflächenparameter in das Beleuchtungsmodell einfließen können, desto realistischer und plausibler das Ergebnis.
 
-Ein realistisches Reflexionsmodell muss diese Oberflächenbeschaffenheit berücksichtigen. In Echtzeitverfahren ist es nicht praktikabel die mikroskopischen Unebenheiten, genannt \textit{Microfacetten oder Microfecets} (siehe \fref{fig:microfacet}), exakt zu berechenen. Entsprechend wurden einige approximierende Microfacet Modelle entwickelt, die die Interaktion des Lichts mit den Facetten realistisch abbilden können.
+Beispielsweise spiegeln polierte Oberflächen die Umgebung und erhalten Glanzlichter bei direkter Beleuchtung. Irreguläre rauhe Oberflächen streuen das einfallende Licht ungleichmäßig in alle Richtungen. Wachs oder Haut lässt das Licht zum Teil in das Material eindringen und zerstreut es. Die glänzenden Reflexionen von metallischen Oberflächen werden durch die Leitfähigkeit des Materials bestimmt (siehe \fref{sec:pbr-dielektisch}).
+
+Viele Material- und Oberflächenparameter sind im Offline-Verfahren, und besonders in Echtzeitverfahren, nicht simulierbar. In Echtzeitverfahren ist es beispielsweise nicht praktikabel die mikroskopischen Unebenheiten, genannt \textit{Mikrofacetten oder Microfecets} (siehe \fref{fig:microfacet}), exakt zu berechenen. Entsprechend wurden einige approximierende Microfacet Modelle entwickelt, die die Interaktion des Lichts mit den Facetten, realistisch abbilden können.
 
 \begin{figure}
 	\label{fig:microfacet}
@@ -61,18 +63,18 @@ Ein realistisches Reflexionsmodell muss diese Oberflächenbeschaffenheit berück
 	\caption[Rauheit]{links: $m = 0$; rechts $m = 1$}
 \end{figure}
 
-Eines von ihnen ist das Cook-Torrance Modell \parencite{Cook1981}, welches mit dem Ziel entwickelt wurde die physikalischen Reflexionseigenschaften von rauhen und glatten Oberflächen realistischer abzubilden als es die klassischen Modelle ermöglichen \parencite[Seite 40]{Ngan2004}. Da sich das Cook-Torrance Modell auf spekulare Reflexionen konzentriert, verwenden wir das Cook-Torrance Modell auschließlich zur Berechnung des spekularen Anteils $f_s$ der BRDF. Der diffuse Anteil $f_d$ wird durch das klassische Lambert'sche Modell abgebildet und nicht weiter betrachtet. Denkbar sind aber auch andere Modelle für die diffuse Reflexion. In \fref{eq:cook-torrance-model} wird das Modell formal dargestellt.
-
+Eines von ihnen ist das Cook-Torrance Modell \parencite{Cook1981}, welches mit dem Ziel entwickelt wurde die physikalischen Reflexionseigenschaften von rauhen und glatten Oberflächen realistischer abzubilden, als die klassischen Modelle es ermöglichen \parencite[Seite 40]{Ngan2004}. Da sich das Cook-Torrance Modell auf spekulare Reflexionen konzentriert, verwenden wir das Cook-Torrance Modell auschließlich zur Berechnung des spekularen Anteils $f_s$ der BRDF. Der diffuse Anteil $f_d$ wird durch das klassische Lambert'sche Modell abgebildet und nicht weiter betrachtet. Denkbar sind aber auch andere Modelle für die diffuse Reflexion. In \fref{eq:cook-torrance-model} wird das Modell formal dargestellt
+.
 \begin{align}
 	\label{eq:cook-torrance-model}
 	% \caption{Cook-Torrance Illumination}
 	f_s(\vV,\vL) = \frac{\mathcal{F}(\vV,\vL)D(\vV,\vL)G(\vV,\vL)}{4(\vN \cdot \vV)(\vN \cdot \vL)}
 \end{align}
 
-Der spekulare Beitrag $f_s$ wird durch die drei Faktoren bestimmt: Dem Fresnel $\mathcal{F}$ Term, der Microfacet Richtungsverteilung, $D$ und der geometrischen Abschwächung (Geometrical Attenuation) $G$. Die Auswahl der konkreten Approximationen folgt der aus \cite[Seite 3]{Karis2013}.
+Der spekulare Beitrag $f_s$ wird durch die drei Faktoren bestimmt: Dem Fresnel $\mathcal{F}$ Term, der Mikrofacetten Richtungsverteilung (Microfacet Distribution Function), $D$ und der geometrischen Abschwächung (Geometrical Attenuation) $G$. Die Auswahl der konkreten Approximationen folgt der aus \cite[Seite 3]{Karis2013}.
 
 \subsubsection[Fresnel]{Fresnel $\mathcal{F}$}
-Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen stärker reflektieren, umso flacher der Betrachtungswinkel wird. Als Approximation wurde die \textit{Schlick Approximation} \parencite{Schlick1994} gewählt. In \cite{Lagarde2012} wurde eine weitere Modifikation vorgeschlagen um den Berechnungsaufwand zu reduzieren. Diese findet hier ebenso ihre Anwendung. $F_0$ beschreibt die Reflektanz für parallel zur Normale $\vN$ einfallendes Licht.
+Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen stärker reflektieren, umso flacher der Betrachtungswinkel wird. Als Approximation wurde die \textit{Schlick Approximation} \parencite{Schlick1994} gewählt. In \cite{Lagarde2012} wurde eine weitere Modifikation vorgeschlagen, um den Berechnungsaufwand im Shader zu reduzieren. Diese findet hier ebenso ihre Anwendung. $F_0$ beschreibt die Reflektanz (als Farbwert) für parallel zur Normale $\vN$ einfallendes Licht.
 
 \begin{align}
 	\label{eq:fresnel-schlick}
@@ -80,8 +82,8 @@ Der Fresnel Effekt beschreibt die Beobachtung, dass Oberflächen stärker reflek
 \end{align}
 
 
-\subsubsection[Facetten Normalverteilung]{Facetten Normalverteilung $D$} 
-$D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets entsprechend der Winkelhalbierenden $\vH$. Die Microfacets von glatten Oberflächen sind überwiegend gleich ausgerichtet, so dass Licht hauptsächlich entlang $R$ reflektiert wird. Raue Oberflächen besitzen eher zufällig ausgerichtete Mircofacets, so dass das reflektierte Licht breiter gestreut wird. Die Rauheit der Oberfläche wird mit $m$ im Intervall $[0,1]$ ausgedrückt. Zur Approximation von $D$ finden sich wiederum eine vielzahl von Modelle. Die Implementierung verwendet das als \textit{GGX} in \cite{Walter2007} vorgestellte Modell (siehe \fref{eq:ggx}).
+\subsubsection[Mikrofacetten Normalverteilung]{Mikrofacetten Normalverteilung $D$} 
+Die Funktion $D$ beschreibt die statistische Normalverteilung der Ausrichtung der Mikrofacetten entsprechend der Winkelhalbierenden $\vH$. Die Mikrofacetten von glatten Oberflächen sind überwiegend gleich ausgerichtet, so dass Licht hauptsächlich entlang $R$ reflektiert wird. Raue Oberflächen besitzen eher zufällig ausgerichtete Mikrofacetten, so dass das reflektierte Licht breiter gestreut wird. Die Rauheit der Oberfläche wird mit $m$ im Intervall $[0,1]$ ausgedrückt. Zur Approximation von $D$ finden sich wiederum eine Vielzahl von Modellen. Die Implementierung verwendet das als \textit{GGX} in \cite{Walter2007} vorgestellte Modell (siehe \fref{eq:ggx}).
 
 \begin{align}
 	\label{eq:ggx}
@@ -90,7 +92,7 @@ $D$ beschreibt die statistische Normalverteilung der Ausrichtung der Microfacets
 
 
 \subsubsection[Geometrische Abschwächung]{Geometrische Abschwächung $G$} 
-$G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich gegenseitig einfallendes oder reflektiertes Licht blockieren und sich somit gegenseitig schattieren ($G_1(\vL)$) oder Reflexionen maskieren ($G_1(\vV)$) können. Verwendet wird eine modifizierte Version der \textit{Schlick} Approximation, damit sie sich dem physikalisch präziseren Smith Modell annähert. Eine genauere Analyse des Smith Modells findet sich in \cite[Kapitel 6, Seite 33]{Heitz2014}.
+$G$ beschreibt einen Faktor, der die Tatsache simuliert dass Mikrofacetten sich gegenseitig einfallendes oder reflektiertes Licht blockieren und sich somit gegenseitig schattieren ($G_1(\vL)$) oder Reflexionen maskieren ($G_1(\vV)$) können. Verwendet wird eine modifizierte Version der \textit{Schlick} Approximation, damit sie sich dem physikalisch präziseren Smith Modell annähert. Eine genauere Analyse des Smith Modells findet sich in \cite[Kapitel 6, Seite 33]{Heitz2014}.
 
 \begin{align}
 	\label{eq:geometric-schlick}
@@ -101,7 +103,7 @@ $G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich ge
 \end{align}
 
 
-\subsubsection{Dielektische und metallische Materialien}
+\subsubsection{Dielektische und metallische Materialien}\label{sec:pbr-dielektisch}
 
 \begin{figure}
 	\includegraphics[width=.5\textwidth]{dielectric}
@@ -112,13 +114,12 @@ $G$ beschreibt einen Faktor, der die Tatsache simuliert dass Microfacets sich ge
 
 In der Natur lassen sich Substanzen bezüglich ihrer Leiteigenschaften in drei Kategorien einteilen: Nichtleiter (Dielektrikum oder Isolatoren), Halbleiter und Leiter (u.A. metallische Substanzen). Ohne auf die physikalischen Details einzugehen (Details in \cite[Abschnitt: Glanz und Farbe der Metalle]{Zawischa2011}) unterscheiden sich metallische und dielektrische Materialien in ihrem spekularem Reflexionsverhalten. Dielektrische Materialien besitzen ausschließlich weiße spekulare Reflexionen\footnote{unter weißem Licht} während metallische Materialien über ein Farbspektrum spekular reflektieren \parencite[Abschnitt: Specular]{Lagarde2011a}(siehe \fref{fig:dielectric-metallic}).
 
-In der Implementierung wird dies über eine Justierung des $F_0$ Wertes aus dem Fresnel-Term $\mathcal{F}$ abgebildet. Für metallische Materialien wird $F_0$ auf die Grundfarbe (Albedo) des Materials gesetzt und die Grundfarbe auf schwarz, ansonsten wird $F_0$ auf weiß gesetzt (Die Idee basiert auf der Unreal Engine 4 Implementierung, Stand 2015).
+In der Implementierung wird dies über eine Justierung des $F_0$ Wertes aus dem Fresnel-Term $\mathcal{F}$ abgebildet. Für metallische Materialien wird $F_0$ auf die Grundfarbe (Albedo) des Materials gesetzt und die Grundfarbe auf schwarz, ansonsten wird $F_0$ auf weiß gesetzt (Die Idee basiert auf der \textit{Unreal Engine 4} Implementierung, Stand 2015).
 
 \section{Praktische Umsetzung}
 \label{sec:pbr-umsetzung}
 
-
-Wie Eingangs erwähnt erfordert die Umstellung auf \ac{PBR} eine Anpassung in der Produktion und der Render"-pipeline. Während Diffuse- bzw. Albeo-Texturen sowie Normalentexturen bereits üblich sind, ist es speziell für die Albedo Texturen wichtig, dass sie von jeglicher vorberechneter Beleuchtung bereinigt sind, damit die grundlegenden Texturen in allen Beleuchtungssituationen anwendbar sind (Details in \cite{Lagarde2011}). Die Implementierung wird im \fref{chap:anwendung} auszugsweise vorgestellt. Im Folgenden eine kurze Übersicht über die praktischen Grundlagen der Implementierung.
+Wie Eingangs erwähnt erfordert die Umstellung auf \ac{PBR} eine Anpassung in der Produktion und der Render"-pipeline. Während Diffuse- bzw. Albeo-Texturen sowie Normalentexturen bereits üblich sind, ist es für die Albedo Texturen wichtig, dass sie von jeglicher vorberechneter Beleuchtung bereinigt sind, damit die grundlegenden Texturen in allen Beleuchtungssituationen anwendbar sind (Details in \cite{Lagarde2011}). Die Implementierung der \ac{PBR} Pipeline wird im \fref{sec:src-pipeline} aufgelistet. Im Folgenden eine kurze Übersicht über die praktischen Grundlagen der Implementierung.
 
 \subsection{Eingangsparameter}
 
@@ -134,11 +135,11 @@ Als Eingangsparameter verwendet die Pipeline der Implementierung dieser Arbeit f
 
 \subsection{Renderverfahren}
 
-Als Renderverfahren wurde das als \textit{Deferred Shading} bekannte Verfahren gewählt, da es effizienter als \textit{Forward Shading} in der Lichtberechnung von vielen Lichtern ist. Dazu wird vor der Berechnung der Schattierung der Oberflächen die Geometrie gerendert. In diesem Renderschritt werden die Oberflächenattribute wie Albedo-Farbe, Roughness und Normale in Texturen gerendert, kombiniert oft \textit{G-Buffer} genannt. Dieser \textit{G-Buffer} dient dann anschließend im Shading Renderschritt als Grundlage für die Berechnung. In diesem Schritt werden die Lichter mit Stellvertreter Geometrien gerendert. Für jedes so erzeugte Fragment wird die gewählte \ac{BRDF} mit Hilfe der Lichtparameter und der Parameter aus dem G-Buffer ausgewertet. In der fortlaufenden Pipeline werden die Farbwerte im HDR-Raum behandelt. Im abschließenden sogenannten Tone-Mapping Schritt werden die Farbwerte vom HDR-Raum auf den linearen (s)RGB Raum übertragen. Weiterführende Details finden dazu finden sich in der Implementierung zu dieser Arbeit oder in \cite{Shishkovtsov2005}.
+Als Renderverfahren wurde das als \textit{Deferred Shading} bekannte Verfahren gewählt, da es effizienter als \textit{Forward Shading} in der Lichtberechnung mit vielen Lichtern ist. Dazu wird vor der Berechnung der Schattierung der Oberflächen die Geometrie gerendert. In diesem Renderschritt werden die Oberflächenattribute wie Albedo-Farbe, Roughness und Normale in Texturen gerendert, kombiniert oft \textit{G-Buffer} genannt. Dieser \textit{G-Buffer} dient anschließend im Shading Renderschritt als Grundlage für die Berechnung. In diesem Schritt werden die Lichter mit Stellvertreter Geometrien gerendert. Für jedes so erzeugte Fragment wird die gewählte \ac{BRDF} mit Hilfe der Lichtparameter und der Parameter aus dem G-Buffer ausgewertet. In der fortlaufenden Pipeline werden die Farbwerte im HDR-Raum behandelt. Im abschließenden Tone-Mapping Schritt werden die Farbwerte vom HDR-Raum auf den linearen (s)RGB Raum übertragen. Weiterführende Details finden dazu finden sich in der Implementierung zu dieser Arbeit oder in \cite{Shishkovtsov2005}.
 
 \subsection[Indirekte Beleuchtung]{Indirekte Beleuchtung mit \acl{IBL}}
 
-Bisher wurde nur die direkte Beleuchtung von Materialien betrachtet. Aber ein weiterer wesentlicher Beitrag zum realistischen Eindruck ist die sogenannte indirekte Beleuchtung. Indirekte Beleuchtung beschreibt physikalische Tatsache, dass Objekte nicht nur direkt von Lichtquellen beleuchtet werden, sondern selbst wieder Licht reflektieren. Entweder trifft das reflektierte Licht in das Auge des Betrachters, so dass Objekte für uns sichtbar werden, oder wiederum auf andere Objekte. Letzteres führt dazu, dass Oberflächen durch das von anderen Oberflächen reflektierte Licht zusätzlich beleuchtet werden \warn{Bild}. Diese wechselseitige Interreflexion wird unter dem Begriff indirekte Beleuchtung zusammengefasst.
+Bisher wurde nur die direkte Beleuchtung von Materialien betrachtet. Aber ein weiterer wesentlicher Beitrag zum realistischen Eindruck ist die sogenannte indirekte Beleuchtung. Indirekte Beleuchtung beschreibt die physikalische Tatsache, dass Objekte nicht nur direkt von Lichtquellen beleuchtet werden, sondern selbst wieder Licht reflektieren. Entweder trifft das reflektierte Licht in das Auge des Betrachters, so dass Objekte für uns sichtbar werden, oder wiederum auf andere Objekte. Letzteres führt dazu, dass Oberflächen, durch das von anderen Oberflächen reflektierte Licht, zusätzlich beleuchtet werden \warn{Bild}. Diese wechselseitige Interreflexion wird unter dem Begriff indirekte Beleuchtung zusammengefasst.
 
 Bisher haben wir in \fref{eq:brdf-dekonstruiert} ausschließlich die \ac{BRDF} mit direkter Beleuchtung betrachtet, aber die \ac{BRDF} lässt sich wie in \ref{eq:brdf-indirect-dekonstruiert} um Beiträge aus ambienten bzw. indirekten Beleuchtungstermen erweitern. Da spekulare Reflexionen kein Sonderfall von glatten Oberflächen sind \parencite{Hable2010}, lohnt ein generelles Verfahren zur Berechnung des indirekten Beitrags $f_{indirect}$. 
 
@@ -153,20 +154,24 @@ Bisher haben wir in \fref{eq:brdf-dekonstruiert} ausschließlich die \ac{BRDF} m
 	f^{\prime}   &= \underbrace{f_{d_{indirect}} + f_{s_{indirect}}}_{f_{indirect}} + \underbrace{f_{d_{direct}} + f_{s_{direct}}}_{f_{direct}}
 \end{align}
 
-Idealerweise lässt sich die Pipeline um ein umfassendes \acf{GI}\footnote{\acl{GI} Synonym für indirekte Beleuchtung.} Verfahren erweiteren, dass die wechselseitigen Interreflexionen aller Objekte im Raum über ein möglichst breites Frequenzenband\footnote{niedrige Frequenzen = diffuse Reflexion $f_{d_{indirect}}$; hohe Frequenzen = spekulare Reflexion $f_{s_{indirect}}$} hin abdeckt. Doch voll dynamisches \ac{GI} ist in Echtzeit immer noch nicht vollends praktikabl. Verfahren wie \ac{SVOGI} \parencite{Lin2013} erlauben zwar auch spekulare Reflexionen sind aber praktisch nur auf Highend Hardware durchführbar.
+Idealerweise lässt sich die Pipeline um ein umfassendes \acf{GI}\footnote{\acl{GI} Synonym für indirekte Beleuchtung.} Verfahren erweitern, das die wechselseitigen Interreflexionen aller Objekte im Raum über ein möglichst breites Frequenzenband\footnote{niedrige Frequenzen = diffuse Reflexion $f_{d_{indirect}}$; hohe Frequenzen = spekulare Reflexion $f_{s_{indirect}}$} hin abdeckt. Doch voll dynamisches \ac{GI} ist in Echtzeit immer noch nicht vollends praktikabl. Verfahren wie \ac{SVOGI} \parencite{Lin2013} erlauben zwar auch spekulare Reflexionen sind aber praktisch nur auf Highend Hardware durchführbar.
 
-Darum, und weil die Implementierung einfacherer ist, findet ein vorberechnetes Verfahren anwendung. Zum Einsatz kommt ein erweitertes \acf{IBL} Verfahren, dass die Umgebungstexturen im Preprozess für die unterschiedlichen Frequenzen vorintegriert. Die Vorintegration läuft aktuell noch nicht direkt in der Pipeline ab sondern wird offline mit dem von Sébastien Lagarde modifiziertem Programm \textit{AMD Cubemapgen} durchgeführt \parencite{Lagarde2012a}. Dazu wird eine HDR-Cubemap in das Programm geladen und mit den passenden Einstellungen gefiltert. Das Resultat ist eine \ac{PMREM} die dann geladen und in der Auswertung der \ac{BRDF} verwendet wird.
+Deswegen findet ein vorberechnetes Verfahren Anwendung. Ein weiterer Grund ist, dass die Implementierung einfacher ist. Zum Einsatz kommt ein erweitertes \acf{IBL} Verfahren, dass die Umgebungstexturen im Preprozess für die unterschiedlichen Frequenzen vorintegriert. Die Vorintegration läuft aktuell noch nicht direkt in der Pipeline, sondern wird offline mit dem von Sébastien Lagarde modifiziertem Programm \textit{AMD Cubemapgen} durchgeführt \parencite{Lagarde2012a}. Dazu wird eine HDR-Cubemap in das Programm geladen und mit den passenden Einstellungen gefiltert. Das Resultat ist eine \ac{PMREM} die dann geladen und in der Auswertung der \ac{BRDF} verwendet wird.
 
-\paragraph{\acl{PMREM}} Betrachten wir die Reflexion an einem Oberflächenpunkt aus Sicht des Betrachters, so bestimmt sich die Reflexion aus der Streuung des reflektierten Sichtstrahls ($\vR$). Ein perfekter Spiegel reflektiert den Sichtstrahl ohne jegliche Streuung während rauhe Oberflächen den Strahl mit zunehmender Rauheit entsprechend breiter streuen, bis hin zur ausschließlich diffusen Streuung.
+\paragraph{Pre-Filtered Mipmapped Radiance Environment Map} Betrachten wir die Reflexion an einem Oberflächenpunkt aus Sicht des Betrachters, so bestimmt sich die Reflexion aus der Streuung des reflektierten Sichtstrahls ($\vR$). Ein perfekter Spiegel reflektiert den Sichtstrahl ohne jegliche Streuung während rauhe Oberflächen den Strahl mit zunehmender Rauheit entsprechend breiter streuen, bis hin zur ausschließlich diffusen Streuung.
 
 Betrachten wir diffuse und spekulare Reflexionen als diffuse und spekulare indirekte Beleuchtung der Umgebung, lässt sich aus \fref{eq:brdf-indirect-dekonstruiert} folgern, dass sich Reflexionen mit dem $f_{indirect}$ Term abbilden lassen. Für die Rauheit der Oberflächen wurde $m$ als Einflussgröße für den spekularen Anteil der \ac{BRDF} eingeführt. Betrachten wir Umgebungstexturen (\textit{Environment Maps}) als Repräsentation des einfallenden Lichts, können wir Umgebungstexturen für die Berechnung des ambienten Terms $f_{indirect}$ verwenden. Entsprechend der Oberflächen Rauheit muss dafür das einfallende Licht über einen Ausschnitt der Hemisphäre aufgesammelt werden. Dies entspricht der Auswertung der \ac{BRDF} über dem entsprechenden Raumwinkel $\Omega$ (siehe \fref{eq:ambient-integral}). Dies führt zu dem in \fref{eq:ambient-integral} aufgeführtem Integral.
 
-\begin{align}
+\begin{equation}
 	\label{eq:ambient-integral}
-	R = \int\limits_{\Omega} f(V,L)(N \cdot L)Env(L)\, \mathrm{d}\omega_L.
-\end{align}
+	R = \int\limits_{\Omega} f(\vV,\vL)(\vN \cdot \vL)Env(\vL)\, \mathrm{d}\omega_{\vL}\\
+\end{equation}
 
-Für einen perfekt spiegeligen Oberflächenpunkt reduziert sich der Raumwinkel $\Omega$ auf einen Strahl, mit steigender Rauheit $m$ rauhe Oberflächen vergrößert sich der Raumwinkel bis hin zur ganzen Hemisphäre. Da die Auswertung für beliebige $m$ zur Laufzeit zu aufwändig ist, wenden wir eine entsprechende Faltung für abgestufte Werte von $m$ im Bereich $[0,1]$ auf die Umgebungstextur an, und werten die \ac{BRDF} im Integral aus. Die gefalteten Umgebungstexturen werden in den Mipmap-Stufen der Umgebungstextur gespeichert. Dies ermöglicht die Berechnung der Werte $f_{s_{indirect}}$ und $f_{d_{indirect}}$ auf Basis der gefilterten Umgebungstextur zur Laufzeit, indem wir den Rauheitswert $m$ auf die entsprechende Mipmap Stufe abbilden und den \warn{Radiance?} Wert der Umgebungstextur auswerten.
+mit $Env(\vL)$ = \text{Wert aus Umgebungstextur entlang Richtungsvektor} $\vL$
+
+Für einen perfekt spiegeligen Oberflächenpunkt reduziert sich der Raumwinkel $\Omega$ auf einen Strahl. Mit steigender Rauheit $m$vergrößert sich der Raumwinkel bis hin zur ganzen Hemisphäre. Wird die gesamte Hemisphäre integriert, entspricht das der diffusen indirekten Beleuchtung. 
+
+Die Auswertung für beliebige $m$ ist zur Laufzeit zu aufwändig. Deswegen wird im Vorfeld eine entsprechende Faltung (Auswertung des Integrals inklusive der \ac{BRDF}) für abgestufte Werte von $m$ im Bereich $[0,1]$ auf die Umgebungstextur angewendet. Die gefalteten Umgebungstexturen werden in den Mipmap-Stufen der Umgebungstextur gespeichert. Dies ermöglicht die Berechnung der Werte $f_{s_{indirect}}$ und $f_{d_{indirect}}$ auf Basis der gefilterten Umgebungstextur zur Laufzeit, indem wir den Rauheitswert $m$ auf die entsprechende Mipmap Stufe abbilden und den Radiance Wert $R$ der Umgebungstextur auswerten.
 
 \begin{figure}
 \centering
