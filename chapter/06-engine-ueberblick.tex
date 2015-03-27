@@ -105,26 +105,33 @@ type RenderPass = RenderSystem -- nur ein semantischer Alias
 \end{haskell}
 
 \begin{haskell}[label={lst:rendersystem-beispiel-reader},caption={Beispiel Rendersystem mit ReaderT IO als Basismonade}]
-type PrintPass = RenderPass (ReaderT IO Int) a a
+type PrintPass = RenderPass (ReaderT Int IO)
+
 printFrame :: PrintPass a a
 printFrame = RenderSystem (\i -> do
-	env <- ask 
-	print (show ask)
-	return (i,printFrame))
+  env <- ask
+  liftIO (print (show env))
+  return (i,printFrame))
 \end{haskell}
 
 \begin{haskell}[label={lst:rendersystem-ausfuehrung-beispiel},caption={Ausführungsbeispiel Rendersystem}]
-> let r0 = runReaderT (runRenderSystem printFrame "Hallo") 0
-> fst r0
-0
+> (a,r0) <- runReaderT (runRenderSystem printFrame "Hallo") 0
+"0"
+> a
 "Hallo"
-> let r1 = runReaderT (runRenderSystem r0 "Welt!") 1
-> fst r1
-1
+> (b,r1) <- runReaderT (runRenderSystem r0 "Welt!") 1
+"1"
+> b
 "Welt"
 \end{haskell}
 
-Da wir in der praxis unterschiedliche Formen von |RenderPass|es konstruieren werden, definieren wir uns in \fref{lst:renderpass-ctr} Hilffunktionen für die Konstruktion der drei wesentlichen Ausprägungen: 1. zustandslos und unveränderlich, 2. zustandsbehaftet unveränderlich und 3. voll dynamisch.
+Da in der Praxis häufiger unterschiedliche Formen von |RenderPass|es konstruieren werden müssen, werden in \fref{lst:renderpass-ctr} drei Hilffunktionen für die Konstruktion der drei wesentlichen Ausprägungen definiert:
+
+\begin{enumerate}
+\item zustandslos und unveränderlich
+\item zustandsbehaftet unveränderlich
+\item voll dynamisch
+\end{enumerate}
 
 \begin{haskell}[label={lst:renderpass-ctr},caption={Konstruktoren für einen RenderPass}]
 -- 1. zustandslos und unveraenderlich
@@ -151,7 +158,9 @@ mkDynamicRenderPass = RenderSystem
 \subsubsection{Klassen-Instanzen}
 \label{sec:rendersystem-klassen-instanzen}
 
-In \fref{sec:abstrakte-definition-haskell} wurde bereits erwähnt, dass sich für den Mealy-Typen nützliche Klassen-Instanzen implementieren lassen. Die konkreten Implementierungen für den Mealy-Typen wurden übersprungen aber wir werden in diesem Kapitel wesentlichen äquivalente Implementierungen für unseren Typen |RenderSystem| entwickeln. Aus Platzgründen werden nur die jeweils minimal notwendigen Definitionen angegeben, vollständige Definition finden sich im Modul |RenderSystem|. Praktische Anwendungen werden mit unter in \fref{chap:anwendungsbeispiele} gegeben, doch kann auch hier aus Platzgründen keine umfassende Übersicht gegegeben werden. Umfassende Beispiele finden sich ebenso im Projekt beispielsweise im Modul |Yage.Rendering.Pipeline.Deferred|.
+In \fref{sec:abstrakte-definition-haskell} wurde bereits erwähnt, dass sich für den Mealy-Typen nützliche Klassen-Instanzen implementieren lassen. Die konkreten Implementierungen für den Mealy-Typen wurden übersprungen aber in diesem Kapitel werden äquivalente Implementierungen für unseren Typen |RenderSystem| entwickelt. Aus Platzgründen werden nur die jeweils minimal notwendigen Definitionen angegeben, vollständige Definition finden sich im Modul |Yage.Rendering.RenderSystem| im Projekt.
+
+Praktische Anwendungen werden in \fref{chap:anwendungsbeispiele} gegeben, doch eine umfassende Übersicht kann auf Grund des Umfangs nicht gegegeben werden. Umfassende Beispiele finden sich ebenso im Projekt beispielsweise im Modul \linebreak|Yage.Rendering.Pipeline.Deferred|.
 
 
 %%%
@@ -159,7 +168,7 @@ In \fref{sec:abstrakte-definition-haskell} wurde bereits erwähnt, dass sich fü
 %%%
 
 \paragraph{Functor} 
-Funktoren, im Folgenden Functor genannt, beschreiben in der Kategorientheorie eine strukturerhaltene Abbildung (Homomorphismus) zwischen zwei Kategorien. In Haskell ist die Klasse der Functoren wie in \fref{lst:class-functor} definiert. Das erste intuitive Verständnis eines |Functor|s in Haskell ist eine Containerstruktur deren Inhalt von einem Typen |a| auf den Typen |b| überführt werden kann, ähnlich dem |map| für die Listen. Zur Klasse der Functoren gehören darüber hinaus noch weit mehr Strukturen. Zum Beispiel lassen sich auch die Ergebnisse von Funktionen homomorph in eine andere Kategorie überführen ohne die Struktur der Berechnung zu verändern.
+Funktoren, im Folgenden Functor genannt, beschreiben in der Kategorientheorie eine strukturerhaltene Abbildung (Homomorphismus) zwischen zwei Kategorien. In Haskell ist die Klasse der Functoren wie in \fref{lst:class-functor} definiert. Das erste intuitive Verständnis eines |Functor|s in Haskell ist eine Containerstruktur, deren Inhalt von einem Typen |a| auf den Typen |b| überführt werden kann, ähnlich dem |map| für die Listen. Zur Klasse der Functoren gehören darüber hinaus noch weit mehr Strukturen. Zum Beispiel lassen sich auch die Ergebnisse von Funktionen homomorph in eine andere Kategorie überführen ohne die Struktur der Berechnung zu verändern.
 
 \begin{haskell}[label={lst:class-functor},caption={Functor Klasse\protect\footnotemark},nolol]
 class Functor f where
@@ -167,7 +176,7 @@ class Functor f where
 \end{haskell}
 \footnotetext{http://hackage.haskell.org/package/base-4.7.0.2/docs/Data-Functor.html}
 
-\Fref{lst:rendersystem-functor} definiert eine Functor Instanz für den |RenderSystem| Typen. Beschrieben wird die Überführung des Ergebnistypens |o| in einen neuen Ergebnistypen |c| (siehe konkrete Signatur für |fmap|). Die Implementierung verdeutlich, dass die Struktur der Berechnung nicht verändert wird. Es wird lediglich der Ausgabetyp des |RenderSystem| in einen neuen Ausgabetyp überführt. Diese Functor Instanz ermöglicht es beispielsweise den Ausgabetypen eines |RenderPass|es, mit Hilfe einer Tranformationsfunktion |f| als Adapter, auf den Eingabetypen eines nachfolgenden |RenderPass| zu überführen.
+\Fref{lst:rendersystem-functor} definiert eine Functor Instanz für den |RenderSystem| Typen. Beschrieben wird die Überführung des Ergebnistypens |o| in einen neuen Ergebnistypen |c| (siehe konkrete Signatur für |fmap|). Die Implementierung verdeutlich, dass die Struktur der Berechnung nicht verändert wird. Es wird lediglich der Ausgabetyp des \linebreak|RenderSystem| in einen neuen Ausgabetyp überführt. Diese Functor Instanz ermöglicht es beispielsweise den Ausgabetypen eines |RenderPass|es, mit Hilfe einer Tranformationsfunktion |f| als Adapter, in den Eingabetypen eines nachfolgenden \linebreak|RenderPass|es zu überführen.
 
 \begin{haskell}[label={lst:rendersystem-functor},caption={Functor Instanz für RenderSystem}]
 instance Monad m => Functor (RenderSystem m i) where
@@ -181,16 +190,18 @@ instance Monad m => Functor (RenderSystem m i) where
 %%%
 
 \paragraph{Applicative}
-Applikative, im Folgenden Applicatives, sind eine spezielle Ausprägung von Functoren. Ein Applicative wird über zwei Operationen definiert: |pure| bettet einen Wert in den Kontext |f| ein und der Sequenz-Operator |(<*>)| wendet eine Berechnung im Kontext |f| auf einen Wert in |f| an und kombiniert das Resultat \parencite[Kapitel~2]{Paterson2008}. Applicative sind weniger mächtig als Monaden, da sie nur das Sequenzieren von kontextfreien Operationen erlauben. Sie werden gerne dazu verwendet kleine Bausteine als Kombinatoren zu bauen um sie kontextfrei aufeinander anzuwenden. In Haskell sind Applicatives wie in \fref{lst:class-functor} definiert.
+Applikative, im Folgenden Applicatives, sind eine spezielle Ausprägung von Functoren. Ein Applicative wird über zwei Operationen definiert: |pure| bettet einen Wert in den Kontext |f| ein und der Sequenz-Operator |(<*>)| wendet eine Berechnung im Kontext |f| auf einen Wert in |f| an und kombiniert das Resultat \parencite[Kapitel~2]{Paterson2008}. Applicative sind weniger mächtig als Monaden, da sie nur das Sequenzieren von kontextfreien Operationen erlauben. Sie werden gerne dazu verwendet kleine Bausteine als Kombinatoren zu bauen, um sie kontextfrei aufeinander anzuwenden. In Haskell sind Applicatives wie in \fref{lst:class-applicative} definiert.
 
-\begin{haskell}[label={lst:class-functor},caption={Applicative Klasse\protect\footnotemark},nolol]
+\begin{haskell}[label={lst:class-applicative},caption={Applicative Klasse\protect\footnotemark},nolol]
 class Functor f => Applicative f where
   pure :: a -> f a
   (<*>) :: f (a -> b) -> f a -> f a
 \end{haskell}
 \footnotetext{http://hackage.haskell.org/package/base-4.7.0.2/docs/Control-Applicative.html}
 
-Für unser |RenderSystem| definieren wir in \fref{lst:rendersystem-applicative} die Applicative Instanz. Auch hier wird anhand der Implementierung von |(<*>)| deutlich, dass die in |sysf| eingebettete Funktion auf den in |sysa| eingebetteten Wert ohne Berücksichtung des Kontext angewendet wird. |pure| entspricht einem RenderSystem, dass ungeachtet der Eingabe konstant den Wert |b| zurück liefert und unter keinen Umständen das Verhalten wechselt. Mit Hilfe der Appliacative Instanz des |RenderSystem|-Typens können wir mehrere Rendersysteme zu einer größeren Struktur kombinieren, sofern die Rendersysteme nicht von einander direkt abhängen. \Fref{lst:rendersystem-applicative-beispiel} zeigt an einem Beispiel, wie über die Applicative Instanz eine Definition eines RenderSystems . Dieses RenderSystem |sceneToTexture| lässt sich dann über die die Applicative Kombinatoren zu einem RenderSystem kombinieren, dass eine Szene in eine Cubemap rendert. Dynamisch erzeugte Cubemaps werden oft als Environment-Maps (Umgebungstexturen) verwendet, um dynamische Spiegelungen der Umgebung auf Objekten darzustellen.
+Für das |RenderSystem| wird in \fref{lst:rendersystem-applicative} die Applicative Instanz definiert. Auch hier wird anhand der Implementierung von |(<*>)| deutlich, dass die in |sysf| eingebettete Funktion auf den in |sysa| eingebetteten Wert ohne Berücksichtung des Kontext angewendet wird. |pure| entspricht einem |RenderSystem|, dass ungeachtet der Eingabe konstant den Wert |b| zurück liefert und unter keinen Umständen das Verhalten wechselt. Mit Hilfe der Appliacative Instanz des |RenderSystem|-Typens können mehrere Rendersysteme zu einer größeren Struktur kombiniert werden, sofern die Rendersysteme nicht von einander direkt abhängen.
+
+\Fref{lst:rendersystem-applicative-beispiel} zeigt an einem Beispiel, wie über die Applicative Instanz ein |RenderPass| |sceneToTexture|  über die Applicative Kombinatoren zu einem größeren |RenderPass| kombiniert wird. Der komponierte |RenderPass| |sceneToCubeTexture|, rendert eine Szene mithilfe sechs Kameras, die jeweils entlag der positiven und negativen 3D Weltachsen ausgerichtet sind. Dynamisch erzeugte Cubemaps werden beispielsweise als Environment-Maps (Umgebungstexturen) verwendet, um dynamische Spiegelungen der Umgebung auf Objekten darzustellen.
 
 \begin{haskell}[label={lst:rendersystem-applicative},caption={Applicative Instanz für RenderSystem}]
 instance Monad m => Applicative (RenderSystem m i) where
@@ -202,7 +213,11 @@ instance Monad m => Applicative (RenderSystem m i) where
 \end{haskell}
 
 \begin{haskell}[label={lst:rendersystem-applicative-beispiel},caption={Applicative RenderSystem Beispiel}]
-data Cube a = CubeTexture{left,right,top,bottom,front,back :: a}
+data Cube a = Cube{left,right,top,bottom,front,back :: a}
+-- dummy
+data Camera
+data Scene
+data Texture
 
 sceneToTexture :: Camera -> RenderPass IO Scene Texture
 sceneToTexture = ...
@@ -231,7 +246,9 @@ sceneToCubeTexture = Cube
 %%%
 
 \paragraph{Profunctor}
-Während die vorhergehenden Klassen nur Operationen auf dem letzten Argument des Typens definierten, gehört unser unser |RenderSystem| Typ auch noch weiteren Klassen an, die sich für die letzten beiden Argumente definieren lassen. Ein Functor in zwei Argumenten wird auch Bifunctor genannt. Jedes Argument gehört einer eigenen Functor-Kategorie an, die auch voneinander unterschiedlich sein können aber nicht müssen. Zusammmen bilden die beiden Functor-Kategorien ($C$ und $D$) eine Produktkategorie ($C \times D$) \parencite{MacLane1998}. Ein spezieller Bifunctor ist der Profunctor, dessen erstes Argument contravariant und zweites Argument covariant ist. Ein covarianter Functor entspricht der üblichen Haskell |Functor| Klasse mit einem Morphismus von der Ausgangskategorie hin zur Zielkategorie. Die Contravarianz entspricht dahingehend einem umgekehrten Morphismus, von der Zielkategorie zur Ausgangskategorie. Die Haskell Definition der Klasse |Profunctor| findet sich in \fref{lst:class-profunctor}
+Während die vorhergehenden Klassen nur Operationen auf dem letzten Argument des Typens definierten, gehört  |RenderSystem| auch noch weiteren Klassen an, die sich für die letzten beiden Argumente definieren lassen. Ein Functor in zwei Argumenten wird auch Bifunctor genannt. Jedes Argument gehört einer eigenen Functor-Kategorie an, die auch voneinander unterschiedlich sein können aber nicht müssen. Zusammmen bilden die beiden Functor-Kategorien ($C$ und $D$) eine Produktkategorie ($C \times D$) \parencite{MacLane1998}.
+
+Ein spezieller Bifunctor ist der Profunctor, dessen erstes Argument contravariant und zweites Argument covariant ist. Ein covarianter Functor entspricht der üblichen Haskell |Functor| Klasse mit einem Morphismus von der Ausgangskategorie hin zur Zielkategorie. Die Contravarianz entspricht dahingehend einem umgekehrten Morphismus, von der Zielkategorie zur Ausgangskategorie. Die Haskell Definition der Klasse |Profunctor| findet sich in \fref{lst:class-profunctor}
 
 \begin{haskell}[label={lst:class-profunctor},caption={Profunctor Klasse\protect\footnotemark},nolol]
 class Profunctor p where
@@ -239,7 +256,9 @@ class Profunctor p where
 \end{haskell}
 \footnotetext{https://hackage.haskell.org/package/profunctors-3.2/docs/Data-Profunctor.html}
 
-Anschaulicher wird die Funktionsweise eines |Profunctor|s wieder bei der Implementierung der |Profunctor| Instanz für unser |RenderSystem|. Das zweite covariante Argument unseres Bifunctors ist unser Parameter |o| für den Ausgabetypen des |RenderSystems| und wird analog zu der Functor Instanz implementiert, mit |g| als Morphismus. Der neue erste Parameter unseres Bifunctors entspricht dem contravarianten Argument. Der umgekehrte Morphismus |f| wird im Gegenzug auf den Eingabewert angewendet, bevor das entsprechende RenderSystem mit der Eingabe ausgeführt wird. Mit der Profunctor Instanz können wir nicht nur elegant den Ausgabetyp unseres Rendersystems konvertieren, sondern auch auch zu einem allgemein definierten Rendersystem neue Varianten erzeugen die auf unterschiedlichen Eingaben arbeiten, solange wir eine Konvertierungsfunktion für die Eingabe definieren können. Die interne Funktionsweise des Rendersystems bleibt trotz etwaiger Konvertierungen von Ein- und Ausgaben die selbe, es werden lediglich die Schnittstellen einem externen Format angepasst.
+Anschaulicher wird die Funktionsweise eines |Profunctor|s wieder bei der Implementierung der |Profunctor| Instanz für das |RenderSystem|. Das zweite covariante Argument des Bifunctors ist der Parameter |o| für den Ausgabetypen des |RenderSystem|s und wird analog zu der Functor Instanz implementiert, mit |g| als Morphismus. Der neue erste Parameter des Bifunctors entspricht dem contravarianten Argument. Der umgekehrte Morphismus |f| wird im Gegenzug auf den Eingabewert angewendet, bevor das entsprechende |RenderSystem| mit der Eingabe ausgeführt wird.
+
+Mit der Profunctor Instanz können wir nicht nur elegant den Ausgabetyp unseres Rendersystems konvertieren, sondern auch auch zu einem allgemein definierten Rendersystem neue Varianten erzeugen die auf unterschiedlichen Eingaben arbeiten, solange wir eine Konvertierungsfunktion für die Eingabe definieren können. Die interne Funktionsweise des Rendersystems bleibt trotz etwaiger Konvertierungen von Ein- und Ausgaben die selbe, es werden lediglich die Schnittstellen einem externen Format angepasst.
 
 \begin{haskell}[label={lst:rendersystem-profunctor},caption={Profunctor Instanz für RenderSystem}]
 instance Monad m => Profunctor (RenderSystem m) where
@@ -256,7 +275,7 @@ instance Monad m => Profunctor (RenderSystem m) where
 
 \paragraph{Category}
 
-Die |Category| beschreibt die Klasse von Strukturen deren Morphismus sich über beide Argumente komponieren lassen. Die grundlegenste |Category| in Haskell ist die der Funktionen und ihre Komponierbarkeit. Unäre Funktionen |(->)| beschreiben einen Morphismus der das Argument der Funktion einem Funktionswert zuordnet. Unäre Funktionen sind in Haskell analog zur mathematischen Funktionskomposition komponierbar. Dies wird dadurch ausgedrückt, dass unäre Funktionen der |Category| Klasse angehören. In \fref{lst:class-category} wird die Definition der Klasse ausgeschrieben. Sie besteht aus dem Identitätsmorphismus |id| und der rechts zu links Komposition |(.)|.
+Die |Category| beschreibt die Klasse von Strukturen deren Morphismus sich über beide Argumente komponieren lassen. Die grundlegenste |Category| in Haskell ist die der Funktionen und ihre Komponierbarkeit. Unäre Funktionen |(->)| beschreiben einen Morphismus, der das Argument der Funktion einem Funktionswert zuordnet. Unäre Funktionen sind in Haskell analog zur mathematischen Funktionskomposition komponierbar. Dies wird dadurch ausgedrückt, dass unäre Funktionen der |Category| Klasse angehören. In \fref{lst:class-category} wird die Definition der Klasse ausgeschrieben. Sie besteht aus dem Identitätsmorphismus |id| und der rechts zu links Komposition |(.)|.
 
 \begin{haskell}[label={lst:class-category},caption={Category Klasse\protect\footnotemark},nolol]
 class Category cat where
@@ -265,9 +284,11 @@ class Category cat where
 \end{haskell}
 \footnotetext{https://hackage.haskell.org/package/base-4.7.0.2/docs/Control-Category.html}
 
-Auch unser Rendersystem beschreibt einen Morphismus von der Eingabe |i| zur Ausgabe |o|. Folglich gehört auch unser |RenderSystem| Typ der Klasse der Kategorien an. In \fref{lst:rendersystem-category} listet die Implementierng der |Category| Klasse für unser |RenderSystem|. Unser Identitätsmorphismus ist ein Rendersystem, dass die Eingabe unverändert ausgibt. Unsere Komposition ist dadurch implementiert, dass wir zuerst die am weitesten rechts stehende Eingabe |a| in unser rechtes |RenderSystem| eingeben und die entsprechende Ausgabe |b| an das linke |RenderSystem| weiter leiten um die finale Ausgabe |c| zu erhalten. Da die jeweiligen Rendersysteme sich dynamisch verändern können, werden die neu erzeugten RenderSysteme ebenso komponiert (|mbc' . mab'|). 
+Auch |RenderSystem| beschreibt einen Morphismus von der Eingabe |i| zur Ausgabe |o|. Folglich gehört auch |RenderSystem| der Klasse der Category an. \fref{lst:rendersystem-category} listet die Implementierng der |Category| Klasse für |RenderSystem|. 
 
-Die erlaubt es uns auf elegenate Weise unterschiedliche Stufen eines RenderSystems hintereinander zu schalten und zu einem größeren Gesamtsystem zu komponieren. \Fref{lst:rendersystem-komposition-beispiel} zeigt an einem Beispiel, wie sich durch die Komposition zweier unabhängig von einander definierten Textur-Filter ein neuer Filter |bloom| erzeugt werden kann.
+Der Identitätsmorphismus ist ein |RenderSystem|, dass die Eingabe unverändert ausgibt. Die Komposition ist dadurch implementiert, dass  zuerst die am weitesten rechts stehende Eingabe |a| in das rechtes |RenderSystem| |mab| eingeben wird und die entsprechende Ausgabe |b| an das linke |RenderSystem| |mbc| weiter geleitet wird, um die finale Ausgabe |c| zu erhalten. Da die jeweiligen |RenderSysteme| sich dynamisch verändern können, werden die neu erzeugten RenderSysteme ebenso komponiert (mit |mbc' . mab'|). 
+
+Die erlaubt auf elegenate Weise unterschiedliche Stufen eines |RenderSystems| hintereinander zu schalten und zu einem größeren Gesamtsystem zu komponieren. \Fref{lst:rendersystem-komposition-beispiel} zeigt an einem Beispiel, wie ein, durch die Komposition zweier unabhängig von einander definierten Textur-Filter, neuer Filter |bloom| erzeugt werden kann.
 
 \begin{haskell}[label={lst:rendersystem-category},caption={Category Instanz für RenderSystem}]
 instance Monad m => Category (RenderSystem m) where
@@ -288,7 +309,7 @@ gaussianFilter :: Int -> RenderSystem IO Texture Texture
 gaussianFilter kernelsize = ...
 
 bloom :: RenderSystem IO Texture Texture
-bloom = gaussFilter 64 . lumaFilter 0.4
+bloom = gaussianFilter 64 . lumaFilter 0.4
 \end{haskell}
 
 
@@ -298,7 +319,7 @@ bloom = gaussFilter 64 . lumaFilter 0.4
 
 \paragraph{Semigroup}
 
-Eine \textit{Semigroup} bzw. eine \textit{Halbgruppe} ist eine algebraische Struktur mit einer assoziativen binären Verknüpfung. Sie gilt als Verallgemeinerung eines Monoiden, für die kein neutrales Element benötigt wird und respektive einer \textit{Group} bzw \textit{Gruppe}, für die kein inverses und kein neutrales Element benötigt wird.
+Eine \textit{Semigroup} bzw. \textit{Halbgruppe} ist eine algebraische Struktur mit einer assoziativen binären Verknüpfung. Sie gilt als Verallgemeinerung eines Monoiden, für die kein neutrales Element benötigt wird und respektive einer \textit{Group} bzw \textit{Gruppe}, für die kein inverses und kein neutrales Element benötigt wird. Die definition der Klasse ist in \fref{lst:class-semigroup} angegeben.
 
 \begin{haskell}[label={lst:class-semigroup},caption={Semigroup Klasse\protect\footnotemark},nolol]
 class Semigroup a where
@@ -306,14 +327,15 @@ class Semigroup a where
 \end{haskell}
 \footnotetext{https://hackage.haskell.org/package/semigroups-0.16.2.2/docs/Data-Semigroup.html}
 
-Die Implementierung in \fref{lst:rendersystem-semigroup} verknüpft die beiden |RenderSystem|e, in dem beide auf der gleichen Eingabe sequenziell ausführt werden. Die Resultate werden abschließend mit |(<>)| verknüpft.
+Die Implementierung in \fref{lst:rendersystem-semigroup} verknüpft zwei |RenderSysteme|, indem beide auf der gleichen Eingabe sequenziell ausführt werden. Die Resultate werden abschließend mit |(<>)| verknüpft.
 
 \begin{haskell}[label={lst:rendersystem-semigroup},caption={Semigroup Instanz für RenderSystem}]
 instance (Applicative m, Semigroup o) => Semigroup (RenderSystem m i o) where
-	sysX <> sysY =  RenderSystem (\i -> liftA2 (<>) (runRenderSystem sysX i) (runRenderSystem sysY i))
+	sysX <> sysY =  RenderSystem (\i -> 
+		liftA2 (<>) (runRenderSystem sysX i) (runRenderSystem sysY i))
 \end{haskell}
 
-\Fref{lst:rendersystem-semigroup-beispiel} ist ein Beispiel dafür, wie die Resulate aus mehreren Render-Schritten zu einer größeren assoziative Struktur zusammengefügt werden können. In diesem Fall wird mehrfach |downsample| auf auf einer Textur ausgeführt, um anschließend die herunter gerechneten Texturen zu einer Mipmap-Chain zu kombinieren. 
+\Fref{lst:rendersystem-semigroup-beispiel} ist ein Beispiel dafür, wie die Resulate aus mehreren Render-Schritten zu einer größeren assoziative Struktur zusammengefügt werden können. In diesem Fall wird mehrfach |downsample| auf eine Textur ausgeführt, um anschließend die herunter gerechneten Texturen zu einer Mipmap-Chain zu kombinieren. 
 
 \begin{haskell}[label={lst:rendersystem-semigroup-beispiel},caption={Beispielanwendung Semigroup für RenderSystem}]
 import Data.List.NonEmpty
@@ -341,7 +363,7 @@ generateMipmap = fmap mkBase id
 
 \paragraph{Arrow}
 
-|Arrows| sind eine weitere abstrakte Darstellungsform von Morphismen. Während |Category| die Komponierbarkeit von Morphismen beschreibt, beschreiben Arrows den Morphismus an sich. In Haskell wird ein Arrow über die Operation |arr| und |first| definiert. Zusätzlich gehört zur Arrow Klasse auch die Kompositionsoperation, welche aber schon durch die Spezialisierung von |Category| definiert ist. |arr| stellt den direkten Bezug zu dem grundlegenden Morphismus der unären Funktionen |(->)| und der Arrow Struktur her und hebt einen einfachen Morphismus in den Kontext des |Arrow|s. |first| ist eine Variante, neben dem gespiegelten |second|, der sogenannten Sideline Operation \parencite[Kapitel 1]{Asada2010}. Über |first| kann ein Morphismus |a b c| auf die erste Komponente des Argumentes angewendet werden, während doe zweite Komponente unverändert durchgereicht wird. Erwähnenswert ist abschließend, dass jeder |Arrow| auch als |Profunctor| dargestellt werden kann \parencite[Kapitel 3]{Asada2010}.
+|Arrows| sind eine weitere abstrakte Darstellungsform von Morphismen. Während |Category| die Komponierbarkeit von Morphismen beschreibt, beschreiben Arrows den Morphismus an sich. In Haskell wird ein Arrow über die Operation |arr| und |first| definiert. Zusätzlich gehört zur Arrow Klasse auch die Kompositionsoperation, welche aber schon durch die Spezialisierung von |Category| definiert ist. |arr| stellt den direkten Bezug zu dem grundlegenden Morphismus der unären Funktionen |(->)| und der Arrow Struktur her und hebt einen einfachen Morphismus in den Kontext des |Arrow|s. |first| ist eine Variante, neben dem gespiegelten |second|, der sogenannten Sideline Operation \parencite[Kapitel 1]{Asada2010}. Über |first| kann ein Morphismus |a b c| auf die erste Komponente des Argumentes angewendet werden, während die zweite Komponente unverändert durchgereicht wird. Erwähnenswert ist abschließend, dass jeder |Arrow| auch als |Profunctor| dargestellt werden kann \parencite[Kapitel 3]{Asada2010}.
 
 \begin{haskell}[label={lst:class-arrow},caption={Arrow Klasse\protect\footnotemark},nolol]
 class Category a => Arrow a where
@@ -365,7 +387,7 @@ instance Monad m => Arrow (RenderSystem m) where
 
 \paragraph{ArrowChoice}
 
-Bevor wir zu einem abschließenden Beispiel für die Anwendung der |Arrow| Implementierung unter Verwendung der Arrow-Notation \footnotemark kommen, werden wir im folgenden noch für unser |RenderSystem| die |ArrowChoice| Klasse implementieren um weitere Möglichkeiten der Arrow Notation nutzen zu können. |Arrow|s die auch |ArrowChoice| implementieren können in der Arrow Notation |if| und |case| Konstrukte als syntaktischen Zucker verwenden. Die Definition der |ArrowChoice| Klasse ist in \fref{lst:class-arrowchoice} angeben. |left| beschreibt dabei eine Operation die eine Operation auf das Argument anwendet, wenn das Argument mit |Left| markiert wurde. Wurde das Argument mit |Right| markiert bleibt es unverändert.
+Vor einem abschließenden Beispiel für die Anwendung der |Arrow| Implementierung unter Verwendung der Arrow-Notation \footnotemark, wird im Folgenden noch für |RenderSystem| die |ArrowChoice| Klasse implementiert, um weitere Möglichkeiten der Arrow Notation nutzen zu können. |Arrow|s die auch |ArrowChoice| implementieren, können in der Arrow Notation |if| und |case| Konstrukte als syntaktischen Zucker verwenden. Die Definition der |ArrowChoice| Klasse ist in \fref{lst:class-arrowchoice} angeben. |left| beschreibt dabei eine Operation die eine Operation auf das Argument anwendet, wenn das Argument mit |Left| markiert wurde. Wurde das Argument mit |Right| markiert, bleibt es unverändert.
 
 \footnotetext{https://downloads.haskell.org/~ghc/7.8.2/docs/html/users\_guide/arrow-notation.html}
 
@@ -375,7 +397,7 @@ class Arrow a => ArrowChoice a where
 \end{haskell}
 \footnotetext{https://hackage.haskell.org/package/base-4.7.0.2/docs/Control-Arrow.html\#g:5}
 
-Die Implementierung von |ArrowChoice| für unser |RenderSystem| in \fref{lst:rendersystem-arrowchoice} ist trivial. Wurde die Eingabe mit |Left| markiert, wenden wir unser |RenderSystem| auf die Eingabe an und markieren die Ausgabe wiederum mit |Left|. Mit |Right| markierte Eingaben passieren das RenderSystem unverändert und ohne Seiteneffekte.
+Die Implementierung von |ArrowChoice| für unser |RenderSystem| in \fref{lst:rendersystem-arrowchoice} ist trivial. Wurde die Eingabe mit |Left| markiert, wird die Eingabe auf unser |RenderSystem| angewendet und die Ausgabe wird wiederum mit |Left| markiert. Mit |Right| markierte Eingaben passieren das RenderSystem unverändert und ohne Seiteneffekte.
 
 \begin{haskell}[label={lst:rendersystem-arrowchoice},caption={ArrowChoice Instanz für RenderSystem}]
 instance Monad m => ArrowChoice (RenderSystem m) where
