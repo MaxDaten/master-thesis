@@ -14,7 +14,7 @@ Haskell eliminiert durch das Typ-System viele gängige Fehlerquellen in Software
 "`Static analysis helps, but NULL problems remain the top fault in our codebase."'\footnote{\label{note:carmack-null}https://twitter.com/id\_aa\_carmack/status/325019679720615936}
 \end{quote}
 
-Durch die explizite Kennzeichnung von optionalen Werten durch |Maybe| schließt Haskell kategorisch eine der größten Fehlerquellen in Softwareprojekten noch zum Übersetzungszeitpunkt aus. Generell gilt, dass Fehler, die schon zur Übersetzungszeit auftreten, einen geringeren kritischen Einfluss auf das Entwicklungs- bzw. Produktionssystem haben als Laufzeitfehler. Es ist trivial zu verhindern, dass Kompilierungsfehler überhaupt schon in das Entwicklungssystem gelangen\footnote{Beispielsweise durch ein \textit{Continious Integration} System}. Dahingegend ist es keine Seltenheit, dass Laufzeitfehler den Entwicklunszyklus lange genug unentdeckt überstehen, bis sie in das Produktionssystem gelangen. Das ist ein starkes Argument für die Philosophie, möglichst viele Fehlerquellen zum Kompilierungszeit auszuschließen.
+Durch die explizite Kennzeichnung von optionalen Werten durch |Maybe| schließt Haskell kategorisch eine der größten Fehlerquellen in Softwareprojekten noch zum Übersetzungszeitpunkt aus. Generell gilt, dass Fehler, die schon zur Übersetzungszeit auftreten, einen geringeren kritischen Einfluss auf das Entwicklungs- bzw. Produktionssystem haben als Laufzeitfehler. Es ist trivial zu verhindern, dass Kompilierungsfehler überhaupt schon in das Entwicklungssystem gelangen\footnote{Beispielsweise durch ein \textit{Continious Integration} System}. Dahingegend ist es keine Seltenheit, dass Laufzeitfehler den Entwicklunszyklus lange genug unentdeckt überstehen, bis sie in das Produktionssystem gelangen. Das ist ein starkes Argument für die Philosophie, möglichst viele Fehlerquellen zur Kompilierungszeit auszuschließen.
 
 \section{Haskell als Kommunikationsmittel}
 
@@ -31,7 +31,7 @@ Kleine übersichtliche und gut komponierbare Elemente führen zu verständlicher
 
 Tim Sweeny von \textit{Epic Games} nennt das "`Shared State Concurrency"' Model aus C++, Java oder C\# eine "`Huge productivity burden"' und weiter sagt er: "`Purely Functional is the right default"'\footnote{\cite[Vgl.][Seite 42 u. Seite 56]{Sweeney2006}\label{note:sweeney-mainstream}}. John Carmack, Gründer von \textit{id Software} und nun CTO bei \textit{Oculus VR}: "`[...] banning mutable shared state. Easier said than done, of course."'\footref{note:carmack-null}.
 
-Die Veränderlichkeit von Daten (mutable) stellt ein großes Hindernis für elegante Nebenläufigkeit in den genannten Sprachen dar. Hinzu kommt, dass Funktionen bzw. Methoden in den genannten Sprachen keine Garantie geben können, dass sie auf ihren Daten garantiert seiteneffektsfrei arbeiten. Das macht es aufwändig Nebenläufige System zu entwickeln, da Nebenläufigkeit mit einem großen Synchronisierungs- und Verwaltungsaufwand verbunden ist.
+Die Veränderlichkeit von Daten (mutable) stellt ein großes Hindernis für elegante Nebenläufigkeit in den genannten Sprachen dar. Hinzu kommt, dass Funktionen bzw. Methoden in den genannten Sprachen keine Garantie geben können, dass sie auf ihren Daten garantiert seiteneffektsfrei arbeiten. Das macht es aufwändig nebenläufige System zu entwickeln, da Nebenläufigkeit mit einem großen Synchronisierungs- und Verwaltungsaufwand verbunden ist.
 
 \begin{quote}
 "`In a concurrent world, imperative is the wrong default!"'\footref{note:sweeney-mainstream}
