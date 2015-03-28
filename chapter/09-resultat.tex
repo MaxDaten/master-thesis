@@ -21,6 +21,10 @@ Es wurde für die Implementierung der Renderschritte auf eine Abstraktion der Gr
 
 Die direkte Umsetzung der Logik eines Renderschritts in \textit{OpenGL} vereinfacht zudem die Verwendung von \textit{OpenGL} Erweiterungen. Dies war für die praktische Umsetzung des \ac{PBR} Verfahrens von Bedeutung, da einige spezielle Erweiterungen\footnote{z.B. ARB\_shading\_language\_include : https://www.opengl.org/registry/specs/ARB/shading\_language\_include.txt} verwendet wurden. Auch in der Implementierung von \acf{AO} mittels \textit{Sparse Textures} wurden spezielle Erweiterungen benötigt.
 
+Anhand von \fref{lst:tonemap-pass-vollstaendig} und \fref{lst:pipeline-vollstaendig} lässt sich erkennen, dass die Trennung und Kapselung der Implementierungsdetails gut funktioniert. Ohne Abstraktionsebene zwischen Anwendung und \textit{OpenGL} ist die Hierarchie der Pipeline-Struktur flach. Später lassen sich gegebenenfalls Abstraktionsschichten einziehen, ohne dass die Pipeline auf der Kompositionsebene angepasst werden muss. Die Struktur der Pipeline auf der Kompositionsebene ist klar und verständlich, die Arrow Notation hilft bei der Zuordnung von Eingaben und Ausgaben. Kleine Renderschritte lassen sich getrennt von einander entwickeln und beispielsweise zu Biblitheken zusammenfassen. Jeder Renderpass kann seine Umgebung und die nötigen Ein- und Ausgaben klar definieren. Konvertierungen von Ein- bzw. Ausgaben können über die vorgestellten Klassen-Instanzen vorgenommen werden.
+
+\subsection{Testszenen}\label{sec:testszenen-impl}
+
 \begin{figure}
 \begin{subfigure}{\textwidth}
 	\centering
@@ -40,7 +44,6 @@ Die direkte Umsetzung der Logik eines Renderschritts in \textit{OpenGL} vereinfa
 \caption{Implementierung Testszenen}\label{fig:impl-scenes}
 \end{figure}
 
-\subsection{Testszenen}\label{sec:testszenen-impl}
 
 Die Testszenen besitzen keinen keinen Anspruch auf Praxisnähe, sondern dienten während der Umsetzung der Engine als Funktionstest. Die Testszene in \fref{fig:impl-scenes-head} diente als Test für das Laden von einem komplexen Modell mit realistischen Texturen. \fref{fig:impl-scenes-sponza} zeigt das Sponza-Modell\footnote{http://www.crytek.com/cryengine/cryengine3/downloads} ohne Texturen aber mit aktiviertem \ac{IBL} auf Basis der gefilterten Umgebungstextur (\fref{sec:pbr-ibl}). \fref{fig:impl-scenes-box} zeigt eine generische Szene mit Testsphären für das Testen der Beleuchtungsparamter der \ac{PBR} Pipeline.
 
@@ -100,9 +103,12 @@ Ein großer Vorteil von Haskell ist der \ac{GHC}, der eine sehr aktive Entwickle
 
 \subsection{Probleme mit Haskell}\label{sec:probleme-haskell}
 
+
 Die produktive Verwendung von Haskell bringt aber auch einige Probleme mit sich. Oft sind die Probleme aber eher organisatorischer und menschlicher Natur. Zum einen sind die funktionalen Konzepte, beispielsweise im Vergleich zu den OOP Konzepten, nicht auf breiter Front bekannt und erfordern neue Denkmuster. Die bestehenden Denkmuster konnten sich jahrelang verfestigen. Deswegen stoßen neue Denkansätze auf Widerstand.
 
 Das schrittweise Einführen (Drop In Replacement) von Haskell ist nicht immer einfach. Während sich in modernen Serverarchitekturen selektiv einige kleine isolierte Dienste mit Haskellimplementierungen ersetzen lassen, stellt sich das bei monolithischen Projekten als schwer bis unmöglich heraus. Auch ist die Verknüpfung von Haskell mit C++ noch nicht umfassend gelöst.
+
+Während der Entwicklung auf mehreren Plattformen (Linux, Windows, OS X) traten immer wieder Probleme mit Fremdabhängigkeiten auf. Das Projekt verwendet für \textit{OpenGL} die Bindings aus der Biblithekt |gl|\footnote{http://hackage.haskell.org/package/gl} und zum Erstellen des OpenGL-Kontexts und der Behandlung von Geräteeingaben |GLFW-b|\footnote{http://hackage.haskell.org/package/GLFW-b}. Besonders die Umstellung auf OS X vom \textit{gcc} auf den \textit{Clang}\footnote{http://clang.llvm.org/} Compiler sorgte beim |GHC| für massive Probleme. Projekte mit der |CPP| Direktive konnten zum Teil gar nicht mehr kompiliert werden. Das ist aber kein Alleinstellungsmerkmal von Haskell. Und seit der Einführung der Cabal Sandbox\footnote{http://coldwa.st/e/blog/2013-08-20-Cabal-sandbox.html} können mit Haskell und Cabal mehrere Projekte gleichzeitig und ohne Konflikte oder Abhängigkeitsprobleme entwickelt werden. Zuvor litt das Haskell Ökosystem massiv unter den Abhängigkeitskonflikten, wenn keine isolierten Entwicklungsumgebungen genutzt wurden\footnote{http://www.reddit.com/r/haskell/comments/2al3vx/how\_do\_you\_avoid\_the\_cabal\_hell/}.
 
 Zudem mangelt es Haskell an wirklich umfassenden Entwicklungsumgebungen. Zwar ist die \textit{Emacs} Unterstützung herausragend, doch fehlt es an grafischen \ac{IDE}s, die eine ähnliche Entwicklerunterstützung bieten wie zum Beispiel \textit{Eclipse} für Java oder {Visual Studio} für C++ und .Net. Das schreckt einige Entwickler ab.
 
