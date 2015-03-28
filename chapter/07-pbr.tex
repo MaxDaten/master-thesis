@@ -123,21 +123,49 @@ Wie Eingangs erwähnt erfordert die Umstellung auf \ac{PBR} eine Anpassung in de
 
 \subsection{Eingangsparameter}
 
+\begin{figure}
+\centering
+	\includegraphics[width=\textwidth]{shots/pbr02}
+	\caption{Von links nach recht ansteigender Rauheitswert}
+	\label{fig:pbr-roughness}
+\end{figure}
+
 Als Eingangsparameter verwendet die Pipeline der Implementierung dieser Arbeit folgende Größen:
 \begin{itemize}
-\item Albedo-Textur im sRGB Farbraum
-\item Normalen-Textur mit Oberflächennormale im Tangenten-Raum kodiert in RGB
-\item Roughness-Textur ($m$) in Graustufen
-\item Metallic-Textur in Graustufen für die Unterscheidung von dielektrischen und metallischen Oberflächen\footnote{Entspricht einer Maske, 0 = nicht metallisch, 1 = metallisch}
+\item Albedo-Textur im sRGB Farbraum (\fref{fig:pbr-albedo-tex})
+\item Normalen-Textur mit Oberflächennormale im Tangenten-Raum kodiert in RGB (\fref{fig:pbr-normale-tex})
+\item Roughness-Textur ($m$) in Graustufen (\fref{fig:pbr-roughness-tex})
+\item Metallic-Textur in Graustufen für die Unterscheidung von dielektrischen und metallischen Oberflächen (\fref{fig:pbr-metalmask-tex})\footnote{Entspricht einer Maske, 0 = nicht metallisch, 1 = metallisch}
 \end{itemize}
 
-\warn{Bild von Beispiel Texturen}
+\begin{figure}
+\centering
+\begin{subfigure}{0.24\textwidth}
+	\includegraphics[width=\textwidth]{Door_IronDungeonDoor_1k_alb}
+	\caption{Albedo-Textur}\label{fig:pbr-albedo-tex}
+\end{subfigure}
+\begin{subfigure}{0.24\textwidth}
+	\includegraphics[width=\textwidth]{Door_IronDungeonDoor_1k_n}
+	\caption{Normalen-Textur}\label{fig:pbr-normale-tex}
+\end{subfigure}
+\begin{subfigure}{0.24\textwidth}
+	\includegraphics[width=\textwidth]{Door_IronDungeonDoor_1k_g}
+	\caption{Roughness-Textur}\label{fig:pbr-roughness-tex}
+\end{subfigure}
+\begin{subfigure}{0.24\textwidth}
+	\includegraphics[width=\textwidth]{Door_IronDungeonDoor_1k_h}
+	\caption{Metal-Mask-Textur}\label{fig:pbr-metalmask-tex}
+\end{subfigure}
+\caption{Beispiel eines Textur-Sets}
+\label{fig:pbr-texturen}
+\end{figure}
+
 
 \subsection{Renderverfahren}
 
 Als Renderverfahren wurde das als \textit{Deferred Shading} bekannte Verfahren gewählt, da es effizienter als \textit{Forward Shading} in der Lichtberechnung mit vielen Lichtern ist. Dazu wird vor der Berechnung der Schattierung der Oberflächen die Geometrie gerendert. In diesem Renderschritt werden die Oberflächenattribute wie Albedo-Farbe, Roughness und Normale in Texturen gerendert, kombiniert oft \textit{G-Buffer} genannt. Dieser \textit{G-Buffer} dient anschließend im Shading Renderschritt als Grundlage für die Berechnung. In diesem Schritt werden die Lichter mit Stellvertreter Geometrien gerendert. Für jedes so erzeugte Fragment wird die gewählte \ac{BRDF} mit Hilfe der Lichtparameter und der Parameter aus dem G-Buffer ausgewertet. In der fortlaufenden Pipeline werden die Farbwerte im HDR-Raum behandelt. Im abschließenden Tone-Mapping Schritt werden die Farbwerte vom HDR-Raum auf den linearen (s)RGB Raum übertragen. Weiterführende Details finden dazu finden sich in der Implementierung zu dieser Arbeit oder in \cite{Shishkovtsov2005}.
 
-\subsection[Indirekte Beleuchtung]{Indirekte Beleuchtung mit \acl{IBL}}
+\subsection[Indirekte Beleuchtung]{Indirekte Beleuchtung mit \acl{IBL}}\label{sec:pbr-ibl}
 
 Bisher wurde nur die direkte Beleuchtung von Materialien betrachtet. Aber ein weiterer wesentlicher Beitrag zum realistischen Eindruck ist die sogenannte indirekte Beleuchtung. Indirekte Beleuchtung beschreibt die physikalische Tatsache, dass Objekte nicht nur direkt von Lichtquellen beleuchtet werden, sondern selbst wieder Licht reflektieren. Entweder trifft das reflektierte Licht in das Auge des Betrachters, so dass Objekte für uns sichtbar werden, oder wiederum auf andere Objekte. Letzteres führt dazu, dass Oberflächen, durch das von anderen Oberflächen reflektierte Licht, zusätzlich beleuchtet werden \warn{Bild}. Diese wechselseitige Interreflexion wird unter dem Begriff indirekte Beleuchtung zusammengefasst.
 
