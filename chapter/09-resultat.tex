@@ -19,24 +19,30 @@ Im Fokus deser Arbeit stand die Konzeption der Renderkomponente der Engine, wär
 
 Es wurde für die Implementierung der Renderschritte auf eine Abstraktion der Grafik-\ac{API} verzichtet. Zum einen, da ausschließlich \textit{OpenGL} zum Einsatz kommen sollte, und die Abstraktionsschicht nicht benötigt wurde, um die Grafikschnittstelle flexibel austauschen zu können. Zum anderen sollte die Umsetzung möglichst direkt \textit{OpenGL} verwenden. Dies machte es auch einfacher \textit{OpenGL} Beispiele nach Haskell zu übertragen. Der Verzicht auf eine Abstraktionsschicht reduzierte auch den Aufwand für die Umsetzung des Projekt auf ein vertratbares Niveau. Zudem ist der aktuelle Stand von \textit{OpenGL}\footnote{Version 4.3 zum Zeitpunkt der Projektphase} noch schwer mit funktionalen Konzepten einzufangen (siehe: \fref{chap:haskell-modern-gl}).
 
-Die direkte Umsetzung der Logik eines Renderschritts in \textit{OpenGL} vereinfacht zudem die Verwendung von \textit{OpenGL} Erweiterungen. Dies war für die praktische Umsetzung des \ac{PBR} Verfahrens von Bedeutung, da einige spezielle Erweiterungen\footnote{z.B. ARB\_shading\_language\_include : https://www.opengl.org/registry/specs/ARB/shading\_language\_include.txt} verwendet wurden. Auch in der Implementierung von \acf{AO} mittels \textit{Sparse Textures} wurden spezielle Erweiterungen benötigt. \warn{siehe Bilde} 
+Die direkte Umsetzung der Logik eines Renderschritts in \textit{OpenGL} vereinfacht zudem die Verwendung von \textit{OpenGL} Erweiterungen. Dies war für die praktische Umsetzung des \ac{PBR} Verfahrens von Bedeutung, da einige spezielle Erweiterungen\footnote{z.B. ARB\_shading\_language\_include : https://www.opengl.org/registry/specs/ARB/shading\_language\_include.txt} verwendet wurden. Auch in der Implementierung von \acf{AO} mittels \textit{Sparse Textures} wurden spezielle Erweiterungen benötigt.
 
 \begin{figure}
-\centering
-\begin{subfigure}{0.3\textwidth}
-	\includegraphics[width=\textwidth]{shots/head}
+\begin{subfigure}{\textwidth}
+	\centering
+	\includegraphics[width=.7\textwidth]{shots/head}
 	\caption{Head}\label{fig:impl-scenes-head}
-\end{subfigure}
-\begin{subfigure}{0.3\textwidth}
-	\includegraphics[width=\textwidth]{shots/sponza-ibl01}
+\end{subfigure}\\
+\begin{subfigure}{\textwidth}
+	\centering
+	\includegraphics[width=.7\textwidth]{shots/sponza-ibl01}
 	\caption{Sponza}\label{fig:impl-scenes-sponza}
-\end{subfigure}
-\begin{subfigure}{0.3\textwidth}
-	\includegraphics[width=\textwidth]{shots/box-blue-start}
+\end{subfigure}\\
+\begin{subfigure}{\textwidth}
+	\centering
+	\includegraphics[width=.7\textwidth]{shots/box-blue-start}
 	\caption{Box}\label{fig:impl-scenes-box}
 \end{subfigure}
 \caption{Implementierung Testszenen}
 \end{figure}
+
+\subsection{Testszenen}\label{sec:testszenen-impl}
+
+Die Testszenen besitzen keinen keinen Anspruch auf Praxisnähe, sondern dienten während der Umsetzung der Engine als Funktionstest. Die Testszene in \fref{fig:impl-scenes-head} diente als Test für das Laden von einem komplexen Modell mit realistischen Texturen. \fref{fig:impl-scenes-sponza} zeigt das Sponza-Modell\footnote{http://www.crytek.com/cryengine/cryengine3/downloads} ohne Texturen aber mit aktiviertem \ac{IBL} auf Basis der gefilterten Umgebungstextur (\fref{sec:pbr-ibl}). \fref{fig:impl-scenes-box} zeigt eine generische Szene mit Testsphären für das Testen der Beleuchtungsparamter der \ac{PBR} Pipeline.
 
 \subsection{Laufzeitverhalten}\label{sec:laufzeit-impl}
 
@@ -66,7 +72,7 @@ RAM &  32 GB  & \\ \bottomrule
 \caption{Testsystem}\label{tab:spec-system}
 \end{table}
 
-Die Testszenen besitzen keinen keinen Anspruch auf Praxisnähe, sondern dienten während der Umsetzung des Engine als Funktionstest. Bisher stand die Performance der Engine nur dann im Fokus, wenn die Performance, trotz der einfachen Szenen, zum Problem wurde. Das war in der Projektphase nur zwei Mal der Fall, aktuell bei der \ac{AO} Implementierung. Techniken zur Reduzierung der API Aufrufe, wie zum Beispiel Frustum-Culling, wurden noch nicht implementiert.
+Bisher stand die Performance der Engine nur dann im Fokus, wenn die Performance, trotz der einfachen Szenen, zum Problem wurde. Das war in der Projektphase nur zwei Mal der Fall, aktuell bei der \ac{AO} Implementierung. Techniken zur Reduzierung der API Aufrufe, wie zum Beispiel Frustum-Culling, wurden noch nicht implementiert.
 
 \section{Erfahrungen mit Haskell}\label{sec:xp-haskell}
 
