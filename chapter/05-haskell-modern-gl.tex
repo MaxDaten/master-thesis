@@ -23,6 +23,7 @@ Quine\footnote{https://github.com/ekmett/quine/} ist ein kleines Hobby Projekt v
 
 Zusätzlich lässt sich Haskell dazu als Hebel nutzen, die bessere Modularität von \ac{DSA} besser auszuschöpfen. Die \textit{Separate Program Objects} lassen sich dabei schon in \textit{OpenGL} 4.1 als Vorboten von \ac{DSA} betrachten. Wie bereits beschrieben lassen sich über diese \textit{OpenGL} Erweiterung die Uniform Variablen der einzelnen Shader-Stufen direkt über das Program-Objekt setzen. In Verbindung mit einer |StateVar| (siehe Beispielimplementierung \fref{sec:src-statevar}) und wenigen zusätzlichen Definitionen, lassen sich in Haskell elegante Schnittstellendatentypen für Shader definieren, die sich in Zukunft automatisch generieren ließen. \ref{lst:uniform-beispiel} gibt ein Beispiel, wie sich eine Shader-Schnittstelle über funktionale Konzepte zusammensetzen lässt. Ein relevanter Auszug findet sich in \fref{lst:uniform-beispiel-auszug}:
 
+\clearpage
 \haskellcode[caption={Shader-Schnittstelle (Auszug)},label={lst:uniform-beispiel-auszug},firstline=67]{src/uniform-beispiel.hs}
 \endgroup
 
