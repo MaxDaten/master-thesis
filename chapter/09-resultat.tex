@@ -21,14 +21,52 @@ Es wurde für die Implementierung der Renderschritte auf eine Abstraktion der Gr
 
 Die direkte Umsetzung der Logik eines Renderschritts in \textit{OpenGL} vereinfacht zudem die Verwendung von \textit{OpenGL} Erweiterungen. Dies war für die praktische Umsetzung des \ac{PBR} Verfahrens von Bedeutung, da einige spezielle Erweiterungen\footnote{z.B. ARB\_shading\_language\_include : https://www.opengl.org/registry/specs/ARB/shading\_language\_include.txt} verwendet wurden. Auch in der Implementierung von \acf{AO} mittels \textit{Sparse Textures} wurden spezielle Erweiterungen benötigt. \warn{siehe Bilde} 
 
+\begin{figure}
+\centering
+\begin{subfigure}{0.3\textwidth}
+	\includegraphics[width=\textwidth]{shots/head}
+	\caption{Head}\label{fig:impl-scenes-head}
+\end{subfigure}
+\begin{subfigure}{0.3\textwidth}
+	\includegraphics[width=\textwidth]{shots/sponza-ibl01}
+	\caption{Sponza}\label{fig:impl-scenes-sponza}
+\end{subfigure}
+\begin{subfigure}{0.3\textwidth}
+	\includegraphics[width=\textwidth]{shots/box-blue-start}
+	\caption{Box}\label{fig:impl-scenes-box}
+\end{subfigure}
+\caption{Implementierung Testszenen}
+\end{figure}
+
 \subsection{Laufzeitverhalten}\label{sec:laufzeit-impl}
 
-\warn{Performance Messungen}
+Gemessen wurde die durchschnittliche Zeit pro Render-Frame und die prozentuale CPU Last durch das Aufrufen der \textit{OpenGL}-\ac{API}. Drei Szenen (\fref{fig:impl-scenes}) wurden mit dem Programm \textit{nVidia Nsight} ausgewertet. Die Spezifikation des Testsystems ist der \fref{tab:spec-system} zu entnehmen. Die Ergebnisse werden in \fref{tab:performance} dargestellt, jeweils mit und ohne aktiviertem \ac{AO}\footnote{Ambient Occlusion wurde im Zuge des VR Projects implementiert}.
 
-performance stand nicht im vordergrund
-kann noch verbessert werden
-muss noch genauer anhand komplexer szenarien untersucht werden
-keine techniken wie frustum culling im einsatz
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+       & CPU API (\%) & GPU (ms/F) & GPU mit \ac{AO} (ms/F) & \\ \midrule
+sponza & 28  		  &  15  & 134  &  \\
+head   & 31    		  &  15  & 100  &  \\
+box    & 23    		  &  15  & 100  &  \\ \bottomrule
+\end{tabular}
+\caption{Millisekunden pro Frame für drei Beispielszenen.\\Jeweils ohne und mit Ambient Occlusion}\label{tab:performance}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}llc@{}}
+\toprule
+CPU &  Intel(R) Core(TM) i5-3570K CPU \@ 3.40GHz  & \\
+GPU &  NVIDIA GeForce GTX 570  & \\
+RAM &  32 GB  & \\ \bottomrule
+\end{tabular}
+\caption{Testsystem}\label{tab:spec-system}
+\end{table}
+
+Die Testszenen besitzen keinen keinen Anspruch auf Praxisnähe, sondern dienten während der Umsetzung des Engine als Funktionstest. Bisher stand die Performance der Engine nur dann im Fokus, wenn die Performance, trotz der einfachen Szenen, zum Problem wurde. Das war in der Projektphase nur zwei Mal der Fall, aktuell bei der \ac{AO} Implementierung. Techniken zur Reduzierung der API Aufrufe, wie zum Beispiel Frustum-Culling, wurden noch nicht implementiert.
 
 \section{Erfahrungen mit Haskell}\label{sec:xp-haskell}
 
@@ -54,7 +92,7 @@ Abseits der genannten Vorzüge zeigt beispielsweise die Implementierung des Rend
 
 Ein großer Vorteil von Haskell ist der \ac{GHC}, der eine sehr aktive Entwicklergemeinde besitzt\footnote{https://phabricator.haskell.org/} und fortlaufend verbessert und erweitert wird. Der \ac{GHC} ist ein herausragendes Beispiel für eine "`Real World"' Anwendung von Haskell. Im Vergleich mit dem \textit{gcc} Compiler\footnote{https://gcc.gnu.org/onlinedocs/gcc/Contributors.html} für C/C++ ist die aktive Entwicklergemeine des \ac{GHC} sehr klein\footnote{https://www.haskell.org/ghc/contributors}. C und C++ befinden sich schon jahrelang in einer breiten Anwendung und die Compiler wurden laufend weiterentwickelt und optimiert, teils mit Unterstützung großer Unternehmen wie \textit{IBM} oder \textit{Intel}. Daraus lässt sich schlussfolgern, dass große Fortschritte durch Optimierungen des Compilers nicht mehr zu erwarten sind --- `die "`low hanging fruits"' dürften schon alle gepflückt worden sein'. Haskell und der \ac{GHC} könnten noch einige Optimierungen ermöglichen (Spekulation). Zum einen begünstigt durch die Tatsache, dass viele gereifte Optimierungen aus anderen Sprachen sich nicht ohne weiteres auf Haskell anwenden lassen, und zum anderen eröffnet die Möglichkeit zur Abstraktion in Haskell neue Spielräume für den Compiler. Zum Beispiel erleichtert die referenzielle Transparenz von Haskell dem Compiler sichere Transformationen des Quelltextes\footnote{oder der Zwischensprache} zur Übersetzungszeit vorzunehmen, während in imperativen Sprachen die Neuanordnung von effektbehafteten Operationen nicht trivial ist. Und zum anderen konnten in den \ac{GHC}, aufgrund der kleineren Entwicklergemeinde, in der Summe deutlich weniger Arbeitsstunden investiert werden\footnote{http://www.quora.com/Is-Haskell-as-fast-as-C++-If-not-why-not}.
 
-\subsection{Probleme bei Haskell}\label{sec:probleme-haskell}
+\subsection{Probleme mit Haskell}\label{sec:probleme-haskell}
 
 Die produktive Verwendung von Haskell bringt aber auch einige Probleme mit sich. Oft sind die Probleme aber eher organisatorischer und menschlicher Natur. Zum einen sind die funktionalen Konzepte, beispielsweise im Vergleich zu den OOP Konzepten, nicht auf breiter Front bekannt und erfordern neue Denkmuster. Die bestehenden Denkmuster konnten sich jahrelang verfestigen. Deswegen stoßen neue Denkansätze auf Widerstand.
 
