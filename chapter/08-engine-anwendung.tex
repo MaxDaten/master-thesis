@@ -34,7 +34,7 @@ toneMap = do
   return $ mkStaticRenderPass $ \(sensor, sceneTex, mBloomTex) -> do
 \end{haskell}
 
-In \fref{lst:tonemap-pass-res}, dem Ressourcenblock des Renderschritts, werden die Ressourcen akquiriert, die zur Ausführung der ab \fref{lst:tonemap-pass-run-resize} beschrieben Routine notwenig sind. Dazu gehören ein Vertex Array Objekt, Framebuffer Objekt und die aus dem Vertex-Shader |drawRectangle.vert| und dem Fragment-Shader |tonemap.frag| erzeugte OpenGL Pipeline\footnote{https://www.opengl.org/wiki/GLSL\_Object\#Program\_pipeline\_objects}. Die Uniform Variablen des Frag"-ment-Sha"-ders werden von |fragmentUniforms| als |StateVar|s gekapselt (siehe Verwendung \fref{lst:tonemap-pass-run-pipeline}). Zusätzlich wird eine ausschließlich intern verwendete |IORef| für die Ausgabetextur erzeugt. Da die verwendeten OpenGL Texturen\footnote{erzeugt mit \texttt{glTexStorage*}} in ihrer Größe unveränderlich sind, muss für neue Ausgabegrößen eine neue Textur erzeugt werden (siehe \fref{lst:tonemap-pass-run-resize}). |resizeTexture2D| nimmt diese Operation vor, in dem es die benötigten Werte der alten Textur übernimmt und eine neue Textur neuer Größe erzeugt. Die alte Textur wird freigegeben. Dieses Texturobjekt speichern wir uns für den nächsten Aufruf in der |IORef|.
+In \fref{lst:tonemap-pass-res}, dem Ressourcenblock des Renderschritts, werden die Ressourcen akquiriert, die zur Ausführung der ab \fref{lst:tonemap-pass-run-resize} beschrieben Routine notwenig sind. Dazu gehören ein Vertex Array Objekt, Framebuffer Objekt und die aus dem Vertex-Shader |drawRectangle.vert| und dem Fragment-Shader |tonemap.frag| erzeugte \textit{OpenGL} Pipeline\footnote{https://www.opengl.org/wiki/GLSL\_Object\#Program\_pipeline\_objects}. Die Uniform Variablen des Frag"-ment-Sha"-ders werden von |fragmentUniforms| als |StateVar|s gekapselt (siehe Verwendung \fref{lst:tonemap-pass-run-pipeline}). Zusätzlich wird eine ausschließlich intern verwendete |IORef| für die Ausgabetextur erzeugt. Da die verwendeten \textit{OpenGL} Texturen\footnote{erzeugt mit \texttt{glTexStorage*}} in ihrer Größe unveränderlich sind, muss für neue Ausgabegrößen eine neue Textur erzeugt werden (siehe \fref{lst:tonemap-pass-run-resize}). |resizeTexture2D| nimmt diese Operation vor, in dem es die benötigten Werte der alten Textur übernimmt und eine neue Textur neuer Größe erzeugt. Die alte Textur wird freigegeben. Dieses Texturobjekt speichern wir uns für den nächsten Aufruf in der |IORef|.
 
 \begin{haskell}[label={lst:tonemap-pass-run-resize},caption={[ToneMapPass Größenanpassung des Framebuffers]\texttt{ToneMapPass} Größenanpassung des Framebuffers},nolol]
     target <- get outTexture
@@ -56,7 +56,7 @@ Die Größenanpassung der Ausgabetextur erzeugt eine neue Textur, so dass die ne
     iHdrSensor $= sensor
 \end{haskell}
 
-In \fref{lst:tonemap-pass-run-pipeline} wird die erzeugte Shaderpipline für diesen Renderschritt global aktiviert und den, in |StateVar|s gekapselten, Uniform Variablen des Fragment-Shaders Werte des Sensors zugewiesen. Zusätzlich werden die Texturen an die jeweiligen Texture-Einheiten von OpenGL gebunden. Die Zuweisung ist auch entsprechend in den |StarVar|s gekapselt.
+In \fref{lst:tonemap-pass-run-pipeline} wird die erzeugte Shaderpipline für diesen Renderschritt global aktiviert und den, in |StateVar|s gekapselten, Uniform Variablen des Fragment-Shaders Werte des Sensors zugewiesen. Zusätzlich werden die Texturen an die jeweiligen Texture-Einheiten von \textit{OpenGL} gebunden. Die Zuweisung ist auch entsprechend in den |StarVar|s gekapselt.
 
 \begin{haskell}[label={lst:tonemap-pass-run-draw-and-out},caption={\texttt{ToneMapPass} Draw-Call und Textur ausgeben},nolol]
     glDrawArrays GL_TRIANGLES 0 3
@@ -64,4 +64,4 @@ In \fref{lst:tonemap-pass-run-pipeline} wird die erzeugte Shaderpipline für die
     get outTexture
 \end{haskell}
 
-Abschließend wird der Draw-Call abgesetzt und die nun von OpenGL gefüllte Textur als Ausgabe zurück gegeben (\fref{lst:tonemap-pass-run-draw-and-out}).
+Abschließend wird der Draw-Call abgesetzt und die nun von \textit{OpenGL} gefüllte Textur als Ausgabe zurück gegeben (\fref{lst:tonemap-pass-run-draw-and-out}).

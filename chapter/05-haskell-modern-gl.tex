@@ -15,13 +15,13 @@ Die in \fref{sec:overhead-und-flexibilitaet} genannten Erweiterungen wurden entw
 \begin{minipage}[t]{0.9\linewidth}
 \begin{smaller}
 \paragraph{Quine}
-Quine\footnote{https://github.com/ekmett/quine/} ist ein kleines Hobby Projekt von Edward Kmett. Aktuell basiert das Projekt auf den neuen OpenGL Haskell-Bindings der \texttt{gl} Bibliothek. Die Demo Szenen sind aktuell nur Fragment-Shader Demos von Shadertoy\footnote{https://www.shadertoy.com/}. Langfristiges Ziel von Quine ist laut Edward Kmett eine Bibliothek in Haskell zu erschaffen die eine Sammlung der Best-Practices von Modern OpenGL zugänglich macht. Der Autor dieser Arbeit beteiligt sich an dem Projekt und hat schon kleinere allgemeine Teile aus dem hier beschriebenen Projekt nach Quine portiert.
+Quine\footnote{https://github.com/ekmett/quine/} ist ein kleines Hobby Projekt von Edward Kmett. Aktuell basiert das Projekt auf den neuen \textit{OpenGL} Haskell-Bindings der \texttt{gl} Bibliothek. Die Demo Szenen sind aktuell nur Fragment-Shader Demos von Shadertoy\footnote{https://www.shadertoy.com/}. Langfristiges Ziel von Quine ist laut Edward Kmett eine Bibliothek in Haskell zu erschaffen die eine Sammlung der Best-Practices von Modern OpenGL zugänglich macht. Der Autor dieser Arbeit beteiligt sich an dem Projekt und hat schon kleinere allgemeine Teile aus dem hier beschriebenen Projekt nach Quine portiert.
 \end{smaller}
 \end{minipage}
 }
 \end{wrapfigure}
 
-Zusätzlich lässt sich Haskell dazu als Hebel nutzen, die bessere Modularität von \ac{DSA} besser auszuschöpfen. Die \textit{Separate Program Objects} lassen sich dabei schon in OpenGL 4.1 als Vorboten von \ac{DSA} betrachten. Wie bereits beschrieben lassen sich über diese OpenGL Erweiterung die Uniform Variablen der einzelnen Shader-Stufen direkt über das Program-Objekt setzen. In Verbindung mit einer |StateVar| (siehe Beispielimplementierung \fref{sec:src-statevar}) und wenigen zusätzlichen Definitionen, lassen sich in Haskell elegante Schnittstellendatentypen für Shader definieren, die sich in Zukunft automatisch generieren ließen. \ref{lst:uniform-beispiel} gibt ein Beispiel, wie sich eine Shader-Schnittstelle über funktionale Konzepte zusammensetzen lässt. Ein relevanter Auszug findet sich in \fref{lst:uniform-beispiel-auszug}:
+Zusätzlich lässt sich Haskell dazu als Hebel nutzen, die bessere Modularität von \ac{DSA} besser auszuschöpfen. Die \textit{Separate Program Objects} lassen sich dabei schon in \textit{OpenGL} 4.1 als Vorboten von \ac{DSA} betrachten. Wie bereits beschrieben lassen sich über diese \textit{OpenGL} Erweiterung die Uniform Variablen der einzelnen Shader-Stufen direkt über das Program-Objekt setzen. In Verbindung mit einer |StateVar| (siehe Beispielimplementierung \fref{sec:src-statevar}) und wenigen zusätzlichen Definitionen, lassen sich in Haskell elegante Schnittstellendatentypen für Shader definieren, die sich in Zukunft automatisch generieren ließen. \ref{lst:uniform-beispiel} gibt ein Beispiel, wie sich eine Shader-Schnittstelle über funktionale Konzepte zusammensetzen lässt. Ein relevanter Auszug findet sich in \fref{lst:uniform-beispiel-auszug}:
 
 \haskellcode[caption={Shader-Schnittstelle (Auszug)},label={lst:uniform-beispiel-auszug},firstline=67]{src/uniform-beispiel.hs}
 \endgroup
@@ -51,9 +51,9 @@ Zusätzlich entstehen durch Bindings zu externen Bibliotheken neue Abhängigkeit
 
 Auch generell stellt sich bei \textit{OpenGL} die Frage, wie sinnvoll es ist die komplexe \acs{API} in einer anderen Sprache komplett abzubilden. \textit{OpenGL} besitzt viele erlaubte und nicht erlaubten Zustände. Die erlaubten und nicht erlaubten Zustände sind zudem mitunter treiberspezifisch. Hinzu kommen diverse Erweiterungen, die die Verhaltensweise der \acs{API} massiv beeinflussen und gültige und ungültige Zustände hinzufügen oder entfernen können (siehe \fref{sec:vulkan}).
 
-\paragraph{Meinung des Autors} \textit{OpenGL} lässt sich nicht in einem vertretbaren Aufwand komplett abbilden. Der Aufwand wäre ungefähr mit dem vergleichbar, den Grafikkartenhersteller bei der Implementierung ihrer Grafikkartentreiber betreiben (weitere Ausführungen in \fref{sec:vulkan}). Deswegen sollte eine Auswahl der direkten OpenGL Bindings getroffen werden um sie punktuell in funktionale Konzepte zu gießen.
+\paragraph{Meinung des Autors} \textit{OpenGL} lässt sich nicht in einem vertretbaren Aufwand komplett abbilden. Der Aufwand wäre ungefähr mit dem vergleichbar, den Grafikkartenhersteller bei der Implementierung ihrer Grafikkartentreiber betreiben (weitere Ausführungen in \fref{sec:vulkan}). Deswegen sollte eine Auswahl der direkten \textit{OpenGL} Bindings getroffen werden um sie punktuell in funktionale Konzepte zu gießen.
 
 % \subsection{Elm}
 
 % \subsection{Gloss}
-% Gloss (2d) ist ein schönes Beispiel dafür wie sich mit einem OpenGL backend und mit der konzentration auf das wesentliche eine klare funktionale api schaffen lässt die einfach anzuwenden ist.
+% Gloss (2d) ist ein schönes Beispiel dafür wie sich mit einem \textit{OpenGL} backend und mit der konzentration auf das wesentliche eine klare funktionale api schaffen lässt die einfach anzuwenden ist.
