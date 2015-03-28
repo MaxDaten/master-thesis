@@ -37,7 +37,7 @@ Die direkte Umsetzung der Logik eines Renderschritts in \textit{OpenGL} vereinfa
 	\includegraphics[width=.7\textwidth]{shots/box-blue-start}
 	\caption{Box}\label{fig:impl-scenes-box}
 \end{subfigure}
-\caption{Implementierung Testszenen}
+\caption{Implementierung Testszenen}\label{fig:impl-scenes}
 \end{figure}
 
 \subsection{Testszenen}\label{sec:testszenen-impl}
@@ -92,7 +92,7 @@ Die Produktivität der Entwickler sollte nicht unter allen Umständen der Laufze
 
 \subsection{Vorteile von Haskell}
 
-In \fref{chap:loesungen-durch-f} wurden schon einige Vorzüge von Haskell diskutiert: Die Möglichkeit zur Abstraktion, die Kompositionsfähigkeit, die Ad-Hoc Beweisführung, das Begünstigen von Multi-Threading durch unveränderliche Daten. Haskell besitzt für viele Probleme in der Softwareentwicklung Lösungen und Lösungskonzepte. 
+In \fref{chap:loesungen-durch-fp} wurden schon einige Vorzüge von Haskell diskutiert: Die Möglichkeit zur Abstraktion, die Kompositionsfähigkeit, die Ad-Hoc Beweisführung, das Begünstigen von Multi-Threading durch unveränderliche Daten. Haskell besitzt für viele Probleme in der Softwareentwicklung Lösungen und Lösungskonzepte. 
 
 Abseits der genannten Vorzüge zeigt beispielsweise die Implementierung des Renderschritts in \fref{chap:anwendung}, dass Haskell zudem auch imperative Programmierung erlaubt, sollte dies punktuell notwendig sein. Die Implementierung des Renderschritts folgt in dem Beispiel der imperativen Natur der \textit{OpenGL}-\ac{API}. Hierbei zeigt sich, dass sich funktionale Konzepte gut mit imperativer Programmierung mischen lassen. Viele Konzepte aus Haskell haben inzwischen ihren Einzug in andere imperative Sprachen gefunden: Lambda-Funktionen in C++ und Java, Monaden in C\#\footnote{http://blogs.msdn.com/b/wesdyer/archive/2008/01/11/the-marvels-of-monads.aspx} oder die Strategie Objekte als unveränderlich (immutable) zu entwickeln, damit Multi-Threading sicher und einfacher umgesetzt werden kann \parencite[Seite 46ff]{Peierls:2005:JCP:1076522}.
 

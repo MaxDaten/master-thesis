@@ -46,7 +46,14 @@ Damit die physikalischen Eigenschaften der Oberflächen möglichst realistisch a
 \label{tab:pbr-notation}
 \end{table}
 
-\warn{Bild BRDF V, N, L, H, R}
+\begin{figure}[H]
+	\label{fig:brdf}
+	\includegraphics[width=\textwidth]{brdf}
+	\caption[Bidirectional Reflectance Distribution Function]{Bidirectional Reflectance Distribution Function $f$\protect\footnotemark}
+\end{figure}
+
+\footnotetext{Quelle: http://commons.wikimedia.org/wiki/File:Blinn\_Vectors.svg}
+\clearpage
 
 \subsection{Cook-Torrance Modell}
 
@@ -54,13 +61,12 @@ Das Reflexionsverhalten von Oberflächen wird in der Realität wesentlich von de
 
 Beispielsweise spiegeln polierte Oberflächen die Umgebung und erhalten Glanzlichter bei direkter Beleuchtung. Irreguläre rauhe Oberflächen streuen das einfallende Licht ungleichmäßig in alle Richtungen. Wachs oder Haut lässt das Licht zum Teil in das Material eindringen und zerstreut es. Die glänzenden Reflexionen von metallischen Oberflächen werden durch die Leitfähigkeit des Materials bestimmt (siehe \fref{sec:pbr-dielektisch}).
 
-Viele Material- und Oberflächenparameter sind im Offline-Verfahren, und besonders in Echtzeitverfahren, nicht simulierbar. In Echtzeitverfahren ist es beispielsweise nicht praktikabel die mikroskopischen Unebenheiten, genannt \textit{Mikrofacetten oder Microfecets} (siehe \fref{fig:microfacet}), exakt zu berechenen. Entsprechend wurden einige approximierende Microfacet Modelle entwickelt, die die Interaktion des Lichts mit den Facetten, realistisch abbilden können.
+Viele Material- und Oberflächenparameter sind im Offline-Verfahren, und besonders in Echtzeitverfahren, nicht simulierbar. In Echtzeitverfahren ist es beispielsweise nicht praktikabel die mikroskopischen Unebenheiten, genannt \textit{Mikrofacetten} oder \textit{Microfecets} (siehe \fref{fig:microfacet}), exakt zu berechenen. Entsprechend wurden einige approximierende Microfacet Modelle entwickelt, die die Interaktion des Lichts mit den Facetten, realistisch abbilden können.
 
 \begin{figure}
-	\label{fig:microfacet}
 	\includegraphics[width=.5\textwidth]{roughness0}
 	\includegraphics[width=.5\textwidth]{roughness1}
-	\caption[Rauheit]{links: $m = 0$; rechts $m = 1$}
+	\caption[Rauheit]{links: $m = 0$; rechts $m = 1$}\label{fig:microfacet}
 \end{figure}
 
 Eines von ihnen ist das Cook-Torrance Modell \parencite{Cook1981}, welches mit dem Ziel entwickelt wurde die physikalischen Reflexionseigenschaften von rauhen und glatten Oberflächen realistischer abzubilden, als die klassischen Modelle es ermöglichen \parencite[Seite 40]{Ngan2004}. Da sich das Cook-Torrance Modell auf spekulare Reflexionen konzentriert, verwenden wir das Cook-Torrance Modell auschließlich zur Berechnung des spekularen Anteils $f_s$ der BRDF. Der diffuse Anteil $f_d$ wird durch das klassische Lambert'sche Modell abgebildet und nicht weiter betrachtet. Denkbar sind aber auch andere Modelle für die diffuse Reflexion. In \fref{eq:cook-torrance-model} wird das Modell formal dargestellt
