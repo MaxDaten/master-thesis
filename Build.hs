@@ -37,7 +37,6 @@ main = shakeArgs shakeOptions{shakeFiles=buildDir</>""} $ do
         
         -- move the bib into the build directory
         command_ [] "cp" [ "-r", "bib", buildDir]
-        
         void pdflatexCmd
         need [out -<.> "bcf"]
         void pdflatexCmd
