@@ -1,19 +1,60 @@
 \input{2015-06-02-presentation/pre}
-\usetheme{Goettingen}
+\usetheme{Warsaw}
+% \usetheme{Goettingen}
+\usefonttheme{professionalfonts}
+\setbeamercovered{transparent}
+\setbeamertemplate{footline}[frame number]
 
-\title{Modern OpenGL Engine in Haskell}
-\author{Jan-Philip Loos}
-\date{\protect\formatdate{02}{06}{2015}}
 
 \begin{document}
+\title[Haskell Engine]{Modern OpenGL Engine in Haskell}
+\subtitle[Konzepte]{Funktionale Konzepte und Implementierungen}
+\author{Jan-Philip Loos}
+\institute[FH Wedel]{Master of Science\\Informatik\\\includegraphics[width=3cm]{fhw}}
+\date{\protect\formatdate{02}{06}{2015}}
 \maketitle
-\frame{\tableofcontents[currentsection]}
+\logo{\includegraphics[width=0.5cm]{fhw-logo}}
 
-\section{Abschnitt 1}
-\begin{frame} %%Eine Folie
-  \frametitle{Ein Demotitel} %%Folientitel
-  \begin{Definition} %%Definition
+% \frame{\tableofcontents[currentsection]}
+
+\section{Konzept der Renderpipeline}
+%% MEALY
+\begin{frame}
+  \frametitle{Mealy Automat}
+  \begin{Definition}
+    \begin{align}
+    \mathbfcal{M} = \left( Q, \Sigma, \Omega, \delta, \lambda, q_0 \right)
+    \label{def:mealy-formal}
+    \end{align}
+    \begin{align*}
+    	\text{mit}\\
+    	Q &: \text{Endliche Menge von Zuständen} \\
+    	\Sigma  &:\text{Endliches Eingabealphabet} \\
+    	\Omega  &:\text{Endliches Ausgabealphabet} \\
+    	\delta  &:\text{Zustandsübergangsfunktion}\ Q \times \Sigma \rightarrow Q \\
+    	\lambda &:\text{Ausgabefunktion}\ Q \times \Sigma \rightarrow \Omega \\
+    	q_0 &: \text{Startzustand}
+    \end{align*}
+  \end{Definition}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Definition in Haskell}
+  \begin{haskell}[label={lst:haskell-mealy},caption={[Definition Mealy in Haskell]Definition Mealy in Haskell\protect\footnotemark}]
+    newtype Mealy a b = Mealy {
+      runMealy :: a -> (b, Mealy a b)
+    }
+  \end{haskell}
+  \footnotetext{https://hackage.haskell.org/package/machines/}
+\end{frame}
+
+\section{Anwendung}
+\begin{frame}
+  \frametitle{Physically Based Rendering}
+  \begin{Definition}
     Eine Definition
   \end{Definition}
 \end{frame}
+
+
 \end{document}

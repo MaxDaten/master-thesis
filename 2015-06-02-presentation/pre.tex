@@ -1,6 +1,48 @@
 \documentclass[ngerman]{beamer}
 
+\usepackage{lmodern}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[ngerman]{babel}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{datetime}
+
+\graphicspath{{./img/}}
+\definecolor{halfgray}{gray}{0.55} % chapter numbers will be semi transparent .5 .55 .6 .0
+
+
+\DeclareMathAlphabet\mathbfcal{OMS}{cmsy}{b}{n}
+
+%% Listings
+\usepackage{listings}
+\usepackage{sourcecodepro} % now the default typewriter font
+
+\lstset
+  { basicstyle=\tiny\ttfamily\footnotesize
+  , breaklines=true
+  , captionpos=t
+  , showstringspaces=false
+  , rulecolor=\color{halfgray}
+  , commentstyle=\scriptsize
+  , numbers=left
+  , frameshape={nnY}{n}{n}{Ynn}
+  , xleftmargin=2.5em
+  , framexleftmargin=2em
+  , keywordstyle=\color{blue}
+  , backgroundcolor=\color{black!3}
+  }
+
+\lstnewenvironment{haskell}[1][]{
+    \noindent
+    \minipage{\linewidth}
+    \vspace{0.5\baselineskip}
+    \lstset
+        { basicstyle=\footnotesize\ttfamily
+        , language=Haskell
+        , tabsize=2
+        , #1
+        }
+}{\endminipage}
