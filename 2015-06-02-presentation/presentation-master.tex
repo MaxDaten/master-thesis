@@ -126,6 +126,11 @@ instance Monad m => Functor (MealyT m a) where
   fmap :: (b -> c) -> MealyT m a b -> MealyT m a c
   @\pause@fmap f (MealyT run) = MealyT (run >=> \(o,sys') ->
     return (f o, fmap f sys'))
+  \end{haskell}\pause
+
+  \begin{haskell}[mathescape, caption={[Anwndung Functor]Anwendung Functor}]
+$\lambda$> :t fmap odd (sumAndPrintInput 0)
+fmap odd (sumAndPrintInput 0) :: MealyT IO Int Bool
   \end{haskell}
 
 \end{frame}
@@ -140,8 +145,46 @@ instance Monad m => Functor (MealyT m a) where
 \section{Anwendung}
 \begin{frame}
   \frametitle{Physically Based Rendering}
+  \begin{itemize}
+    \item<1-> {physikalisches Oberflächenmaterial- \\und Beleuchtungskonzept}
+    \item<2-> {allgemeingültige und nachvollziehbare Parameter}
+    \item<3-> {kein festes Formelwerk}
+    \item<4-> {viele mögliche Implementierungen}
+    \item<5-> {Paradigma}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Cook Torrance Modell}
+  \begin{itemize}
+    \item<1-> {effizientes Reflexionsmodell ($BRDF$)}
+    \item<2-> {berücksichtig den Fresnel Effekt}
+    \item<2-> {simuliert Mikrofacetten}
+  \end{itemize}
+  \pause
   \begin{Definition}
-    Eine Definition
+    \begin{align}
+    	% \caption{Cook-Torrance Illumination}
+    	f(\vV,\vL) = \frac{\mathcal{F}(\vV,\vL)D(\vV,\vL)G(\vV,\vL)}{4(\vN \cdot \vV)(\vN \cdot \vL)}
+    \end{align}
+  \end{Definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Cook Torrance Modell (2)}
+  \begin{Definition}
+
+    \begin{align*}
+    	f(\vV,\vL) = \frac{\mathcal{F}(\vV,\vL)D(\vV,\vL)G(\vV,\vL)}{4(\vN \cdot \vV)(\vN \cdot \vL)}
+    \end{align*}
+
+    \begin{align*}
+      \text{mit}\\
+      \mathcal{F} &: \text{Fresnel} \\
+    	D  &: \text{Mikrofacetten Normalverteilung} \\
+    	G  &: \text{Geometrische Abschwächung}
+    \end{align*}
+
   \end{Definition}
 \end{frame}
 
