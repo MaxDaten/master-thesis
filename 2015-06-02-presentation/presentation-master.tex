@@ -17,7 +17,7 @@
 
 % \frame{\tableofcontents[currentsection]}
 
-\section{Konzept der Renderpipeline}
+\section{Konzept des Rendersystems}
 %% MEALY
 \begin{frame}
   \frametitle{Mealy Automat}
@@ -40,12 +40,101 @@
 
 \begin{frame}[fragile]
   \frametitle{Definition in Haskell}
+  \begin{block}{Definition Mealy}
+    \begin{align*}
+    \mathbfcal{M} = \left( Q, \Sigma, \Omega, \delta, \lambda, q_0 \right)
+    \label{def:mealy-formal}
+  \end{align*}
+  \end{block}
   \begin{haskell}[label={lst:haskell-mealy},caption={[Definition Mealy in Haskell]Definition Mealy in Haskell\protect\footnotemark}]
-    newtype Mealy a b = Mealy {
-      runMealy :: a -> (b, Mealy a b)
-    }
+newtype Mealy a b = Mealy {
+  runMealy :: a -> (b, Mealy a b)
+}
   \end{haskell}
   \footnotetext{https://hackage.haskell.org/package/machines/}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Monadische Erweiterung von {\ttfamily Mealy}}
+  \begin{haskell}[label={lst:haskell-mealy},caption={[Monadische Mealy]Monadische Mealy}]
+newtype MealyT m a b = MealyT {
+  runMealyT :: a -> m (b, MealyT m a b)
+}
+  \end{haskell}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Beispielimplementierung eines {\ttfamily MealyT}}
+
+  \begin{haskell}[label={lst:haskell-mealy}]
+newtype MealyT m a b = MealyT {
+  runMealyT :: a -> m (b, MealyT m a b)
+}
+  \end{haskell}
+
+  \begin{haskell}
+sumAndPrintInput :: Int -> MealyT IO Int Int
+sumAndPrintInput q0 = @\pause@ MealyT (\i -> do
+  print i
+  let sumVal = q0 + i
+  return (sumVal,sumAndPrintInput sumVal))
+  \end{haskell}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Ausführung von {\ttfamily sumAndPrintInput}}
+
+  \begin{haskell}
+sumAndPrintInput :: Int -> MealyT IO Int Int
+sumAndPrintInput q0 = MealyT (\i -> do
+  print i
+  let sumVal = q0 + i
+  return (sumVal,sumAndPrintInput sumVal))
+  \end{haskell}
+  \begin{haskell}[mathescape]
+$\lambda$> (out0, q1) <- runMealyT (sumAndPrintInput 0) 1
+1
+$\lambda$> print out0
+1
+$\lambda$> (out1, q2) <- runMealyT q1 42
+42
+$\lambda$> print out1
+43
+  \end{haskell}
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Kategorien für {\ttfamily MealyT}}
+
+  \begin{itemize}
+    \item {\ttfamily Functor}
+    \item {\ttfamily Applicative}
+    \item {\ttfamily Profunctor}
+    \item {\ttfamily Category}
+    \item {\ttfamily Semigroup}
+    \item {\ttfamily Arrow}
+    \item {\ttfamily ArrowChoice}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{{\ttfamily Functor} Instanz für {\ttfamily MealyT}}
+
+  \begin{haskell}
+instance Monad m => Functor (MealyT m a) where
+  fmap :: (b -> c) -> MealyT m a b -> MealyT m a c
+  @\pause@fmap f (MealyT run) = MealyT (run >=> \(o,sys') ->
+    return (f o, fmap f sys'))
+  \end{haskell}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{\ttfamily RenderSystem}
+  \begin{block}{\ttfamily RenderSystem}
+    {\ttfamily RenderSystem} = {\ttfamily MealyT}
+  \end{block}
 \end{frame}
 
 \section{Anwendung}
