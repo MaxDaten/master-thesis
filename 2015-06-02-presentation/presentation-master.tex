@@ -17,7 +17,9 @@
 
 % \frame{\tableofcontents[currentsection]}
 
-\section{Konzept des Rendersystems}
+\section{Formale Basis des Rendersystems}
+\frame{\sectionpage}
+
 %% MEALY
 \begin{frame}
   \frametitle{Mealy Automat}
@@ -143,6 +145,7 @@ fmap odd (sumAndPrintInput 0) :: MealyT IO Int Bool
 \end{frame}
 
 \section{Anwendung}
+\frame{\sectionpage}
 \begin{frame}
   \frametitle{Physically Based Rendering}
   \begin{itemize}
@@ -186,6 +189,32 @@ fmap odd (sumAndPrintInput 0) :: MealyT IO Int Bool
     \end{align*}
 
   \end{Definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Oberflächenparameter}
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}{0.24\textwidth}
+    	\includegraphics[width=\textwidth]{Door_IronDungeonDoor_1k_alb}
+    	\caption{Albedo-Textur}
+    \end{subfigure}
+    \begin{subfigure}{0.24\textwidth}
+    	\includegraphics[width=\textwidth]{Door_IronDungeonDoor_1k_n}
+    	\caption{Normalen-Textur}
+    \end{subfigure}
+    \begin{subfigure}{0.24\textwidth}
+    	\includegraphics[width=\textwidth]{Door_IronDungeonDoor_1k_g}
+    	\caption{Roughness-Textur}
+    \end{subfigure}
+    \begin{subfigure}{0.24\textwidth}
+    	\includegraphics[width=\textwidth]{Door_IronDungeonDoor_1k_h}
+    	\caption{Metal-Mask-Textur}
+    \end{subfigure}
+    \caption{Beispiel eines Textur-Sets}
+  \end{figure}
+
 \end{frame}
 
 
