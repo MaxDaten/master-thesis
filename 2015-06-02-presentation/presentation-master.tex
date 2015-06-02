@@ -167,13 +167,12 @@ fmap odd (sumAndPrintInput 0) :: MealyT IO Int Bool
     \item<2-> {berücksichtig den Fresnel Effekt}
     \item<3-> {simuliert Mikrofacetten}
   \end{itemize}
-  \pause
-  \begin{Definition}
+  \onslide<4->{\begin{Definition}
     \begin{align}
     	% \caption{Cook-Torrance Illumination}
     	f(\vV,\vL) = \frac{\mathcal{F}(\vV,\vL)D(\vV,\vL)G(\vV,\vL)}{4(\vN \cdot \vV)(\vN \cdot \vL)}
     \end{align}
-  \end{Definition}
+  \end{Definition}}
 \end{frame}
 
 \begin{frame}
