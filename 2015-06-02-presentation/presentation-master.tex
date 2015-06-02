@@ -16,7 +16,7 @@
 \logo{\includegraphics[width=0.5cm]{fhw-logo}}
 
 % \frame{\tableofcontents[currentsection]}
-
+\frame{\tableofcontents}
 \section{Formale Basis des Rendersystems}
 \frame{\sectionpage}
 
@@ -30,11 +30,11 @@
     \end{align}
     \begin{align*}
     	\text{mit}\\
-    	Q &: \text{Endliche Menge von Zuständen} \\
-    	\Sigma  &:\text{Endliches Eingabealphabet} \\
-    	\Omega  &:\text{Endliches Ausgabealphabet} \\
-    	\delta  &:\text{Zustandsübergangsfunktion}\ Q \times \Sigma \rightarrow Q \\
-    	\lambda &:\text{Ausgabefunktion}\ Q \times \Sigma \rightarrow \Omega \\
+    	Q &: \text{Endliche Menge von Zuständen} \\\pause
+    	\Sigma  &:\text{Endliches Eingabealphabet} \\\pause
+    	\Omega  &:\text{Endliches Ausgabealphabet} \\\pause
+    	\delta  &:\text{Zustandsübergangsfunktion}\ Q \times \Sigma \rightarrow Q \\\pause
+    	\lambda &:\text{Ausgabefunktion}\ Q \times \Sigma \rightarrow \Omega \\\pause
     	q_0 &: \text{Startzustand}
     \end{align*}
   \end{Definition}
@@ -93,16 +93,16 @@ sumAndPrintInput q0 = MealyT (\i -> do
   let sumVal = q0 + i
   return (sumVal,sumAndPrintInput sumVal))
   \end{haskell}
-  \begin{haskell}[mathescape]
-$\lambda$> (out0, q1) <- runMealyT (sumAndPrintInput 0) 1
-1
-$\lambda$> print out0
-1
-$\lambda$> (out1, q2) <- runMealyT q1 42
-42
-$\lambda$> print out1
+  \begin{semiverbatim}
+\(\lambda\)> (out0, q1) <- runMealyT (sumAndPrintInput 0) 1\pause
+1\pause
+\(\lambda\)> print out0 \pause
+1\pause
+\(\lambda\)> (out1, q2) <- runMealyT q1 42\pause
+42\pause
+\(\lambda\)> print out1\pause
 43
-  \end{haskell}
+  \end{semiverbatim}
 \end{frame}
 
 \begin{frame}
@@ -162,7 +162,7 @@ fmap odd (sumAndPrintInput 0) :: MealyT IO Int Bool
   \begin{itemize}
     \item<1-> {effizientes Reflexionsmodell ($BRDF$)}
     \item<2-> {berücksichtig den Fresnel Effekt}
-    \item<2-> {simuliert Mikrofacetten}
+    \item<3-> {simuliert Mikrofacetten}
   \end{itemize}
   \pause
   \begin{Definition}
@@ -205,7 +205,7 @@ fmap odd (sumAndPrintInput 0) :: MealyT IO Int Bool
     	\caption{Normalen-Textur}
     \end{subfigure}
     \begin{subfigure}{0.24\textwidth}
-    	\includegraphics[width=\textwidth]{Door_IronDungeonDoor_1k_g}
+    	\includegraphics[width=\textwidth]{Door_IronDungeonDoor_1k_rr}
     	\caption{Roughness-Textur}
     \end{subfigure}
     \begin{subfigure}{0.24\textwidth}
@@ -219,5 +219,9 @@ fmap odd (sumAndPrintInput 0) :: MealyT IO Int Bool
 
 
 \section{Demonstration}
-\frame{\sectionpage}
+\begin{frame}
+  \sectionpage
+  \centering
+  \includegraphics[width=0.8\textwidth]{shots/pbr01}
+\end{frame}
 \end{document}
